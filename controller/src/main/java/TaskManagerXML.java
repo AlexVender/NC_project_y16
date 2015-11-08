@@ -1,4 +1,6 @@
 import java.util.Date;
+import java.util.List;
+
 
 /**
  * Created by Ivan.Chikhanov on 08.11.2015.
@@ -18,7 +20,7 @@ public class TaskManagerXML implements TaskManager {
 
     }
 
-    Task getTask(int id){
+    public Task getTask(int id){
         return TaskList.get(id);
     }
 

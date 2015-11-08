@@ -1,6 +1,8 @@
 /**
  * Created by Ivan.Chikhanov on 08.11.2015.
  */
+
+
 public class Notification {
     private Task currentTask;
 
