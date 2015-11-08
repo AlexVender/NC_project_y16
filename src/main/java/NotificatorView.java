@@ -16,6 +16,14 @@ public class NotificatorView implements ProgramInterface {
 
     }
 
+    public void postponeButton(){
+
+    }
+
+    public void dismissButton(){
+
+    }
+
     public int getTaskCount() {
         return TaskCount;
     }
