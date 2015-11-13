@@ -30,12 +30,5 @@
         <module>view</module>
     </modules>
 
-    <dependencies>
-        <dependency>
-            <groupId>org.netcracker.unc.group16</groupId>
-            <artifactId>view</artifactId>
-            <version>1.0-SNAPSHOT</version>
-        </dependency>
-    </dependencies>
 
 </project>
