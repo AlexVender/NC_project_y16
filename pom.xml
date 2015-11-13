@@ -6,7 +6,7 @@
 
     <packaging>pom</packaging>
     <groupId>org.netcracker.unc.group16</groupId>
-    <artifactId>view</artifactId>
+    <artifactId>lab1</artifactId>
     <version>1.0-SNAPSHOT</version>
 
 
@@ -26,6 +26,8 @@
 
     <modules>
         <module>controller</module>
+        <module>model</module>
+        <module>view</module>
     </modules>
 
 </project>
