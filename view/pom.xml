@@ -13,5 +13,12 @@
     <artifactId>view</artifactId>
     <version>1.0-SNAPSHOT</version>
 
-    
+    <dependencies>
+        <dependency>
+            <groupId>org.netcracker.unc.group16</groupId>
+            <artifactId>controller</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
+    </dependencies>
+
 </project>
