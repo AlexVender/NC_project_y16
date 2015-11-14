@@ -2,6 +2,7 @@
  * Created by Ivan.Chikhanov on 08.11.2015.
  */
 
+package org.netcracker.unc.group16;
 
 public class Notification {
     private Task currentTask;
