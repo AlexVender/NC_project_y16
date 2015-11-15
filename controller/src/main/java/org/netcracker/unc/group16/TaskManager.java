@@ -3,9 +3,6 @@ package org.netcracker.unc.group16;
 import java.util.Date;
 import java.util.List;
 
-/**
- * Created by Ivan.Chikhanov on 08.11.2015.
- */
 public interface TaskManager {
     void editTask(int id);
     void addTask();

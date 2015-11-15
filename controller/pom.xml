@@ -17,7 +17,7 @@
     <dependencies>
         <dependency>
             <groupId>org.netcracker.unc.group16</groupId>
-            <artifactId>view</artifactId>
+            <artifactId>model</artifactId>
             <version>1.0-SNAPSHOT</version>
         </dependency>
     </dependencies>
