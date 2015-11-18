@@ -1,11 +1,8 @@
 package org.netcracker.unc.group16;
 
-import sun.java2d.HeadlessGraphicsEnvironment;
-import sun.java2d.SunGraphicsEnvironment;
-
 import javax.swing.*;
-import javax.swing.border.LineBorder;
 import java.awt.*;
+import java.util.Calendar;
 
 
 public class TaskManagerView implements ProgramInterface {
@@ -14,6 +11,11 @@ public class TaskManagerView implements ProgramInterface {
     private Panel rightControlPanel;
     private Panel monthYearPanel;
     private JLabel lblMonthYear;
+    private CalendarPanel calendarPanel;
+
+    private String[] months = {
+            "Январь", "Февраль", "Март", "Апрель", "Май", "Июнь", "Июль", "Август", "Сентябрь", "Октябрь", "Ноябрь", "Декабрь"
+    };
 
     public TaskManagerView(TaskManager taskManager) {
         try {
@@ -32,6 +34,7 @@ public class TaskManagerView implements ProgramInterface {
         mainFrame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 //        mainFrame.setPreferredSize(new Dimension(1440, 900));
         mainFrame.setMinimumSize(new Dimension(750, 650));
+        mainFrame.setLocationRelativeTo(null);
 
         mainFrame.setLayout(new BorderLayout());
         JPanel contentPane = new JPanel();
@@ -74,6 +77,26 @@ public class TaskManagerView implements ProgramInterface {
         JButton btnNextMonth = new JButton("  >  ");
         rightControlPanel.add(btnNextMonth, c2);
 
+        btnPrevMonth.addActionListener(e -> {
+            if (calendarPanel.getMonth() > 0) {
+                calendarPanel.setMonth(calendarPanel.getMonth() - 1);
+            } else {
+                calendarPanel.setMonth(Calendar.DECEMBER);
+                calendarPanel.setYear(calendarPanel.getYear() - 1);
+            }
+            lblMonthYear.setText(months[calendarPanel.getMonth()] + " " + calendarPanel.getYear());
+        });
+
+        btnNextMonth.addActionListener(e -> {
+            if (calendarPanel.getMonth() < Calendar.DECEMBER) {
+                calendarPanel.setMonth(calendarPanel.getMonth() + 1);
+            } else {
+                calendarPanel.setMonth(Calendar.JANUARY);
+                calendarPanel.setYear(calendarPanel.getYear() + 1);
+            }
+            lblMonthYear.setText(months[calendarPanel.getMonth()] + " " + calendarPanel.getYear());
+        });
+
 // Second line
         monthYearPanel = new Panel();
         c1.gridx = 0;
@@ -81,25 +104,20 @@ public class TaskManagerView implements ProgramInterface {
         c1.gridwidth = 2;
         c1.anchor = GridBagConstraints.CENTER;
         contentPane.add(monthYearPanel, c1);
-        lblMonthYear = new JLabel("Ноябрь 2015");
+        lblMonthYear = new JLabel();
         lblMonthYear.setFont(new Font("Verdana", 0, 15));
         monthYearPanel.add(lblMonthYear);
 
 
 // Third line
-        CalendarPanel calendarPanel = new  CalendarPanel();
+        calendarPanel = new  CalendarPanel();
         mainFrame.add(calendarPanel);
-
+        lblMonthYear.setText(months[calendarPanel.getMonth()] + " " + calendarPanel.getYear());
 
         mainFrame.pack();
         mainFrame.setVisible(true);
     }
 
-    private static void addAButton(String text, Container container) {
-        JButton button = new JButton(text);
-        button.setAlignmentX(Component.CENTER_ALIGNMENT);
-        container.add(button);
-    }
 
     public void drawNotificate(){
     }

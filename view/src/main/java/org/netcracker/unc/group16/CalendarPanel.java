@@ -8,15 +8,16 @@ import java.util.GregorianCalendar;
 
 
 public class CalendarPanel extends JPanel {
-    private Font font;
-    private GregorianCalendar calendar;
+    // Дата Текущий день
     private GregorianCalendar presentDay;
+
+    // Массив дат для отображения
     private int[][] dates;
 
+    // Дата отображаемого иесяцв
     private int year;
     private int month;
-    private int daysInMonth;
-    private int firstWeekday; // 1-7
+
 
     private static final String[] weekdays = {
             "Понедельник", "Вторник", "Среда", "Четверг", "Пятница", "Суббота", "Воскресенье"
@@ -24,34 +25,24 @@ public class CalendarPanel extends JPanel {
 
     private static final int weekdaysHeight = 24;
 
+    private static final Color LINES_COLOR = Color.BLACK;
     private static final Color WEEKENDS_COLOR = new Color(213, 230, 244);
     private static final Color ANOTHER_MONTH_COLOR = new Color(237,237,237);
     private static final Color ANOTHER_MONTH_WEEKENDS_COLOR = new Color(225, 233, 240);
 
     public CalendarPanel() {
-
-//        DeBug
-        year = 2016;
-        month = Calendar.OCTOBER;
-//        #####
-
-        presentDay = new GregorianCalendar();
-        calendar = new GregorianCalendar();
-
-        calendar.setMinimalDaysInFirstWeek(7);
-        setBorder(new LineBorder(Color.black));
-
         setFont(new Font("Verdana", Font.BOLD, 13));
 
+        presentDay = new GregorianCalendar();
+        year = presentDay.get(Calendar.YEAR);
+        month = presentDay.get(Calendar.MONTH);
+        setBorder(new LineBorder(Color.BLACK));
         calcDaysPositions();
     }
 
     private void calcDaysPositions() {
-        calendar.set(presentDay.get(Calendar.YEAR), presentDay.get(Calendar.MONTH), 1);
-
-        daysInMonth = calendar.getActualMaximum(Calendar.DAY_OF_MONTH);
-//        firstWeekday = calendar.get(Calendar.DAY_OF_WEEK);
-
+        Calendar calendar = new GregorianCalendar(year, month, 1);
+        calendar.setMinimalDaysInFirstWeek(7);
         calendar.set(Calendar.WEEK_OF_MONTH, calendar.getActualMinimum(Calendar.WEEK_OF_MONTH));
         calendar.set(Calendar.DAY_OF_WEEK, calendar.getFirstDayOfWeek());
 
@@ -62,32 +53,46 @@ public class CalendarPanel extends JPanel {
                 calendar.add(Calendar.DAY_OF_MONTH, 1);
             }
         }
-        System.out.println();
+    }
+
+    public void setYear(int year) {
+        this.year = year;
+        calcDaysPositions();
+        repaint();
+    }
+
+    public void setMonth(int month) {
+        this.month = month;
+        calcDaysPositions();
+        repaint();
+    }
+
+    public int getYear() {
+        return year;
+    }
+
+    public int getMonth() {
+        return month;
     }
 
     public void paintComponent(Graphics g) {
         Graphics2D g2d = (Graphics2D)g;
         int height = getHeight();
         int width = getWidth();
-
         double xGridStep = width / 7;
         double yGridStep = (height - weekdaysHeight) / 6;
 
 
         g2d.setColor(Color.WHITE);
         g2d.fillRect(0, 0, width, height);
-        g2d.setColor(Color.BLACK);
 
         // Сглаживание
         g2d.setRenderingHint ( RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON );
         // Выключить сглаживание для текста ?
 //        g2d.setRenderingHint ( RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_OFF );
 
-
         g2d.setColor(WEEKENDS_COLOR);
         g2d.fillRect((int)(xGridStep*5), weekdaysHeight, (int)(width - xGridStep*5), height - weekdaysHeight);
-        g2d.setColor(Color.BLACK);
-
 
         boolean isCurMonth = false;
         for (int r = 0; r < 6; r++) {
@@ -104,13 +109,31 @@ public class CalendarPanel extends JPanel {
                         g2d.setColor(ANOTHER_MONTH_WEEKENDS_COLOR);
                     }
 
-
                     g2d.fillRect(
                             (int) (xGridStep * c ),
                             (int) (weekdaysHeight + yGridStep * r),
                             (int) xGridStep,
                             (int) yGridStep
                     );
+                } else {
+                    if (dates[r][c] == presentDay.get(Calendar.DAY_OF_MONTH) &&
+                            month == presentDay.get(Calendar.MONTH) &&
+                            year == presentDay.get(Calendar.YEAR)) {
+
+                        g2d.setColor(Color.BLACK);
+                        g2d.fillRect(
+                                (int) (xGridStep * c - 1),
+                                (int) (weekdaysHeight + yGridStep * r - 1),
+                                (int) xGridStep + 2,
+                                (int) yGridStep + 2
+                        );
+                        g2d.clearRect(
+                                (int) (xGridStep * c + 2),
+                                (int) (weekdaysHeight + yGridStep * r + 2),
+                                (int) xGridStep - 4,
+                                (int) yGridStep - 4
+                        );
+                    }
                 }
 
                 int xDatePos = (int) (xGridStep*(c+1) - g2d.getFontMetrics().stringWidth(String.valueOf(dates[r][c])) - 5);
@@ -128,7 +151,7 @@ public class CalendarPanel extends JPanel {
         for (int i = 0; i < 6; i++) {
             g2d.setColor(new Color(166, 166, 166));
             g2d.drawLine(0, weekdaysHeight*2 + (int)(yGridStep*i), width, weekdaysHeight*2 + (int)(yGridStep*i));
-            g2d.setColor(Color.BLACK);
+            g2d.setColor(LINES_COLOR);
             g2d.drawLine(0, weekdaysHeight + (int)(yGridStep*i), width, weekdaysHeight + (int)(yGridStep*i));
         }
 
@@ -138,8 +161,5 @@ public class CalendarPanel extends JPanel {
             int y = (weekdaysHeight + g2d.getFontMetrics().getAscent())/2;
             g2d.drawString(weekdays[i], x, y);
         }
-
-//        g2d.drawString("W: " + width + "  H: " + height, 5, 70);
     }
-
 }
