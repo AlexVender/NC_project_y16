@@ -8,19 +8,19 @@ import java.util.GregorianCalendar;
 
 
 public class CalendarPanel extends JPanel {
-    // Дата Текущий день
+    // Р”Р°С‚Р° РўРµРєСѓС‰РёР№ РґРµРЅСЊ
     private GregorianCalendar presentDay;
 
-    // Массив дат для отображения
+    // РњР°СЃСЃРёРІ РґР°С‚ РґР»СЏ РѕС‚РѕР±СЂР°Р¶РµРЅРёСЏ
     private int[][] dates;
 
-    // Дата отображаемого иесяцв
+    // Р”Р°С‚Р° РѕС‚РѕР±СЂР°Р¶Р°РµРјРѕРіРѕ РёРµСЃСЏС†РІ
     private int year;
     private int month;
 
 
     private static final String[] weekdays = {
-            "Понедельник", "Вторник", "Среда", "Четверг", "Пятница", "Суббота", "Воскресенье"
+            "РџРѕРЅРµРґРµР»СЊРЅРёРє", "Р’С‚РѕСЂРЅРёРє", "РЎСЂРµРґР°", "Р§РµС‚РІРµСЂРі", "РџСЏС‚РЅРёС†Р°", "РЎСѓР±Р±РѕС‚Р°", "Р’РѕСЃРєСЂРµСЃРµРЅСЊРµ"
     };
 
     private static final int weekdaysHeight = 24;
@@ -86,9 +86,9 @@ public class CalendarPanel extends JPanel {
         g2d.setColor(Color.WHITE);
         g2d.fillRect(0, 0, width, height);
 
-        // Сглаживание
+        // РЎРіР»Р°Р¶РёРІР°РЅРёРµ
         g2d.setRenderingHint ( RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON );
-        // Выключить сглаживание для текста ?
+        // Р’С‹РєР»СЋС‡РёС‚СЊ СЃРіР»Р°Р¶РёРІР°РЅРёРµ РґР»СЏ С‚РµРєСЃС‚Р° ?
 //        g2d.setRenderingHint ( RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_OFF );
 
         g2d.setColor(WEEKENDS_COLOR);
@@ -142,12 +142,12 @@ public class CalendarPanel extends JPanel {
             }
         }
 
-        // Сетка
-        //   Вертикальные линии
+        // РЎРµС‚РєР°
+        //   Р’РµСЂС‚РёРєР°Р»СЊРЅС‹Рµ Р»РёРЅРёРё
         for (int i = 1; i <= 6; i++) {
             g2d.drawLine((int) (xGridStep * i), 0, (int) (xGridStep * i), height);
         }
-        //   Горизонтальные линии
+        //   Р“РѕСЂРёР·РѕРЅС‚Р°Р»СЊРЅС‹Рµ Р»РёРЅРёРё
         for (int i = 0; i < 6; i++) {
             g2d.setColor(new Color(166, 166, 166));
             g2d.drawLine(0, weekdaysHeight*2 + (int)(yGridStep*i), width, weekdaysHeight*2 + (int)(yGridStep*i));
@@ -155,7 +155,7 @@ public class CalendarPanel extends JPanel {
             g2d.drawLine(0, weekdaysHeight + (int)(yGridStep*i), width, weekdaysHeight + (int)(yGridStep*i));
         }
 
-        // Подписи дней недель
+        // РџРѕРґРїРёСЃРё РґРЅРµР№ РЅРµРґРµР»СЊ
         for (int i = 0; i < 7; i++) {
             int x = (int)(xGridStep*i + (xGridStep - g2d.getFontMetrics().stringWidth(weekdays[i])) / 2) + 1;
             int y = (weekdaysHeight + g2d.getFontMetrics().getAscent())/2;

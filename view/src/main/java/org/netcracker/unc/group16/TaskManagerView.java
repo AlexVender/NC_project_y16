@@ -14,7 +14,7 @@ public class TaskManagerView implements ProgramInterface {
     private CalendarPanel calendarPanel;
 
     private String[] months = {
-            "Январь", "Февраль", "Март", "Апрель", "Май", "Июнь", "Июль", "Август", "Сентябрь", "Октябрь", "Ноябрь", "Декабрь"
+            "РЇРЅРІР°СЂСЊ", "Р¤РµРІСЂР°Р»СЊ", "РњР°СЂС‚", "РђРїСЂРµР»СЊ", "РњР°Р№", "РСЋРЅСЊ", "РСЋР»СЊ", "РђРІРіСѓСЃС‚", "РЎРµРЅС‚СЏР±СЂСЊ", "РћРєС‚СЏР±СЂСЊ", "РќРѕСЏР±СЂСЊ", "Р”РµРєР°Р±СЂСЊ"
     };
 
     public TaskManagerView(TaskManager taskManager) {
@@ -60,10 +60,10 @@ public class TaskManagerView implements ProgramInterface {
         c2.gridy = 0;
         c2.anchor = GridBagConstraints.WEST;
         c2.gridx = 0;
-        JButton btnCreateTask = new JButton("Создать задачу");
+        JButton btnCreateTask = new JButton("РЎРѕР·РґР°С‚СЊ Р·Р°РґР°С‡Сѓ");
         leftControlPanel.add(btnCreateTask, c2);
         c2.gridx = 1;
-        JButton btnViewTask = new JButton("Просмотр задач");
+        JButton btnViewTask = new JButton("РџСЂРѕСЃРјРѕС‚СЂ Р·Р°РґР°С‡");
         leftControlPanel.add(btnViewTask, c2);
 
         c1.gridx = 1;
