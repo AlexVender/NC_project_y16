@@ -13,6 +13,13 @@ public class Task {
     private Date time;
     private String comment;
 
+    public Task(int id, String title, Date time, String comment) {
+        this.id = id;
+        this.title = title;
+        this.time = time;
+        this.comment = comment;
+    }
+
 
     public int getId() {
         return id;
@@ -45,4 +52,5 @@ public class Task {
     public void setComment(String comment) {
         this.comment = comment;
     }
+
 }

@@ -4,7 +4,10 @@
 
 package org.netcracker.unc.group16;
 
-public class Notification {
+import java.util.Observable;
+import java.util.Observer;
+
+public class Notification implements Observer {
     private Task currentTask;
 
     public void notificate(){
@@ -30,4 +33,10 @@ public class Notification {
     public void setCurrentTask(Task currentTask) {
         this.currentTask = currentTask;
     }
+
+
+    public void update(Observable o, Object arg) {
+
+    }
+
 }
