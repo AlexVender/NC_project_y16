@@ -1,5 +1,6 @@
 package org.netcracker.unc.group16;
 
+import java.util.Calendar;
 import java.util.Date;
 
 
@@ -10,10 +11,13 @@ import java.util.Date;
 public class Task {
     private int id;
     private String title;
-    private Date time;
+    private Calendar time;
     private String comment;
 
-    public Task(int id, String title, Date time, String comment) {
+    public  Task(){
+
+    }
+    public Task(int id, String title, Calendar time, String comment) {
         this.id = id;
         this.title = title;
         this.time = time;
@@ -37,11 +41,11 @@ public class Task {
         this.title = title;
     }
 
-    public Date getTime() {
+    public Calendar getTime() {
         return time;
     }
 
-    public void setTime(Date time) {
+    public void setTime(Calendar time) {
         this.time = time;
     }
 

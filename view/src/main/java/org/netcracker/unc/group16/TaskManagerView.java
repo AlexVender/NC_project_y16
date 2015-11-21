@@ -17,7 +17,7 @@ public class TaskManagerView implements ProgramInterface {
             "Январь", "Февраль", "Март", "Апрель", "Май", "Июнь", "Июль", "Август", "Сентябрь", "Октябрь", "Ноябрь", "Декабрь"
     };
 
-    public TaskManagerView(TaskManager taskManager) {
+    public TaskManagerView(TaskManagerController taskManager) {
         try {
             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
         } catch (Exception e) {

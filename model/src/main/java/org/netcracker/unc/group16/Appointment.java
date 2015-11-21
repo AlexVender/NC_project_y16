@@ -1,18 +1,19 @@
 package org.netcracker.unc.group16;
 
+import java.util.Calendar;
 import java.util.Date;
 
 /**
  * Created by Ivan.Chikhanov on 08.11.2015.
  */
 public class Appointment extends Task {
-    private Date duration;
+    private Calendar duration;
 
-    public Date getDuration() {
+    public Calendar getDuration() {
         return duration;
     }
 
-    public void setDuration(Date duration) {
+    public void setDuration(Calendar duration) {
         this.duration = duration;
     }
 }

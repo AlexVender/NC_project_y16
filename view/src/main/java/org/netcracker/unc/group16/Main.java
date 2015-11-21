@@ -5,7 +5,7 @@ public class Main {
       //  System.out.println("Hello world !");
         //Test comment
 
-        TaskManagerView taskManagerView = new TaskManagerView(new TaskManagerXML());
+        TaskManagerView taskManagerView = new TaskManagerView(new TaskManagerController());
 
     }
 }
