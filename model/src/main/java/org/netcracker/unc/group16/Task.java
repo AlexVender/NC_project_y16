@@ -1,27 +1,35 @@
 package org.netcracker.unc.group16;
 
+import org.netcracker.unc.group16.annotations.Displayed;
+import org.netcracker.unc.group16.annotations.FieldSettings;
+
 import java.util.Calendar;
-import java.util.Date;
 
 
-
-/**
- * Created by Ivan.Chikhanov on 08.11.2015.
- */
 public class Task {
     private int id;
-    private String title;
-    private Calendar time;
-    private String comment;
 
-    public  Task(){
+    @Displayed
+    @FieldSettings(displayName = "Название", editable = true, orderNumb = 1)
+    private String title;
+
+    @Displayed
+    @FieldSettings(displayName = "Дата", editable = true, orderNumb = 2)
+    private Calendar time;
+
+    @Displayed
+    @FieldSettings(displayName = "Описание", editable = true, orderNumb = 3)
+    private String description;
+
+    public  Task() {
 
     }
-    public Task(int id, String title, Calendar time, String comment) {
+
+    public Task(int id, String title, Calendar time, String description) {
         this.id = id;
         this.title = title;
         this.time = time;
-        this.comment = comment;
+        this.description = description;
     }
 
 
@@ -49,12 +57,12 @@ public class Task {
         this.time = time;
     }
 
-    public String getComment() {
-        return comment;
+    public String getDescription() {
+        return description;
     }
 
-    public void setComment(String comment) {
-        this.comment = comment;
+    public void setDescription(String description) {
+        this.description = description;
     }
 
 }
