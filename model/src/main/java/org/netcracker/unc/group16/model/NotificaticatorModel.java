@@ -2,12 +2,12 @@
  * Created by Ivan.Chikhanov on 08.11.2015.
  */
 
-package org.netcracker.unc.group16;
+package org.netcracker.unc.group16.model;
 
 import java.util.Observable;
 import java.util.Observer;
 
-public class Notification implements Observer {
+public class NotificaticatorModel implements Observer {
     private Task currentTask;
 
     public void notificate(){

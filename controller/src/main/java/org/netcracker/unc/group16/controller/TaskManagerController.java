@@ -1,15 +1,16 @@
-package org.netcracker.unc.group16;
+package org.netcracker.unc.group16.controller;
+
+import org.netcracker.unc.group16.model.Task;
 
 import java.util.Date;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 
 /**
  * Created by Ivan.Chikhanov on 08.11.2015.
  */
-public class TaskManagerXML {
+public class TaskManagerController implements TaskManager {
     private Map<Integer, Task> hashMapTasks = new HashMap<Integer, Task>();
 //    private TaskManager taskManager;
 

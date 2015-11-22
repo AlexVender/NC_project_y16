@@ -1,8 +1,8 @@
-package org.netcracker.unc.group16;
+package org.netcracker.unc.group16.model;
 
 import java.util.*;
 
-public class TaskManagerController extends Observable implements TaskManager {
+public class TaskManagerModel extends Observable {
     Map<Integer, Task> hashMapTasks = new HashMap<Integer, Task>();
 
     public void editTask(int id, String title, Calendar time, String comment){
@@ -46,8 +46,8 @@ public class TaskManagerController extends Observable implements TaskManager {
 
 
     public void execute(){
-        TaskManagerController taskManager = new TaskManagerController();
-        taskManager.addObserver(new Notification());
+        TaskManagerModel taskManager = new TaskManagerModel();
+        taskManager.addObserver(new NotificaticatorModel());
     }
 
     public Task getTestTask(){
