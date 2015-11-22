@@ -1,4 +1,4 @@
-package org.netcracker.unc.group16;
+package org.netcracker.unc.group16.model;
 
 import org.netcracker.unc.group16.annotations.Displayed;
 import org.netcracker.unc.group16.annotations.FieldSettings;

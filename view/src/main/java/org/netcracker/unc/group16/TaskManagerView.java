@@ -1,5 +1,7 @@
 package org.netcracker.unc.group16;
 
+import org.netcracker.unc.group16.model.TaskManagerModel;
+
 import javax.swing.*;
 import java.awt.*;
 import java.util.Calendar;
@@ -17,7 +19,7 @@ public class TaskManagerView implements ProgramInterface {
             "Январь", "Февраль", "Март", "Апрель", "Май", "Июнь", "Июль", "Август", "Сентябрь", "Октябрь", "Ноябрь", "Декабрь"
     };
 
-    public TaskManagerView(TaskManagerController taskManager) {
+    public TaskManagerView(TaskManagerModel taskManager) {
         try {
             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
         } catch (Exception e) {

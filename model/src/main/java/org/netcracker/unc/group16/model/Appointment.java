@@ -1,7 +1,6 @@
-package org.netcracker.unc.group16;
+package org.netcracker.unc.group16.model;
 
 import java.util.Calendar;
-import java.util.Date;
 
 /**
  * Created by Ivan.Chikhanov on 08.11.2015.
