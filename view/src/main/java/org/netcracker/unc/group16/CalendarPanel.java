@@ -3,6 +3,8 @@ package org.netcracker.unc.group16;
 import javax.swing.*;
 import javax.swing.border.LineBorder;
 import java.awt.*;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 
@@ -18,12 +20,15 @@ public class CalendarPanel extends JPanel {
     private int year;
     private int month;
 
+    // Шаги сетки
+    private double xGridStep;
+    private double yGridStep;
 
     private static final String[] weekdays = {
             "Понедельник", "Вторник", "Среда", "Четверг", "Пятница", "Суббота", "Воскресенье"
     };
 
-    private static final int weekdaysHeight = 24;
+    private static final int WEEKDAYS_HEIGHT = 24;
 
     private static final Color LINES_COLOR = Color.BLACK;
     private static final Color WEEKENDS_COLOR = new Color(213, 230, 244);
@@ -38,6 +43,46 @@ public class CalendarPanel extends JPanel {
         month = presentDay.get(Calendar.MONTH);
         setBorder(new LineBorder(Color.BLACK));
         calcDaysPositions();
+
+        addListeners();
+    }
+
+    private void addListeners() {
+        addMouseListener(new MouseListener() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+
+            }
+
+            @Override
+            public void mousePressed(MouseEvent e) {
+                int x = e.getX();
+                int y = e.getY();
+
+                int r = (int) ((y - WEEKDAYS_HEIGHT) / yGridStep);
+                int c = (int) (x / xGridStep);
+
+                // По двойному клику
+//                if (e.getClickCount() == 2) {
+                    // TODO: open DayTimetablePanel
+//                }
+            }
+
+            @Override
+            public void mouseReleased(MouseEvent e) {
+
+            }
+
+            @Override
+            public void mouseEntered(MouseEvent e) {
+
+            }
+
+            @Override
+            public void mouseExited(MouseEvent e) {
+
+            }
+        });
     }
 
     private void calcDaysPositions() {
@@ -79,8 +124,8 @@ public class CalendarPanel extends JPanel {
         Graphics2D g2d = (Graphics2D)g;
         int height = getHeight();
         int width = getWidth();
-        double xGridStep = width / 7;
-        double yGridStep = (height - weekdaysHeight) / 6;
+        xGridStep = width / 7;
+        yGridStep = (height - WEEKDAYS_HEIGHT) / 6;
 
 
         g2d.setColor(Color.WHITE);
@@ -92,17 +137,19 @@ public class CalendarPanel extends JPanel {
 //        g2d.setRenderingHint ( RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_OFF );
 
         g2d.setColor(WEEKENDS_COLOR);
-        g2d.fillRect((int)(xGridStep*5), weekdaysHeight, (int)(width - xGridStep*5), height - weekdaysHeight);
+        g2d.fillRect((int)(xGridStep *5), WEEKDAYS_HEIGHT, (int)(width - xGridStep *5), height - WEEKDAYS_HEIGHT);
 
         boolean isCurMonth = false;
         for (int r = 0; r < 6; r++) {
-            int yDatePos = (int) (weekdaysHeight + yGridStep*r + (weekdaysHeight + g2d.getFontMetrics().getAscent())/2);
+            int yDatePos = (int) (WEEKDAYS_HEIGHT + yGridStep *r + (WEEKDAYS_HEIGHT + g2d.getFontMetrics().getAscent())/2);
             for (int c = 0; c < 7; c++) {
                 if (dates[r][c] == 1) {
                     isCurMonth = !isCurMonth;
                 }
 
+                // Соседний месяц
                 if (!isCurMonth) {
+                    // Выбор цвета будние/выходные
                     if (c < 5) {
                         g2d.setColor(ANOTHER_MONTH_COLOR);
                     } else {
@@ -111,7 +158,7 @@ public class CalendarPanel extends JPanel {
 
                     g2d.fillRect(
                             (int) (xGridStep * c ),
-                            (int) (weekdaysHeight + yGridStep * r),
+                            (int) (WEEKDAYS_HEIGHT + yGridStep * r),
                             (int) xGridStep,
                             (int) yGridStep
                     );
@@ -121,22 +168,17 @@ public class CalendarPanel extends JPanel {
                             year == presentDay.get(Calendar.YEAR)) {
 
                         g2d.setColor(Color.BLACK);
-                        g2d.fillRect(
+                        g2d.drawRoundRect(
                                 (int) (xGridStep * c - 1),
-                                (int) (weekdaysHeight + yGridStep * r - 1),
+                                (int) (WEEKDAYS_HEIGHT + yGridStep * r - 1),
                                 (int) xGridStep + 2,
-                                (int) yGridStep + 2
-                        );
-                        g2d.clearRect(
-                                (int) (xGridStep * c + 2),
-                                (int) (weekdaysHeight + yGridStep * r + 2),
-                                (int) xGridStep - 4,
-                                (int) yGridStep - 4
+                                (int) yGridStep + 2,
+                                15, 15
                         );
                     }
                 }
 
-                int xDatePos = (int) (xGridStep*(c+1) - g2d.getFontMetrics().stringWidth(String.valueOf(dates[r][c])) - 5);
+                int xDatePos = (int) (xGridStep *(c+1) - g2d.getFontMetrics().stringWidth(String.valueOf(dates[r][c])) - 5);
                 g2d.setColor(Color.BLACK);
                 g2d.drawString(String.valueOf(dates[r][c]), xDatePos, yDatePos);
             }
@@ -150,15 +192,15 @@ public class CalendarPanel extends JPanel {
         //   Горизонтальные линии
         for (int i = 0; i < 6; i++) {
             g2d.setColor(new Color(166, 166, 166));
-            g2d.drawLine(0, weekdaysHeight*2 + (int)(yGridStep*i), width, weekdaysHeight*2 + (int)(yGridStep*i));
+            g2d.drawLine(0, WEEKDAYS_HEIGHT * 2 + (int) (yGridStep * i), width, WEEKDAYS_HEIGHT * 2 + (int) (yGridStep * i));
             g2d.setColor(LINES_COLOR);
-            g2d.drawLine(0, weekdaysHeight + (int)(yGridStep*i), width, weekdaysHeight + (int)(yGridStep*i));
+            g2d.drawLine(0, WEEKDAYS_HEIGHT + (int)(yGridStep *i), width, WEEKDAYS_HEIGHT + (int)(yGridStep *i));
         }
 
         // Подписи дней недель
         for (int i = 0; i < 7; i++) {
-            int x = (int)(xGridStep*i + (xGridStep - g2d.getFontMetrics().stringWidth(weekdays[i])) / 2) + 1;
-            int y = (weekdaysHeight + g2d.getFontMetrics().getAscent())/2;
+            int x = (int)(xGridStep *i + (xGridStep - g2d.getFontMetrics().stringWidth(weekdays[i])) / 2) + 1;
+            int y = (WEEKDAYS_HEIGHT + g2d.getFontMetrics().getAscent())/2;
             g2d.drawString(weekdays[i], x, y);
         }
     }

@@ -1,7 +1,12 @@
 package org.netcracker.unc.group16;
 
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.Calendar;
 
 
@@ -9,15 +14,20 @@ public class TaskManagerView implements ProgramInterface {
     private JFrame mainFrame;
     private Panel leftControlPanel;
     private Panel rightControlPanel;
+    private JButton btnCreateTask;
+    private JButton btnViewTask;
+    private JButton btnPrevMonth;
+    private JButton btnNextMonth;
     private Panel monthYearPanel;
     private JLabel lblMonthYear;
-    private CalendarPanel calendarPanel;
 
+
+    private CalendarPanel calendarPanel;
     private String[] months = {
             "Январь", "Февраль", "Март", "Апрель", "Май", "Июнь", "Июль", "Август", "Сентябрь", "Октябрь", "Ноябрь", "Декабрь"
     };
 
-    public TaskManagerView(TaskManagerController taskManager) {
+    public TaskManagerView() {
         try {
             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
         } catch (Exception e) {
@@ -26,6 +36,7 @@ public class TaskManagerView implements ProgramInterface {
         }
 
         initGUI();
+        addListeners();
     }
 
     private void initGUI() {
@@ -35,6 +46,8 @@ public class TaskManagerView implements ProgramInterface {
 //        mainFrame.setPreferredSize(new Dimension(1440, 900));
         mainFrame.setMinimumSize(new Dimension(750, 650));
         mainFrame.setLocationRelativeTo(null);
+
+        mainFrame.setIconImage(Toolkit.getDefaultToolkit().getImage("view/resources/icon.png"));
 
         mainFrame.setLayout(new BorderLayout());
         JPanel contentPane = new JPanel();
@@ -60,10 +73,10 @@ public class TaskManagerView implements ProgramInterface {
         c2.gridy = 0;
         c2.anchor = GridBagConstraints.WEST;
         c2.gridx = 0;
-        JButton btnCreateTask = new JButton("Создать задачу");
+        btnCreateTask = new JButton("Создать задачу");
         leftControlPanel.add(btnCreateTask, c2);
         c2.gridx = 1;
-        JButton btnViewTask = new JButton("Просмотр задач");
+        btnViewTask = new JButton("Просмотр задач");
         leftControlPanel.add(btnViewTask, c2);
 
         c1.gridx = 1;
@@ -71,12 +84,34 @@ public class TaskManagerView implements ProgramInterface {
         contentPane.add(rightControlPanel, c1);
         rightControlPanel.setLayout(new GridBagLayout());
         c2.gridx = 2;
-        JButton btnPrevMonth = new JButton("  <  ");
+        btnPrevMonth = new JButton("  <  ");
         rightControlPanel.add(btnPrevMonth, c2);
         c2.gridx = 3;
-        JButton btnNextMonth = new JButton("  >  ");
+        btnNextMonth = new JButton("  >  ");
         rightControlPanel.add(btnNextMonth, c2);
 
+// Second line
+        monthYearPanel = new Panel();
+        c1.gridx = 0;
+        c1.gridy = 1;
+        c1.gridwidth = 2;
+        c1.anchor = GridBagConstraints.CENTER;
+        contentPane.add(monthYearPanel, c1);
+        lblMonthYear = new JLabel();
+        lblMonthYear.setFont(new Font("Verdana", 0, 15));
+        monthYearPanel.add(lblMonthYear);
+
+
+// Third line
+        calendarPanel = new  CalendarPanel();
+        mainFrame.add(new DayTimetablePanel());
+        lblMonthYear.setText(months[calendarPanel.getMonth()] + " " + calendarPanel.getYear());
+
+        mainFrame.pack();
+        mainFrame.setVisible(true);
+    }
+
+    private void addListeners() {
         btnPrevMonth.addActionListener(e -> {
             if (calendarPanel.getMonth() > 0) {
                 calendarPanel.setMonth(calendarPanel.getMonth() - 1);
@@ -97,25 +132,13 @@ public class TaskManagerView implements ProgramInterface {
             lblMonthYear.setText(months[calendarPanel.getMonth()] + " " + calendarPanel.getYear());
         });
 
-// Second line
-        monthYearPanel = new Panel();
-        c1.gridx = 0;
-        c1.gridy = 1;
-        c1.gridwidth = 2;
-        c1.anchor = GridBagConstraints.CENTER;
-        contentPane.add(monthYearPanel, c1);
-        lblMonthYear = new JLabel();
-        lblMonthYear.setFont(new Font("Verdana", 0, 15));
-        monthYearPanel.add(lblMonthYear);
-
-
-// Third line
-        calendarPanel = new  CalendarPanel();
-        mainFrame.add(calendarPanel);
-        lblMonthYear.setText(months[calendarPanel.getMonth()] + " " + calendarPanel.getYear());
-
-        mainFrame.pack();
-        mainFrame.setVisible(true);
+        NewTaskDialog newTaskDialog = new NewTaskDialog();
+        btnCreateTask.addActionListener(e -> {
+            if (newTaskDialog.showDialog() == NewTaskDialog.OK) {
+                Task task;
+                // TODO: createNewTask(...);
+            }
+        });
     }
 
 
