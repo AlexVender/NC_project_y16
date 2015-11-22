@@ -20,6 +20,7 @@ public class Task {
     @Displayed
     @FieldSettings(displayName = "Описание", editable = true, orderNumb = 3)
     private String description;
+    private String comment;
 
     public  Task() {
 
@@ -65,4 +66,7 @@ public class Task {
         this.description = description;
     }
 
+    public void setComment(String comment) {
+        this.comment = comment;
+    }
 }
