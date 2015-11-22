@@ -1,4 +1,4 @@
-package org.netcracker.unc.group16;
+package org.netcracker.unc.group16.view;
 
 import javax.swing.*;
 import javax.swing.border.LineBorder;

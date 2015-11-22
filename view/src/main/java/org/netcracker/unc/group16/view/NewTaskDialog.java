@@ -1,7 +1,8 @@
-package org.netcracker.unc.group16;
+package org.netcracker.unc.group16.view;
 
 import org.netcracker.unc.group16.annotations.Displayed;
 import org.netcracker.unc.group16.annotations.FieldSettings;
+import org.netcracker.unc.group16.model.Task;
 
 import javax.swing.*;
 import java.awt.event.WindowAdapter;
