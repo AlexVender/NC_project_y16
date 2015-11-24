@@ -38,6 +38,7 @@ public class Task {
         return id;
     }
 
+
     public void setId(int id) {
         this.id = id;
     }
@@ -45,6 +46,7 @@ public class Task {
     public String getTitle() {
         return title;
     }
+
 
     public void setTitle(String title) {
         this.title = title;
@@ -54,6 +56,7 @@ public class Task {
         return time;
     }
 
+
     public void setTime(Calendar time) {
         this.time = time;
     }
@@ -62,11 +65,17 @@ public class Task {
         return description;
     }
 
+
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public String getComment(){
+        return comment;
     }
 
     public void setComment(String comment) {
         this.comment = comment;
     }
+
 }

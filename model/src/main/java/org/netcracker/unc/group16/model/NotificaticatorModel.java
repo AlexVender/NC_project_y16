@@ -4,10 +4,9 @@
 
 package org.netcracker.unc.group16.model;
 
-import java.util.Observable;
-import java.util.Observer;
 
-public class NotificaticatorModel implements Observer {
+
+public class NotificaticatorModel {
     private Task currentTask;
 
     public void notificate(){
@@ -32,11 +31,6 @@ public class NotificaticatorModel implements Observer {
 
     public void setCurrentTask(Task currentTask) {
         this.currentTask = currentTask;
-    }
-
-
-    public void update(Observable o, Object arg) {
-
     }
 
 }
