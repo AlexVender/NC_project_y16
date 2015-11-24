@@ -102,7 +102,8 @@ public class TaskManagerView implements ProgramInterface {
 
 // Third line
         calendarPanel = new  CalendarPanel();
-        mainFrame.add(new DayTimetablePanel());
+//        mainFrame.add(new DayTimetablePanel());
+        mainFrame.add(calendarPanel);
         lblMonthYear.setText(months[calendarPanel.getMonth()] + " " + calendarPanel.getYear());
 
         mainFrame.pack();
