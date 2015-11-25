@@ -1,5 +1,6 @@
 package org.netcracker.unc.group16;
 
+import org.netcracker.unc.group16.controller.TaskManager;
 import org.netcracker.unc.group16.model.JAXB;
 import org.netcracker.unc.group16.model.Task;
 import org.netcracker.unc.group16.model.TaskManagerModel;
@@ -12,7 +13,7 @@ public class Main {
       //  System.out.println("Hello world !");
         //Test comment
 
-        TaskManagerView taskManagerView = new TaskManagerView(new TaskManagerModel());
+      //  TaskManagerView taskManagerView = new TaskManagerView(new TaskManagerModel());
 
         TaskManagerModel taskManagerModel = new TaskManagerModel();
         taskManagerModel.setHashMapTasks(new HashMap<Integer, Task>());
@@ -24,5 +25,7 @@ public class Main {
 
         JAXB jaxb = new JAXB();
         jaxb.write(taskManagerModel);
+        jaxb.read();
+
     }
 }

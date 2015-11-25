@@ -14,12 +14,22 @@ public class JAXB {
 
         try {
 
-            File file = new File("file.xml");
+            File file = new File("./model/file.xml");
             JAXBContext jaxbContext = JAXBContext.newInstance(TaskManagerModel.class);
 
             Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
             TaskManagerModel taskManagerModel = (TaskManagerModel) jaxbUnmarshaller.unmarshal(file);
-            System.out.println(taskManagerModel);
+            for (Map.Entry<Integer, Task> entry: taskManagerModel.getHashMapTasks().entrySet()){
+                Integer key = entry.getKey();
+                Task value = entry.getValue();
+                System.out.println(key + "\n"
+                                + value.getId() + "\n"
+                                + value.getTitle() + "\n"
+                                + value.getTime() + "\n"
+                                + value.getDescription() + "\n"
+                                + value.getComment() + "\n***"
+                                );
+            }
 
         } catch (JAXBException e) {
             e.printStackTrace();
@@ -32,7 +42,7 @@ public class JAXB {
 
 
 
-            File file = new File("model\\src\\main\\java\\org\\netcracker\\unc\\group16\\file.xml");
+            File file = new File("./model/file.xml");
             JAXBContext jaxbContext = JAXBContext.newInstance(TaskManagerModel.class);
             Marshaller jaxbMarshaller = jaxbContext.createMarshaller();
 

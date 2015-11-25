@@ -2,16 +2,18 @@ package org.netcracker.unc.group16.model;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.util.*;
 
 @XmlRootElement(name="tasks")
-@XmlAccessorType(XmlAccessType.FIELD)
+//@XmlAccessorType(XmlAccessType.FIELD)
 public class TaskManagerModel {
 
-    @XmlElement(name = "task")
-    private Map<Integer, Task> hashMapTasks = null;
+
+    private Map<Integer, Task> hashMapTasks;
+
+
 
     public void editTask(int id, String title, Calendar time, String comment){
         getHashMapTasks().get(id).setTitle(title);
@@ -65,6 +67,7 @@ public class TaskManagerModel {
     }
 
 
+  //  @XmlJavaTypeAdapter(value = HashMapAdapter.class)
     public Map<Integer, Task> getHashMapTasks() {
         return hashMapTasks;
     }
