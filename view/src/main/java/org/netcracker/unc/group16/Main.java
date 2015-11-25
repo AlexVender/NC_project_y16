@@ -1,5 +1,6 @@
 package org.netcracker.unc.group16;
 
+import org.apache.log4j.BasicConfigurator;
 import org.netcracker.unc.group16.controller.TaskManager;
 import org.netcracker.unc.group16.model.JAXB;
 import org.netcracker.unc.group16.model.Task;
@@ -10,10 +11,12 @@ import java.util.*;
 
 public class Main {
     public static void main(String[] args) {
+        BasicConfigurator.configure(); //Необходим для log4j
       //  System.out.println("Hello world !");
         //Test comment
 
       //  TaskManagerView taskManagerView = new TaskManagerView(new TaskManagerModel());
+
 
         TaskManagerModel taskManagerModel = new TaskManagerModel();
         taskManagerModel.setHashMapTasks(new HashMap<Integer, Task>());

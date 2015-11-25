@@ -11,6 +11,15 @@
 
 
     <build>
+        <resources>
+            <resource>
+                <directory>resources</directory>
+                <targetPath>${basedir}/target</targetPath>
+                <includes>
+                    <include>conf/log4j.properties</include>
+                </includes>
+            </resource>
+        </resources>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -23,6 +32,13 @@
             </plugin>
         </plugins>
     </build>
+    <properties>
+        <log4j.configuration>
+            ./src/main/resources/log4j.properties
+        </log4j.configuration>
+    </properties>
+
+
 
     <modules>
         <module>controller</module>
@@ -30,5 +46,12 @@
         <module>view</module>
     </modules>
 
+    <dependencies>
+        <dependency>
+            <groupId>log4j</groupId>
+            <artifactId>log4j</artifactId>
+            <version>1.2.17</version>
+        </dependency>
+    </dependencies>
 
 </project>

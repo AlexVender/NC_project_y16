@@ -1,5 +1,7 @@
 package org.netcracker.unc.group16.model;
 
+import org.apache.log4j.Logger;
+
 import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
@@ -9,6 +11,8 @@ import javax.xml.bind.Unmarshaller;
 import javax.xml.bind.Marshaller;
 
 public class JAXB {
+
+    final static Logger logger = Logger.getLogger(JAXB.class);
 
     public void read() {
 
@@ -22,26 +26,25 @@ public class JAXB {
             for (Map.Entry<Integer, Task> entry: taskManagerModel.getHashMapTasks().entrySet()){
                 Integer key = entry.getKey();
                 Task value = entry.getValue();
-                System.out.println(key + "\n"
+
+
+                logger.info(key + "\n"
                                 + value.getId() + "\n"
                                 + value.getTitle() + "\n"
                                 + value.getTime() + "\n"
                                 + value.getDescription() + "\n"
                                 + value.getComment() + "\n***"
-                                );
+                );
             }
 
         } catch (JAXBException e) {
-            e.printStackTrace();
+            logger.error("Error =(:", e);
         }
 
     }
 
     public void write(TaskManagerModel taskManagerModel) {
         try {
-
-
-
             File file = new File("./model/file.xml");
             JAXBContext jaxbContext = JAXBContext.newInstance(TaskManagerModel.class);
             Marshaller jaxbMarshaller = jaxbContext.createMarshaller();
@@ -49,11 +52,12 @@ public class JAXB {
 
             jaxbMarshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
 
+            String test;
             jaxbMarshaller.marshal(taskManagerModel, file);
-            jaxbMarshaller.marshal(taskManagerModel, System.out);
+           // jaxbMarshaller.marshal(taskManagerModel, test);
 
         } catch (JAXBException e) {
-            e.printStackTrace();
+            logger.error("Error =(:", e);
         }
 
     }
