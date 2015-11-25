@@ -52,9 +52,9 @@ public class JAXB {
 
             jaxbMarshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
 
-            String test;
+
             jaxbMarshaller.marshal(taskManagerModel, file);
-           // jaxbMarshaller.marshal(taskManagerModel, test);
+            jaxbMarshaller.marshal(taskManagerModel, System.out);
 
         } catch (JAXBException e) {
             logger.error("Error =(:", e);
