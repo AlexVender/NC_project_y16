@@ -1,7 +1,8 @@
-package org.netcracker.unc.group16.view;
+package org.netcracker.unc.group16;
 
 import org.netcracker.unc.group16.model.JAXB;
 import org.netcracker.unc.group16.model.TaskManagerModel;
+import org.netcracker.unc.group16.view.TaskManagerView;
 
 import java.util.Calendar;
 
@@ -15,7 +16,7 @@ public class Main {
         taskManagerModel.addTask("TestTask", Calendar.getInstance(),"TestTask");
 
         JAXB jaxb = new JAXB();
-//        jaxb.write(taskManagerModel);
+        jaxb.write(taskManagerModel);
         TaskManagerView taskManagerView = new TaskManagerView(taskManagerModel);
 
     }
