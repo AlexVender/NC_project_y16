@@ -33,7 +33,7 @@ public class JAXB {
                                 + value.getTitle() + "\n"
                                 + value.getTime() + "\n"
                                 + value.getDescription() + "\n"
-                                + value.getComment() + "\n***"
+//                                + value.getComment() + "\n***"
                 );
             }
 
