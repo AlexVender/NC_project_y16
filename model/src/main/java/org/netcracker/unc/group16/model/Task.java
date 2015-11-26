@@ -9,9 +9,7 @@ import java.util.Calendar;
 
 
 public class Task {
-
-
-    private int id;
+    private Integer id;
 
 
     @Displayed
@@ -27,9 +25,6 @@ public class Task {
     @Displayed
     @FieldSettings(displayName = "Описание", editable = true, orderNumb = 3)
     private String description;
-
-
-    private String comment;
 
     public  Task() {
 
@@ -48,8 +43,7 @@ public class Task {
         return id;
     }
 
-
-    public void setId(int id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 
@@ -58,16 +52,14 @@ public class Task {
         return title;
     }
 
-
     public void setTitle(String title) {
         this.title = title;
     }
 
     @XmlJavaTypeAdapter(value = CalendarAdapter.class)
     public Calendar getTime() {
-        return time;
+        return (Calendar)time.clone();
     }
-
 
     public void setTime(Calendar time) {
         this.time = time;
@@ -78,18 +70,8 @@ public class Task {
         return description;
     }
 
-
     public void setDescription(String description) {
         this.description = description;
-    }
-
-
-    public String getComment(){
-        return comment;
-    }
-
-    public void setComment(String comment) {
-        this.comment = comment;
     }
 
 }

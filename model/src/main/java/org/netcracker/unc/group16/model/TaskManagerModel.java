@@ -15,31 +15,62 @@ public class TaskManagerModel {
 
 
 
-    public void editTask(int id, String title, Calendar time, String comment){
-        getHashMapTasks().get(id).setTitle(title);
-        getHashMapTasks().get(id).setTime(time);
-        getHashMapTasks().get(id).setComment(comment);
+    private TreeSet<Integer> availableIDs;
+
+    public TaskManagerModel() {
+        hashMapTasks = new HashMap<>();
+        availableIDs = new TreeSet<>();
+
+        // Стартовый ID тасок
+        availableIDs.add(1);
     }
 
-    public void addTask(int id, String title, Calendar time, String comment){
-        Task task = new Task(id, title, time, comment);
-        getHashMapTasks().put(id, task);
-    }
-    public void deleteTask(int id){
-        getHashMapTasks().remove(id);
-    }
-
-    public Task getTask(int id){
-        return getHashMapTasks().get(id);
+    public void editTask(Integer id, String title, Calendar time, String description) {
+        Task elm = hashMapTasks.get(id);
+        elm.setTitle(title);
+        elm.setTime(time);
+        elm.setDescription(description);
     }
 
-    public Map<Integer, Task> getTasksByDate(Calendar date1, Calendar date2){
-        Map<Integer, Task> tempHashMapTasks= new HashMap<Integer, Task>();
-        for (HashMap.Entry<Integer, Task> entry : getHashMapTasks().entrySet()) {
+    public void addTask(String title, Calendar time, String description) {
+        Integer id = availableIDs.pollFirst();
+        if (availableIDs.isEmpty()) {
+            availableIDs.add(id + 1);
+        }
+
+        Task task = new Task(id, title, time, description);
+        hashMapTasks.put(id, task);
+    }
+
+    public void addTask(Task task) {
+        Integer id = availableIDs.pollFirst();
+        if (availableIDs.isEmpty()) {
+            availableIDs.add(id + 1);
+        }
+
+        hashMapTasks.put(id, task);
+    }
+
+    public void deleteTask(Integer id) {
+        hashMapTasks.remove(id);
+        availableIDs.add(id);
+    }
+
+    public Task getTask(Integer id) {
+        return hashMapTasks.get(id);
+    }
+
+    public Map<Integer, Task> getTasksByDate(int year, int month, int day) {
+        Map<Integer, Task> tempHashMapTasks = new HashMap<>();
+        Calendar dateStart = new GregorianCalendar(year, month, day);
+        Calendar dateEnd = new GregorianCalendar(year, month, day + 1);
+        dateEnd.add(Calendar.MILLISECOND, -1);
+
+        for (HashMap.Entry<Integer, Task> entry : hashMapTasks.entrySet()) {
             Integer key = entry.getKey();
             Task value = entry.getValue();
-            if (value.getTime().after(date1) &&
-                    value.getTime().before(date2)){
+
+            if (value.getTime().after(dateStart) && value.getTime().before(dateEnd)){
                 tempHashMapTasks.put(key, value);
             }
         }

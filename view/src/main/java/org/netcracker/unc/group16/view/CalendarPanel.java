@@ -6,20 +6,16 @@ import org.netcracker.unc.group16.model.TaskManagerModel;
 import javax.swing.*;
 import javax.swing.border.LineBorder;
 import java.awt.*;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
-import java.util.HashMap;
 import java.util.Map;
 
 
 public class CalendarPanel extends JPanel {
+    TaskManagerModel taskManagerModel;
+
     // Дата Текущий день
     private GregorianCalendar presentDay;
-
-    // Массив дат для отображения
-    private int[][] dates;
 
     // Дата отображаемого иесяцв
     private int year;
@@ -33,88 +29,38 @@ public class CalendarPanel extends JPanel {
             "Понедельник", "Вторник", "Среда", "Четверг", "Пятница", "Суббота", "Воскресенье"
     };
 
-    private static final int WEEKDAYS_HEIGHT = 24;
-    private static final int CELL_HEAD_HEIGHT = 20;
+    public static final int WEEKDAYS_HEIGHT = 24;
+    public static final int CELL_HEAD_HEIGHT = 18;
 
     private static final Color LINES_COLOR = Color.BLACK;
     private static final Color WEEKENDS_COLOR = new Color(213, 230, 244);
     private static final Color ANOTHER_MONTH_COLOR = new Color(237,237,237);
     private static final Color ANOTHER_MONTH_WEEKENDS_COLOR = new Color(225, 233, 240);
 
-    public CalendarPanel() {
+    public CalendarPanel(TaskManagerModel taskManagerModel) {
+        this.taskManagerModel = taskManagerModel;
+
         setFont(new Font("Verdana", Font.BOLD, 12));
 
         presentDay = new GregorianCalendar();
         year = presentDay.get(Calendar.YEAR);
         month = presentDay.get(Calendar.MONTH);
         setBorder(new LineBorder(Color.BLACK));
-        calcDaysPositions();
 
         addListeners();
     }
 
     private void addListeners() {
-        addMouseListener(new MouseListener() {
-            @Override
-            public void mouseClicked(MouseEvent e) {
-
-            }
-
-            @Override
-            public void mousePressed(MouseEvent e) {
-                int x = e.getX();
-                int y = e.getY();
-
-                int r = (int) ((y - WEEKDAYS_HEIGHT) / yGridStep);
-                int c = (int) (x / xGridStep);
-
-                // По двойному клику
-//                if (e.getClickCount() == 2) {
-                    // TODO: open DayTimetablePanel
-//                }
-            }
-
-            @Override
-            public void mouseReleased(MouseEvent e) {
-
-            }
-
-            @Override
-            public void mouseEntered(MouseEvent e) {
-
-            }
-
-            @Override
-            public void mouseExited(MouseEvent e) {
-
-            }
-        });
     }
 
-    private void calcDaysPositions() {
-        Calendar calendar = new GregorianCalendar(year, month, 1);
-        calendar.setMinimalDaysInFirstWeek(7);
-        calendar.set(Calendar.WEEK_OF_MONTH, calendar.getActualMinimum(Calendar.WEEK_OF_MONTH));
-        calendar.set(Calendar.DAY_OF_WEEK, calendar.getFirstDayOfWeek());
-
-        dates = new int[6][7];
-        for (int r = 0; r < 6; r++) {
-            for (int c = 0; c < 7; c++) {
-                dates[r][c] = calendar.get(Calendar.DAY_OF_MONTH);
-                calendar.add(Calendar.DAY_OF_MONTH, 1);
-            }
-        }
-    }
 
     public void setYear(int year) {
         this.year = year;
-        calcDaysPositions();
         repaint();
     }
 
     public void setMonth(int month) {
         this.month = month;
-        calcDaysPositions();
         repaint();
     }
 
@@ -139,26 +85,28 @@ public class CalendarPanel extends JPanel {
 
         // Сглаживание
         g2d.setRenderingHint ( RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON );
-        // Выключить сглаживание для текста ?
+        // Выключить сглаживание для текста
         g2d.setRenderingHint ( RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_OFF );
 
         g2d.setColor(WEEKENDS_COLOR);
         g2d.fillRect((int)(xGridStep *5), WEEKDAYS_HEIGHT, (int)(width - xGridStep *5), height - WEEKDAYS_HEIGHT);
 
-        boolean isCurMonth = false;
+
+        Calendar calendarIter = new GregorianCalendar(year, month, 1);
+        calendarIter.setMinimalDaysInFirstWeek(7);
+        calendarIter.set(Calendar.WEEK_OF_MONTH, calendarIter.getActualMinimum(Calendar.WEEK_OF_MONTH));
+        calendarIter.set(Calendar.DAY_OF_WEEK, calendarIter.getFirstDayOfWeek());
         for (int r = 0; r < 6; r++) {
-            int yDatePos = (int) (WEEKDAYS_HEIGHT + yGridStep *r + (CELL_HEAD_HEIGHT + g2d.getFontMetrics().getAscent())/2);
+            int yDatePos = (int) (WEEKDAYS_HEIGHT + yGridStep * r + (CELL_HEAD_HEIGHT + g2d.getFontMetrics().getAscent()) / 2);
             for (int c = 0; c < 7; c++) {
-                if (dates[r][c] == 1) {
-                    isCurMonth = !isCurMonth;
-                }
+                int yearIter = calendarIter.get(Calendar.YEAR);
+                int monthIter = calendarIter.get(Calendar.MONTH);
+                int dateIter = calendarIter.get(Calendar.DAY_OF_MONTH);
 
-
-                TaskManagerModel taskManagerModel = new TaskManagerModel();
-                Map<Integer, Task> tasks = new HashMap<>();
+                Map<Integer, Task> tasks = taskManagerModel.getTasksByDate(yearIter, monthIter, dateIter);
 
                 // Соседний месяц
-                if (!isCurMonth) {
+                if (monthIter != month) {
                     // Выбор цвета будние/выходные
                     if (c < 5) {
                         g2d.setColor(ANOTHER_MONTH_COLOR);
@@ -172,29 +120,20 @@ public class CalendarPanel extends JPanel {
                             (int) xGridStep,
                             (int) yGridStep
                     );
-                } else {
-                    if (dates[r][c] == presentDay.get(Calendar.DAY_OF_MONTH) &&
-                            month == presentDay.get(Calendar.MONTH) &&
-                            year == presentDay.get(Calendar.YEAR)) {
-
-                        g2d.setColor(Color.BLACK);
-                        g2d.drawRoundRect(
-                                (int) (xGridStep * c - 1),
-                                (int) (WEEKDAYS_HEIGHT + yGridStep * r - 1),
-                                (int) xGridStep + 2,
-                                (int) yGridStep + 2,
-                                5, 5
-                        );
-                        tasks.put(1, taskManagerModel.getTestTask());
-                        tasks.put(2, taskManagerModel.getTestTask());
-                        tasks.put(3, taskManagerModel.getTestTask());
-                        tasks.put(4, taskManagerModel.getTestTask());
-                    }
                 }
 
-                int xDatePos = (int) (xGridStep *(c+1) - g2d.getFontMetrics().stringWidth(String.valueOf(dates[r][c])) - 5);
-                g2d.setColor(Color.BLACK);
-                g2d.drawString(String.valueOf(dates[r][c]), xDatePos, yDatePos);
+                // Если ячейка календаря отображает сегодняшнюю дату
+                if (dateIter == presentDay.get(Calendar.DAY_OF_MONTH) &&
+                        monthIter == (presentDay.get(Calendar.MONTH) ) &&
+                        yearIter == presentDay.get(Calendar.YEAR)) {
+                    g2d.setColor(new Color(0,0, 200));
+                } else {
+                    g2d.setColor(Color.BLACK);
+                }
+
+
+                int xDatePos = (int) (xGridStep *(c+1) - g2d.getFontMetrics().stringWidth(String.valueOf(calendarIter.get(Calendar.DAY_OF_MONTH))) - 5);
+                g2d.drawString(String.valueOf(calendarIter.get(Calendar.DAY_OF_MONTH)), xDatePos, yDatePos);
 
 
                 int tasksOnDayCnt = 0;
@@ -217,16 +156,15 @@ public class CalendarPanel extends JPanel {
                     g2d.setColor(Color.BLACK);
                     int hour = task.getTime().get(Calendar.HOUR_OF_DAY);
                     int min = task.getTime().get(Calendar.MINUTE);
-                    g2d.drawString(hour + ":" + min + " " + task.getTitle(),
+                    g2d.drawString((hour>9 ? "" : "0") + hour + ":" + min + " " + task.getTitle(),
                             (int) (xGridStep*c) + 5, shift + yTaskPos  + g2d.getFontMetrics().getAscent());
 
                     tasksOnDayCnt++;
                 }
 
+                calendarIter.add(Calendar.DAY_OF_MONTH, 1);
             }
         }
-
-        FontMetrics fm = g2d.getFontMetrics();
 
         // Сетка
         //   Вертикальные линии
@@ -247,5 +185,24 @@ public class CalendarPanel extends JPanel {
             int y = (WEEKDAYS_HEIGHT + g2d.getFontMetrics().getAscent())/2;
             g2d.drawString(weekdays[i], x, y);
         }
+    }
+
+    public Calendar getDateOfCell(int row, int col) {
+        Calendar date = new GregorianCalendar(year, month, 1);
+        date.setMinimalDaysInFirstWeek(7);
+        date.set(Calendar.WEEK_OF_MONTH, date.getActualMinimum(Calendar.WEEK_OF_MONTH));
+        date.set(Calendar.DAY_OF_WEEK, date.getFirstDayOfWeek());
+
+        date.add(Calendar.DAY_OF_MONTH, row*7 + col);
+
+        return date;
+    }
+
+    public double getXGridStep() {
+        return xGridStep;
+    }
+
+    public double getYGridStep() {
+        return yGridStep;
     }
 }

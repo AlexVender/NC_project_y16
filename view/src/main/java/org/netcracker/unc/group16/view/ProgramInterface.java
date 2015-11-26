@@ -5,7 +5,5 @@
 package org.netcracker.unc.group16.view;
 
 public interface ProgramInterface {
-    void drawNotificate();
-    void drawTaskManager();
-    void drawMainWindow();
+
 }

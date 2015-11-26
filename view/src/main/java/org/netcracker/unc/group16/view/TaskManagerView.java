@@ -1,31 +1,46 @@
 package org.netcracker.unc.group16.view;
 
-import org.netcracker.unc.group16.model.Task;
 import org.netcracker.unc.group16.model.TaskManagerModel;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.util.Calendar;
 
 
 public class TaskManagerView implements ProgramInterface {
+    TaskManagerModel taskManagerModel;
+
     private JFrame mainFrame;
     private Panel leftControlPanel;
     private Panel rightControlPanel;
     private JButton btnCreateTask;
     private JButton btnViewTask;
+    private JButton btnBack;
     private JButton btnPrevMonth;
     private JButton btnNextMonth;
+    private JPanel workPanel;
     private Panel monthYearPanel;
     private JLabel lblMonthYear;
 
-
     private CalendarPanel calendarPanel;
-    private String[] months = {
+    private DayTimetablePanel dayTimetablePanel;
+
+    enum States {
+        calendar, dayTimetable
+    }
+
+    private States menuState;
+
+    private static final String[] months = {
             "Январь", "Февраль", "Март", "Апрель", "Май", "Июнь", "Июль", "Август", "Сентябрь", "Октябрь", "Ноябрь", "Декабрь"
     };
 
-    public TaskManagerView(TaskManagerModel taskManager) {
+    public TaskManagerView(TaskManagerModel taskManagerModel) {
+        this.taskManagerModel = taskManagerModel;
+        menuState = States.calendar;
+
         try {
             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
         } catch (Exception e) {
@@ -44,7 +59,6 @@ public class TaskManagerView implements ProgramInterface {
 //        mainFrame.setPreferredSize(new Dimension(1440, 900));
         mainFrame.setMinimumSize(new Dimension(750, 650));
         mainFrame.setLocationRelativeTo(null);
-
         mainFrame.setIconImage(Toolkit.getDefaultToolkit().getImage("view/resources/icon.png"));
 
         mainFrame.setLayout(new BorderLayout());
@@ -76,8 +90,13 @@ public class TaskManagerView implements ProgramInterface {
         c2.gridx = 1;
         btnViewTask = new JButton("Просмотр задач");
         leftControlPanel.add(btnViewTask, c2);
+        c2.gridx = 2;
+        btnBack = new JButton("<- Назад");
+        btnBack.setVisible(false);
+        leftControlPanel.add(btnBack, c2);
 
         c1.gridx = 1;
+        c1.weightx = 0;
         c1.anchor = GridBagConstraints.EAST;
         contentPane.add(rightControlPanel, c1);
         rightControlPanel.setLayout(new GridBagLayout());
@@ -101,82 +120,146 @@ public class TaskManagerView implements ProgramInterface {
 
 
 // Third line
-        calendarPanel = new  CalendarPanel();
-//        mainFrame.add(new DayTimetablePanel());
-        mainFrame.add(calendarPanel);
+        workPanel = new JPanel();
+        workPanel.setLayout(new CardLayout());
+        mainFrame.add(workPanel);
+
+        calendarPanel = new  CalendarPanel(taskManagerModel);
+        workPanel.add(calendarPanel, "Calendar");
         lblMonthYear.setText(months[calendarPanel.getMonth()] + " " + calendarPanel.getYear());
+
+        dayTimetablePanel = new DayTimetablePanel(taskManagerModel);
+        dayTimetablePanel.setVisible(false);
+        workPanel.add(dayTimetablePanel, "DayTimetable");
+
 
         mainFrame.pack();
         mainFrame.setVisible(true);
     }
 
     private void addListeners() {
+        // Кнопка назад
+        btnBack.addActionListener(e -> {
+            btnBack.setVisible(false);
+            menuState = States.calendar;
+
+            CardLayout cardLayout = (CardLayout)(workPanel.getLayout());
+            cardLayout.show(workPanel, "Calendar");
+
+            lblMonthYear.setText(months[calendarPanel.getMonth()] + " " + calendarPanel.getYear());
+        });
+
         btnPrevMonth.addActionListener(e -> {
-            if (calendarPanel.getMonth() > 0) {
-                calendarPanel.setMonth(calendarPanel.getMonth() - 1);
-            } else {
-                calendarPanel.setMonth(Calendar.DECEMBER);
-                calendarPanel.setYear(calendarPanel.getYear() - 1);
+            switch (menuState) {
+                case calendar: // TODO
+                    if (calendarPanel.getMonth() > 0) {
+                        calendarPanel.setMonth(calendarPanel.getMonth() - 1);
+                    } else {
+                        calendarPanel.setMonth(Calendar.DECEMBER);
+                        calendarPanel.setYear(calendarPanel.getYear() - 1);
+                    }
+                    lblMonthYear.setText(months[calendarPanel.getMonth()] + " " + calendarPanel.getYear());
+                    break;
+
+                case dayTimetable:
+                    Calendar date = dayTimetablePanel.getDate();
+                    date.add(Calendar.DAY_OF_MONTH, -1);
+                    dayTimetablePanel.setDate(date);
+
+                    String month = months[date.get(Calendar.MONTH)];
+                    if (date.get(Calendar.MONTH) == 2 || date.get(Calendar.MONTH) == 7) {
+                        month = month + 'а';
+                    } else {
+                        month = month.substring(0, month.length() - 1) + 'я';
+                    }
+                    lblMonthYear.setText(date.get(Calendar.DAY_OF_MONTH) + " " + month + ", " + date.get(Calendar.YEAR));
+                    dayTimetablePanel.repaint();
+                    break;
             }
-            lblMonthYear.setText(months[calendarPanel.getMonth()] + " " + calendarPanel.getYear());
-        });
+            });
 
-        btnNextMonth.addActionListener(e -> {
-            if (calendarPanel.getMonth() < Calendar.DECEMBER) {
-                calendarPanel.setMonth(calendarPanel.getMonth() + 1);
-            } else {
-                calendarPanel.setMonth(Calendar.JANUARY);
-                calendarPanel.setYear(calendarPanel.getYear() + 1);
-            }
-            lblMonthYear.setText(months[calendarPanel.getMonth()] + " " + calendarPanel.getYear());
-        });
+            btnNextMonth.addActionListener(e -> {
+                switch (menuState) {
+                    case calendar: // TODO
+                        if (calendarPanel.getMonth() < Calendar.DECEMBER) {
+                            calendarPanel.setMonth(calendarPanel.getMonth() + 1);
+                        } else {
+                            calendarPanel.setMonth(Calendar.JANUARY);
+                            calendarPanel.setYear(calendarPanel.getYear() + 1);
+                        }
+                        lblMonthYear.setText(months[calendarPanel.getMonth()] + " " + calendarPanel.getYear());
+                        break;
 
-        NewTaskDialog newTaskDialog = new NewTaskDialog();
-        btnCreateTask.addActionListener(e -> {
-            if (newTaskDialog.showDialog() == NewTaskDialog.OK) {
-                Task task;
-                // TODO: createNewTask(...);
-            }
-        });
+                    case dayTimetable:
+                        Calendar date = dayTimetablePanel.getDate();
+                        date.add(Calendar.DAY_OF_MONTH, 1);
+                        dayTimetablePanel.setDate(date);
+
+                        String month = months[date.get(Calendar.MONTH)];
+                        if (date.get(Calendar.MONTH) == 2 || date.get(Calendar.MONTH) == 7) {
+                            month = month + 'а';
+                        } else {
+                            month = month.substring(0, month.length() - 1) + 'я';
+                        }
+                        lblMonthYear.setText(date.get(Calendar.DAY_OF_MONTH) + " " + month + ", " + date.get(Calendar.YEAR));
+                        dayTimetablePanel.repaint();
+                        break;
+
+                }
+            });
+
+            NewTaskDialog newTaskDialog = new NewTaskDialog();
+            btnCreateTask.addActionListener(e -> {
+                if (newTaskDialog.showDialog() == NewTaskDialog.OK) {
+//                Task task;
+                    // TODO: createNewTask(...);
+                }
+            });
+
+
+            calendarPanel.addMouseListener(new MouseListener() {
+                @Override
+                public void mouseClicked(MouseEvent e) {
+                }
+
+                @Override
+                public void mousePressed(MouseEvent e) {
+                    // По двойному клику
+                    if (e.getClickCount() == 2) {
+                        int x = e.getX();
+                        int y = e.getY();
+
+                        if (y > CalendarPanel.WEEKDAYS_HEIGHT) {
+                            int r = (int) ((y - CalendarPanel.WEEKDAYS_HEIGHT) / calendarPanel.getYGridStep());
+                            int c = (int) (x / calendarPanel.getXGridStep());
+
+                            Calendar date = calendarPanel.getDateOfCell(r, c);
+                            dayTimetablePanel.setDate(date);
+                            CardLayout cardLayout = (CardLayout) (workPanel.getLayout());
+                            cardLayout.show(workPanel, "DayTimetable");
+
+                            String month = months[date.get(Calendar.MONTH)];
+                            if (date.get(Calendar.MONTH) == 2 || date.get(Calendar.MONTH) == 7) {
+                                month = month + 'а';
+                            } else {
+                                month = month.substring(0, month.length() - 1) + 'я';
+                            }
+                            lblMonthYear.setText(date.get(Calendar.DAY_OF_MONTH) + " " + month + ", " + date.get(Calendar.YEAR));
+                            menuState = States.dayTimetable;
+
+                            btnBack.setVisible(true);
+                        }
+                    }
+                }
+
+                @Override
+                public void mouseReleased(MouseEvent e) {}
+
+                @Override
+                public void mouseEntered(MouseEvent e) {}
+
+                @Override
+                public void mouseExited(MouseEvent e) {}
+            });
+        }
     }
-
-
-    public void drawNotificate(){
-    }
-
-    public void drawTaskManager(){
-
-    }
-
-    public void drawMainWindow(){
-
-    }
-
-    public void addTaskButton(){
-
-    }
-
-    public void editTaskButton(){
-
-    }
-
-    public void deleteTaskButton(){
-
-    }
-
-    public void showByDayButton(){
-
-    }
-
-    public void showByWeekButton(){
-
-    }
-
-    public void showByMonthButton(){
-
-    }
-
-    public void showByYearButton(){
-
-    }
-}
