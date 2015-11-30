@@ -4,6 +4,7 @@ import org.netcracker.unc.group16.annotations.Displayed;
 import org.netcracker.unc.group16.annotations.FieldSettings;
 
 import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.util.Calendar;
 
@@ -39,6 +40,7 @@ public class Task {
 
 
 
+    
     public int getId() {
         return id;
     }
@@ -48,6 +50,7 @@ public class Task {
     }
 
 
+
     public String getTitle() {
         return title;
     }
@@ -55,6 +58,7 @@ public class Task {
     public void setTitle(String title) {
         this.title = title;
     }
+
 
     @XmlJavaTypeAdapter(value = CalendarAdapter.class)
     public Calendar getTime() {

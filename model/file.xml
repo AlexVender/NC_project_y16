@@ -4,19 +4,29 @@
         <entry>
             <key>1</key>
             <value>
-                <description>Comment1</description>
-                <id>1</id>
-                <time>2015-11-24T23:32:11.187+04:00</time>
-                <title>Test1</title>
+                <description>TestTask</description>
+                <time>1448569622133</time>
             </value>
         </entry>
         <entry>
             <key>2</key>
             <value>
-                <description>Comment2</description>
-                <id>2</id>
-                <time>2015-11-24T23:32:11.774+04:00</time>
-                <title>Test2</title>
+                <description>TestTask</description>
+                <time>1448569622160</time>
+            </value>
+        </entry>
+        <entry>
+            <key>3</key>
+            <value>
+                <description>TestTask</description>
+                <time>1448569622160</time>
+            </value>
+        </entry>
+        <entry>
+            <key>4</key>
+            <value>
+                <description>TestTask</description>
+                <time>1448569622160</time>
             </value>
         </entry>
     </hashMapTasks>

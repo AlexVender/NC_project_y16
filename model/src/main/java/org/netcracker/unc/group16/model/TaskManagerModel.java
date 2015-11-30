@@ -3,17 +3,20 @@ package org.netcracker.unc.group16.model;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.util.*;
 
+
 @XmlRootElement(name="tasks")
 //@XmlAccessorType(XmlAccessType.FIELD)
-public class TaskManagerModel {
+public class TaskManagerModel implements Observable {
 
 
     private Map<Integer, Task> hashMapTasks;
 
-
+    @XmlTransient
+    private List<Observer> observers;
 
     private TreeSet<Integer> availableIDs;
 
@@ -105,5 +108,22 @@ public class TaskManagerModel {
 
     public void setHashMapTasks(Map<Integer, Task> hashMapTasks) {
         this.hashMapTasks = hashMapTasks;
+    }
+
+    @Override
+    public void registerObserver(Observer o) {
+        observers.add(o);
+    }
+
+    @Override
+    public void removeObserver(Observer o) {
+        observers.remove(o);
+    }
+
+    @Override
+    public void notifyObservers() {
+        for (Observer observer : observers){
+            observer.update();
+        }
     }
 }
