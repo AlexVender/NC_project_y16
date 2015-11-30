@@ -33,6 +33,9 @@ public class TaskManagerModel implements Observable {
         elm.setTitle(title);
         elm.setTime(time);
         elm.setDescription(description);
+        for (Observer observer: observers){
+            observer.update(elm);
+        }
     }
 
     public void addTask(String title, Calendar time, String description) {
@@ -120,10 +123,4 @@ public class TaskManagerModel implements Observable {
         observers.remove(o);
     }
 
-    @Override
-    public void notifyObservers() {
-        for (Observer observer : observers){
-            observer.update();
-        }
-    }
 }

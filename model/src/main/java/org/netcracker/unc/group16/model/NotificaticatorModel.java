@@ -5,8 +5,9 @@
 package org.netcracker.unc.group16.model;
 
 
+import java.util.concurrent.ScheduledFuture;
 
-public class NotificaticatorModel {
+public class NotificaticatorModel implements Observer {
     private Task currentTask;
 
     public void notificate(){
@@ -33,4 +34,10 @@ public class NotificaticatorModel {
         this.currentTask = currentTask;
     }
 
+    @Override
+    public void update(Task task) {
+        if (task.getId() == currentTask.getId()){
+            currentTask = task;
+        }
+    }
 }
