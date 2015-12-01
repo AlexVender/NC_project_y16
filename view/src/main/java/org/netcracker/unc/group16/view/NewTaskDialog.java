@@ -56,15 +56,12 @@ public class NewTaskDialog extends JDialog {
         c.anchor = GridBagConstraints.NORTHWEST;
 
 
-        // ########## //
         panels = new ArrayList<>();
         
         newTask = new Task();
         Field[] taskFields = newTask.getClass().getDeclaredFields();
 
-        int line;
-        for (line = 0; line < taskFields.length; line++) {
-            Field taskField = taskFields[line];
+        for (Field taskField : taskFields) {
             NotDisplayed taskFieldNotDisplayed = taskField.getDeclaredAnnotation(NotDisplayed.class);
             if (taskFieldNotDisplayed != null)
                 continue;
@@ -75,19 +72,21 @@ public class NewTaskDialog extends JDialog {
                     taskField.getType(), taskField,
                     taskFieldSettings.displayName(), taskFieldSettings.orderNumb(), taskFieldSettings.editable());
 
-            c.gridy = line;
             if (newFieldPanel != null) {
                 panels.add(newFieldPanel);
-                mainPanel.add(newFieldPanel, c);
             }
         }
 
-        // ########## //
+        panels.sort((o1, o2) -> o1.getOrder().compareTo(o2.getOrder()));
+
+        c.gridy = 0;
+        for (TaskFieldPanel panel : panels) {
+            mainPanel.add(panel, c);
+            c.gridy++;
+        }
 
         JPanel buttonsPanel = new JPanel();
         buttonsPanel.setLayout(new BoxLayout(buttonsPanel, BoxLayout.LINE_AXIS));
-//        buttonsPanel.setAlignmentX(Component.RIGHT_ALIGNMENT);
-        c.gridy = ++line;
         c.anchor = GridBagConstraints.NORTHEAST;
         mainPanel.add(buttonsPanel, c);
         btnOK = new JButton("OK");
@@ -117,7 +116,7 @@ public class NewTaskDialog extends JDialog {
 
 
         btnOK.addActionListener(e -> {
-            for (TaskFieldPanel panel : panels) { // FIXME
+            for (TaskFieldPanel panel : panels) {
                 if (!panel.isValidData()) {
                     JOptionPane.showMessageDialog(this,
                             "Введены некорректные данные.",

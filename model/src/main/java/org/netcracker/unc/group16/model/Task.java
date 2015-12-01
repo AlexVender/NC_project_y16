@@ -10,7 +10,6 @@ import java.util.Calendar;
 
 
 public class Task {
-    @NotDisplayed
     @FieldSettings(displayName = "ID", editable = true, orderNumb = 0)
     protected Integer id;
 

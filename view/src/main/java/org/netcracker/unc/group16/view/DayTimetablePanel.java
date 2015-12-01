@@ -12,6 +12,9 @@ import java.util.Map;
 
 
 public class DayTimetablePanel extends JPanel {
+    private final Color ELAPSED_TIME_BG_COLOR = new Color(200, 200, 200);
+    private final Color TASKS_BG_COLOR = new Color(213, 230, 244);
+    
     TaskManagerModel taskManagerModel;
 
     private int shift;
@@ -21,6 +24,8 @@ public class DayTimetablePanel extends JPanel {
     private static final int TIME_COLUMN_WIDTH = 55;
     private boolean isPresentDay;
 
+    private Map<Integer, Task> tasks;
+    
     public DayTimetablePanel(TaskManagerModel taskManagerModel) {
         this.taskManagerModel = taskManagerModel;
 
@@ -29,6 +34,11 @@ public class DayTimetablePanel extends JPanel {
 
         addListeners();
     }
+
+    public void updateTasks() {
+        tasks = taskManagerModel.getTasksByDate(date.get(Calendar.YEAR), date.get(Calendar.MONTH), date.get(Calendar.DAY_OF_MONTH));
+    }
+
 
     private void addListeners() {
         addMouseWheelListener(e -> {
@@ -106,7 +116,7 @@ public class DayTimetablePanel extends JPanel {
         Stroke defaultStroke = g2d.getStroke();
         g2d.setStroke(new BasicStroke(1.0f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER, 1.0f, new float[] {1.0f}, 0.0f));
 
-        g2d.setColor(new Color(200, 200, 200));
+        g2d.setColor(ELAPSED_TIME_BG_COLOR);
         for (int i = 0; i < 24; i++) {
             g2d.drawLine(TIME_COLUMN_WIDTH + 2, ROWS_HEIGHT/2 + ROWS_HEIGHT * i  - shift,
                     width - 1, ROWS_HEIGHT/2 + ROWS_HEIGHT * i - shift);
@@ -114,17 +124,13 @@ public class DayTimetablePanel extends JPanel {
         g2d.setStroke(defaultStroke);
 
         // Размещение тасок
-        Map<Integer, Task> tasks = taskManagerModel.getTasksByDate(date.get(Calendar.YEAR), date.get(Calendar.MONTH), date.get(Calendar.DAY_OF_MONTH));
-
-
         for (Task task : tasks.values()) {
-            g2d.setColor(new Color(213, 230, 244));
+            g2d.setColor(TASKS_BG_COLOR);
             Calendar taskTime = task.getTime();
             int hour = taskTime.get(Calendar.HOUR_OF_DAY);
             int min = taskTime.get(Calendar.MINUTE);
 
             int y1 = (int) Math.round((hour   + (double) min / 60) * ROWS_HEIGHT) - shift + 1;
-//            System.out.println(y1);
             int y2 = (int) Math.round((hour+1 + (double) min / 60) * ROWS_HEIGHT) - shift;
 
             g2d.fillRect(TIME_COLUMN_WIDTH + 2,
@@ -177,6 +183,9 @@ public class DayTimetablePanel extends JPanel {
             if (shift < 0)
                 shift = 0;
         }
+
+        updateTasks();
+        repaint();
     }
 
     public void setDay(int day) {
@@ -194,5 +203,8 @@ public class DayTimetablePanel extends JPanel {
             if (shift < 0)
                 shift = 0;
         }
+
+        updateTasks();
+        repaint();
     }
 }

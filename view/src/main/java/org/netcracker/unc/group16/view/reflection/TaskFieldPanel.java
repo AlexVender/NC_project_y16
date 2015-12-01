@@ -20,9 +20,12 @@ public abstract class TaskFieldPanel extends JPanel {
         this.order = order;
         this.editable = editable;
 
+        lblDisplayName.setPreferredSize(new Dimension(65, (int) lblDisplayName.getPreferredSize().getHeight()));
+        lblDisplayName.setHorizontalAlignment(SwingConstants.RIGHT);
+
         setLayout(new BoxLayout(this, BoxLayout.LINE_AXIS));
         GridBagConstraints c = new GridBagConstraints();
-        add(lblDisplayName);
+        add(lblDisplayName, c);
         add(Box.createRigidArea(new Dimension(10, 0)));
 
     }

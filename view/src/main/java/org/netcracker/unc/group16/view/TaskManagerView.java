@@ -53,11 +53,6 @@ public class TaskManagerView implements ProgramInterface {
 
         initGUI();
         addListeners();
-        // TODO: DELETE IT
-//        NewTaskDialog newTaskDialog = new NewTaskDialog(mainFrame);
-//        newTaskDialog.showDialog();
-//        mainFrame.dispose();
-//        System.exit(0);
     }
 
     private void initGUI() {
@@ -222,10 +217,11 @@ public class TaskManagerView implements ProgramInterface {
             updateMonthLabel();
         });
 
-        NewTaskDialog newTaskDialog = new NewTaskDialog(mainFrame);
         btnCreateTask.addActionListener(e -> {
+            NewTaskDialog newTaskDialog = new NewTaskDialog(mainFrame);
             if (newTaskDialog.showDialog() == NewTaskDialog.OK) {
                 taskManagerModel.addTask(newTaskDialog.getResult());
+                calendarPanel.repaint();
             }
         });
 
@@ -288,6 +284,5 @@ public class TaskManagerView implements ProgramInterface {
                 break;
 
         }
-        dayTimetablePanel.repaint();
     }
 }
