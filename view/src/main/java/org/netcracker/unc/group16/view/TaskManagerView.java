@@ -18,14 +18,17 @@ public class TaskManagerView implements ProgramInterface {
     private JButton btnCreateTask;
     private JButton btnViewTask;
     private JButton btnBack;
-    private JButton btnPrevMonth;
-    private JButton btnNextMonth;
+    private JButton btnPrev;
+    private JButton btnNext;
+    private JButton btnDoublePrev;
+    private JButton btnDoubleNext;
     private JPanel workPanel;
     private Panel monthYearPanel;
     private JLabel lblMonthYear;
 
     private CalendarPanel calendarPanel;
     private DayTimetablePanel dayTimetablePanel;
+
 
     enum States {
         calendar, dayTimetable
@@ -50,6 +53,11 @@ public class TaskManagerView implements ProgramInterface {
 
         initGUI();
         addListeners();
+        // TODO: DELETE IT
+//        NewTaskDialog newTaskDialog = new NewTaskDialog(mainFrame);
+//        newTaskDialog.showDialog();
+//        mainFrame.dispose();
+//        System.exit(0);
     }
 
     private void initGUI() {
@@ -100,12 +108,23 @@ public class TaskManagerView implements ProgramInterface {
         c1.anchor = GridBagConstraints.EAST;
         contentPane.add(rightControlPanel, c1);
         rightControlPanel.setLayout(new GridBagLayout());
+
+
+        c2.gridx = 0;
+        btnDoublePrev = new JButton("  <<  ");
+        rightControlPanel.add(btnDoublePrev, c2);
+        c2.gridx = 1;
+        c2.insets = new Insets(0, 5, 0, 0);
+        btnPrev = new JButton("  <  ");
+        rightControlPanel.add(btnPrev, c2);
         c2.gridx = 2;
-        btnPrevMonth = new JButton("  <  ");
-        rightControlPanel.add(btnPrevMonth, c2);
+        c2.insets = new Insets(0, 0, 0, 5);
+        btnNext = new JButton("  >  ");
+        rightControlPanel.add(btnNext, c2);
         c2.gridx = 3;
-        btnNextMonth = new JButton("  >  ");
-        rightControlPanel.add(btnNextMonth, c2);
+        c2.insets = new Insets(0, 0, 0, 0);
+        btnDoubleNext = new JButton("  >>  ");
+        rightControlPanel.add(btnDoubleNext, c2);
 
 // Second line
         monthYearPanel = new Panel();
@@ -126,13 +145,12 @@ public class TaskManagerView implements ProgramInterface {
 
         calendarPanel = new  CalendarPanel(taskManagerModel);
         workPanel.add(calendarPanel, "Calendar");
-        lblMonthYear.setText(months[calendarPanel.getMonth()] + " " + calendarPanel.getYear());
 
         dayTimetablePanel = new DayTimetablePanel(taskManagerModel);
         dayTimetablePanel.setVisible(false);
         workPanel.add(dayTimetablePanel, "DayTimetable");
 
-
+        updateMonthLabel();
         mainFrame.pack();
         mainFrame.setVisible(true);
     }
@@ -142,124 +160,134 @@ public class TaskManagerView implements ProgramInterface {
         btnBack.addActionListener(e -> {
             btnBack.setVisible(false);
             menuState = States.calendar;
+            updateMonthLabel();
 
             CardLayout cardLayout = (CardLayout)(workPanel.getLayout());
             cardLayout.show(workPanel, "Calendar");
-
-            lblMonthYear.setText(months[calendarPanel.getMonth()] + " " + calendarPanel.getYear());
         });
 
-        btnPrevMonth.addActionListener(e -> {
+        btnPrev.addActionListener(e -> {
             switch (menuState) {
-                case calendar: // TODO
-                    if (calendarPanel.getMonth() > 0) {
-                        calendarPanel.setMonth(calendarPanel.getMonth() - 1);
-                    } else {
-                        calendarPanel.setMonth(Calendar.DECEMBER);
-                        calendarPanel.setYear(calendarPanel.getYear() - 1);
-                    }
-                    lblMonthYear.setText(months[calendarPanel.getMonth()] + " " + calendarPanel.getYear());
+                case calendar:
+                    calendarPanel.setMonth(calendarPanel.getMonth() - 1);
                     break;
 
                 case dayTimetable:
                     Calendar date = dayTimetablePanel.getDate();
                     date.add(Calendar.DAY_OF_MONTH, -1);
                     dayTimetablePanel.setDate(date);
-
-                    String month = months[date.get(Calendar.MONTH)];
-                    if (date.get(Calendar.MONTH) == 2 || date.get(Calendar.MONTH) == 7) {
-                        month = month + 'а';
-                    } else {
-                        month = month.substring(0, month.length() - 1) + 'я';
-                    }
-                    lblMonthYear.setText(date.get(Calendar.DAY_OF_MONTH) + " " + month + ", " + date.get(Calendar.YEAR));
-                    dayTimetablePanel.repaint();
-                    break;
             }
-            });
+            updateMonthLabel();
+        });
 
-            btnNextMonth.addActionListener(e -> {
-                switch (menuState) {
-                    case calendar: // TODO
-                        if (calendarPanel.getMonth() < Calendar.DECEMBER) {
-                            calendarPanel.setMonth(calendarPanel.getMonth() + 1);
-                        } else {
-                            calendarPanel.setMonth(Calendar.JANUARY);
-                            calendarPanel.setYear(calendarPanel.getYear() + 1);
-                        }
-                        lblMonthYear.setText(months[calendarPanel.getMonth()] + " " + calendarPanel.getYear());
-                        break;
+        btnNext.addActionListener(e -> {
+            switch (menuState) {
+                case calendar:
+                    calendarPanel.setMonth(calendarPanel.getMonth() + 1);
+                    break;
 
-                    case dayTimetable:
-                        Calendar date = dayTimetablePanel.getDate();
-                        date.add(Calendar.DAY_OF_MONTH, 1);
+                case dayTimetable:
+                    Calendar date = dayTimetablePanel.getDate();
+                    date.add(Calendar.DAY_OF_MONTH, 1);
+                    dayTimetablePanel.setDate(date);
+            }
+            updateMonthLabel();
+        });
+
+        btnDoublePrev.addActionListener(e1 -> {
+            switch (menuState) {
+                case calendar:
+                    calendarPanel.setYear(calendarPanel.getYear() - 1);
+                    break;
+
+                case dayTimetable:
+                    Calendar date = dayTimetablePanel.getDate();
+                    date.add(Calendar.MONTH, - 1);
+                    dayTimetablePanel.setDate(date);
+            }
+            updateMonthLabel();
+        });
+
+        btnDoubleNext.addActionListener(e1 -> {
+            switch (menuState) {
+                case calendar:
+                    calendarPanel.setYear(calendarPanel.getYear() + 1);
+                    break;
+
+                case dayTimetable:
+                    Calendar date = dayTimetablePanel.getDate();
+                    date.add(Calendar.MONTH, + 1);
+                    dayTimetablePanel.setDate(date);
+            }
+            updateMonthLabel();
+        });
+
+        NewTaskDialog newTaskDialog = new NewTaskDialog(mainFrame);
+        btnCreateTask.addActionListener(e -> {
+            if (newTaskDialog.showDialog() == NewTaskDialog.OK) {
+                taskManagerModel.addTask(newTaskDialog.getResult());
+            }
+        });
+
+
+        calendarPanel.addMouseListener(new MouseListener() {
+            @Override
+            public void mouseClicked(MouseEvent e) {}
+
+            @Override
+            public void mousePressed(MouseEvent e) {
+                // По двойному клику
+                if (e.getClickCount() == 2) {
+                    int x = e.getX();
+                    int y = e.getY();
+
+                    if (y > CalendarPanel.WEEKDAYS_HEIGHT) {
+                        int r = (int) ((y - CalendarPanel.WEEKDAYS_HEIGHT) / calendarPanel.getYGridStep());
+                        int c = (int) (x / calendarPanel.getXGridStep());
+
+                        Calendar date = calendarPanel.getDateOfCell(r, c);
                         dayTimetablePanel.setDate(date);
+                        CardLayout cardLayout = (CardLayout) (workPanel.getLayout());
+                        cardLayout.show(workPanel, "DayTimetable");
 
-                        String month = months[date.get(Calendar.MONTH)];
-                        if (date.get(Calendar.MONTH) == 2 || date.get(Calendar.MONTH) == 7) {
-                            month = month + 'а';
-                        } else {
-                            month = month.substring(0, month.length() - 1) + 'я';
-                        }
-                        lblMonthYear.setText(date.get(Calendar.DAY_OF_MONTH) + " " + month + ", " + date.get(Calendar.YEAR));
-                        dayTimetablePanel.repaint();
-                        break;
+                        menuState = States.dayTimetable;
+                        updateMonthLabel();
 
-                }
-            });
-
-            NewTaskDialog newTaskDialog = new NewTaskDialog();
-            btnCreateTask.addActionListener(e -> {
-                if (newTaskDialog.showDialog() == NewTaskDialog.OK) {
-//                Task task;
-                    // TODO: createNewTask(...);
-                }
-            });
-
-
-            calendarPanel.addMouseListener(new MouseListener() {
-                @Override
-                public void mouseClicked(MouseEvent e) {
-                }
-
-                @Override
-                public void mousePressed(MouseEvent e) {
-                    // По двойному клику
-                    if (e.getClickCount() == 2) {
-                        int x = e.getX();
-                        int y = e.getY();
-
-                        if (y > CalendarPanel.WEEKDAYS_HEIGHT) {
-                            int r = (int) ((y - CalendarPanel.WEEKDAYS_HEIGHT) / calendarPanel.getYGridStep());
-                            int c = (int) (x / calendarPanel.getXGridStep());
-
-                            Calendar date = calendarPanel.getDateOfCell(r, c);
-                            dayTimetablePanel.setDate(date);
-                            CardLayout cardLayout = (CardLayout) (workPanel.getLayout());
-                            cardLayout.show(workPanel, "DayTimetable");
-
-                            String month = months[date.get(Calendar.MONTH)];
-                            if (date.get(Calendar.MONTH) == 2 || date.get(Calendar.MONTH) == 7) {
-                                month = month + 'а';
-                            } else {
-                                month = month.substring(0, month.length() - 1) + 'я';
-                            }
-                            lblMonthYear.setText(date.get(Calendar.DAY_OF_MONTH) + " " + month + ", " + date.get(Calendar.YEAR));
-                            menuState = States.dayTimetable;
-
-                            btnBack.setVisible(true);
-                        }
+                        btnBack.setVisible(true);
                     }
                 }
+            }
 
-                @Override
-                public void mouseReleased(MouseEvent e) {}
+            @Override
+            public void mouseReleased(MouseEvent e) {}
 
-                @Override
-                public void mouseEntered(MouseEvent e) {}
+            @Override
+            public void mouseEntered(MouseEvent e) {}
 
-                @Override
-                public void mouseExited(MouseEvent e) {}
-            });
-        }
+            @Override
+            public void mouseExited(MouseEvent e) {}
+        });
     }
+
+    public void updateMonthLabel() {
+        switch (menuState) {
+            case calendar:
+                lblMonthYear.setText(months[calendarPanel.getMonth()] + " " + calendarPanel.getYear());
+                break;
+
+            case dayTimetable:
+                Calendar date = dayTimetablePanel.getDate();
+
+                String month = months[date.get(Calendar.MONTH)];
+                if (date.get(Calendar.MONTH) == 2 || date.get(Calendar.MONTH) == 7) {
+                    month = month + 'а';
+                } else {
+                    month = month.substring(0, month.length() - 1) + 'я';
+                }
+                lblMonthYear.setText(date.get(Calendar.DAY_OF_MONTH) + " " + month + ", " + date.get(Calendar.YEAR));
+                break;
+
+        }
+        dayTimetablePanel.repaint();
+    }
+}

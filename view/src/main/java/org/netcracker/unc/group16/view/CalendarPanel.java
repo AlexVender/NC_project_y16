@@ -1,5 +1,6 @@
 package org.netcracker.unc.group16.view;
 
+import org.netcracker.unc.group16.model.Appointment;
 import org.netcracker.unc.group16.model.Task;
 import org.netcracker.unc.group16.model.TaskManagerModel;
 
@@ -14,10 +15,10 @@ import java.util.Map;
 public class CalendarPanel extends JPanel {
     TaskManagerModel taskManagerModel;
 
-    // Дата Текущий день
+    // Дата текущего дня
     private GregorianCalendar presentDay;
 
-    // Дата отображаемого иесяцв
+    // Дата отображаемого месяца
     private int year;
     private int month;
 
@@ -28,6 +29,8 @@ public class CalendarPanel extends JPanel {
     private static final String[] weekdays = {
             "Понедельник", "Вторник", "Среда", "Четверг", "Пятница", "Суббота", "Воскресенье"
     };
+
+    private static final String suffix = "..";
 
     public static final int WEEKDAYS_HEIGHT = 24;
     public static final int CELL_HEAD_HEIGHT = 18;
@@ -60,7 +63,8 @@ public class CalendarPanel extends JPanel {
     }
 
     public void setMonth(int month) {
-        this.month = month;
+        this.month = (month % 12) + ((month < 0) ? 12 : 0);
+        this.year += month / 12 + ((month < 0) ? -1 : 0);
         repaint();
     }
 
@@ -126,13 +130,14 @@ public class CalendarPanel extends JPanel {
                 if (dateIter == presentDay.get(Calendar.DAY_OF_MONTH) &&
                         monthIter == (presentDay.get(Calendar.MONTH) ) &&
                         yearIter == presentDay.get(Calendar.YEAR)) {
-                    g2d.setColor(new Color(0,0, 200));
+                    g2d.setColor(new Color(0,0, 220));
                 } else {
                     g2d.setColor(Color.BLACK);
                 }
 
 
-                int xDatePos = (int) (xGridStep *(c+1) - g2d.getFontMetrics().stringWidth(String.valueOf(calendarIter.get(Calendar.DAY_OF_MONTH))) - 5);
+                FontMetrics fontMetrics = g2d.getFontMetrics();
+                int xDatePos = (int) (xGridStep *(c+1) - fontMetrics.stringWidth(String.valueOf(calendarIter.get(Calendar.DAY_OF_MONTH))) - 5);
                 g2d.drawString(String.valueOf(calendarIter.get(Calendar.DAY_OF_MONTH)), xDatePos, yDatePos);
 
 
@@ -140,7 +145,7 @@ public class CalendarPanel extends JPanel {
                 for (Task task : tasks.values()) {
                     int shift = (int)(WEEKDAYS_HEIGHT + yGridStep * r + CELL_HEAD_HEIGHT);
                     int taskHeight = 14;
-                    int yTaskPos =  (taskHeight + 2) * tasksOnDayCnt;
+                    int yTaskPos = (taskHeight + 2) * tasksOnDayCnt;
 
                     if (yTaskPos + taskHeight > yGridStep - WEEKDAYS_HEIGHT ) {
                         break;
@@ -148,7 +153,7 @@ public class CalendarPanel extends JPanel {
 
                     g2d.setColor(Color.ORANGE);
                     g2d.fillRect(
-                            (int) (xGridStep * c + 2),
+                            (int) (xGridStep * c) + 2,
                             shift + yTaskPos + 2,
                             (int) xGridStep - 3,
                             taskHeight);
@@ -156,8 +161,22 @@ public class CalendarPanel extends JPanel {
                     g2d.setColor(Color.BLACK);
                     int hour = task.getTime().get(Calendar.HOUR_OF_DAY);
                     int min = task.getTime().get(Calendar.MINUTE);
-                    g2d.drawString((hour>9 ? "" : "0") + hour + ":" + min + " " + task.getTitle(),
-                            (int) (xGridStep*c) + 5, shift + yTaskPos  + g2d.getFontMetrics().getAscent());
+
+
+                    String formedText = (hour > 9 ? "" : "0") + hour + ":" +
+                            (min > 9 ? "" : "0") + min + " " + task.getTitle();
+
+                    int dx = fontMetrics.stringWidth(formedText) - ((int) xGridStep - 6 - fontMetrics.stringWidth(suffix));
+                    if (dx > 0) {
+                        for (int i = 1; i < formedText.length(); i++) {
+                            if (fontMetrics.bytesWidth(formedText.getBytes(), formedText.length() - i, i) >= dx) {
+                                formedText = formedText.substring(0, formedText.length() - i);
+                                break;
+                            }
+                        }
+                        formedText = formedText + suffix;
+                    }
+                    g2d.drawString(formedText, (int) (xGridStep * c) + 3, shift + yTaskPos + fontMetrics.getAscent());
 
                     tasksOnDayCnt++;
                 }
@@ -167,16 +186,16 @@ public class CalendarPanel extends JPanel {
         }
 
         // Сетка
-        //   Вертикальные линии
-        for (int i = 1; i <= 6; i++) {
-            g2d.drawLine((int) (xGridStep * i), 0, (int) (xGridStep * i), height);
-        }
         //   Горизонтальные линии
         for (int i = 0; i < 6; i++) {
             g2d.setColor(new Color(166, 166, 166));
             g2d.drawLine(0, WEEKDAYS_HEIGHT + CELL_HEAD_HEIGHT + (int) (yGridStep * i), width, WEEKDAYS_HEIGHT + CELL_HEAD_HEIGHT + (int) (yGridStep * i));
             g2d.setColor(LINES_COLOR);
             g2d.drawLine(0, WEEKDAYS_HEIGHT + (int)(yGridStep *i), width, WEEKDAYS_HEIGHT + (int)(yGridStep *i));
+        }
+        //   Вертикальные линии
+        for (int i = 1; i <= 6; i++) {
+            g2d.drawLine((int) (xGridStep * i), 0, (int) (xGridStep * i), height);
         }
 
         // Подписи дней недель

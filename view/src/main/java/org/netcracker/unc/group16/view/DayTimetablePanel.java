@@ -19,6 +19,7 @@ public class DayTimetablePanel extends JPanel {
 
     private static final int ROWS_HEIGHT = 50;
     private static final int TIME_COLUMN_WIDTH = 55;
+    private boolean isPresentDay;
 
     public DayTimetablePanel(TaskManagerModel taskManagerModel) {
         this.taskManagerModel = taskManagerModel;
@@ -50,9 +51,9 @@ public class DayTimetablePanel extends JPanel {
                 if (shift < 0)
                     shift = 0;
 
-                int maxShift = ROWS_HEIGHT * 24;
-                if (shift + getHeight() > maxShift)
-                    shift = maxShift - getHeight();
+                int maxShift = ROWS_HEIGHT * 24 - getHeight();
+                if (shift > maxShift)
+                    shift = maxShift;
             }
 
             @Override
@@ -69,16 +70,29 @@ public class DayTimetablePanel extends JPanel {
     public void paintComponent(Graphics g) {
         Graphics2D g2d = (Graphics2D) g;
 
+        Calendar currentDate = Calendar.getInstance();
+
         int width = getWidth();
         int height = getHeight();
 
-        g2d.setColor(Color.WHITE);
+        if (date.before(currentDate)) {
+            g2d.setColor(new Color(245, 245, 245));
+        } else {
+            g2d.setColor(Color.WHITE);
+        }
         g2d.fillRect(0, 0, width, height);
 
-        g2d.setColor(Color.BLACK);
+        if (isPresentDay) {
+            int currentTimeY = (int) Math.round((currentDate.get(Calendar.HOUR_OF_DAY) + (double) currentDate.get(Calendar.MINUTE) / 60) * ROWS_HEIGHT) - shift;
+
+            g2d.setColor(Color.WHITE);
+            g2d.fillRect(0, currentTimeY, width, height - currentTimeY);
+        }
+
+            g2d.setColor(Color.BLACK);
         g2d.drawLine(0, 0, 0, height);
         g2d.drawLine(TIME_COLUMN_WIDTH, 0, TIME_COLUMN_WIDTH, height);
-        g2d.drawLine(width-1, 0, width-1, height);
+        g2d.drawLine(width - 1, 0, width - 1, height);
 
         Stroke st1 = g2d.getStroke();
         Stroke st2 = new BasicStroke();
@@ -122,17 +136,26 @@ public class DayTimetablePanel extends JPanel {
             g2d.drawString(task.getTitle(), TIME_COLUMN_WIDTH + 7 , y1 + g2d.getFontMetrics().getAscent());
         }
 
-        // Указатель текущего времени
-        Calendar time = Calendar.getInstance();
-        int currentTimeY = (int) Math.round((time.get(Calendar.HOUR_OF_DAY) + (double) time.get(Calendar.MINUTE) / 60) * ROWS_HEIGHT) - shift ;
-        g2d.setColor(Color.BLUE);
-        g2d.setStroke(new BasicStroke(1.0f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER, 1.0f, new float[] {1.0f}, 0.0f));
-        g2d.drawLine(0, currentTimeY, width, currentTimeY);
-        g2d.setStroke(defaultStroke);
-        int[] triangleX = {0, 5, 0};
-        int[] triangleY = {currentTimeY-3, currentTimeY, currentTimeY+3};
-        g2d.fillPolygon(triangleX, triangleY, 3);
+        // Если сегодняшний день
+        if (isPresentDay) {
+            int currentTimeY = (int) Math.round((currentDate.get(Calendar.HOUR_OF_DAY) + (double) currentDate.get(Calendar.MINUTE) / 60) * ROWS_HEIGHT) - shift;
+            g2d.setColor(Color.BLUE);
+            g2d.setStroke(new BasicStroke(1.0f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER, 1.0f, new float[]{1.0f}, 0.0f));
+            g2d.drawLine(0, currentTimeY, width, currentTimeY);
+            g2d.setStroke(defaultStroke);
+            int[] triangleX = {0, 5, 0};
+            int[] triangleY = {currentTimeY - 3, currentTimeY, currentTimeY + 3};
+            g2d.fillPolygon(triangleX, triangleY, 3);
+        }
+    }
 
+    private boolean isPresentDayCheck() {
+        Calendar currentDate = Calendar.getInstance();
+
+        isPresentDay = date.get(Calendar.DAY_OF_MONTH) == currentDate.get(Calendar.DAY_OF_MONTH) &&
+                date.get(Calendar.MONTH) == currentDate.get(Calendar.MONTH) &&
+                date.get(Calendar.YEAR) == currentDate.get(Calendar.YEAR);
+        return isPresentDay;
     }
 
     public Calendar getDate() {
@@ -141,9 +164,35 @@ public class DayTimetablePanel extends JPanel {
 
     public void setDate(Calendar date) {
         this.date = date;
+
+        if (isPresentDayCheck()) {
+            Calendar currentDate = Calendar.getInstance();
+            shift = (int) Math.round((currentDate.get(Calendar.HOUR_OF_DAY) +
+                    (double) currentDate.get(Calendar.MINUTE) / 60) * ROWS_HEIGHT) - getHeight()/3 ;
+
+            int maxShift = ROWS_HEIGHT * 24 - getHeight();
+            if (shift > maxShift)
+                shift = maxShift;
+
+            if (shift < 0)
+                shift = 0;
+        }
     }
 
     public void setDay(int day) {
         date.set(Calendar.DAY_OF_MONTH, day);
+
+        if (isPresentDayCheck()) {
+            Calendar currentDate = Calendar.getInstance();
+            shift = (int) Math.round((currentDate.get(Calendar.HOUR_OF_DAY) +
+                    (double) currentDate.get(Calendar.MINUTE) / 60) * ROWS_HEIGHT) - getHeight()/3 ;
+
+            int maxShift = ROWS_HEIGHT * 24 - getHeight();
+            if (shift > maxShift)
+                shift = maxShift;
+
+            if (shift < 0)
+                shift = 0;
+        }
     }
 }
