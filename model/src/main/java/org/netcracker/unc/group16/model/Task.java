@@ -1,30 +1,25 @@
 package org.netcracker.unc.group16.model;
 
-import org.netcracker.unc.group16.annotations.Displayed;
+import org.netcracker.unc.group16.annotations.NotDisplayed;
 import org.netcracker.unc.group16.annotations.FieldSettings;
 
-import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.util.Calendar;
 
 
 public class Task {
-    private Integer id;
+    @NotDisplayed
+    @FieldSettings(displayName = "ID", editable = true, orderNumb = 0)
+    protected Integer id;
 
-
-    @Displayed
     @FieldSettings(displayName = "Название", editable = true, orderNumb = 1)
-    private String title;
+    protected String title;
 
-
-    @Displayed
     @FieldSettings(displayName = "Дата", editable = true, orderNumb = 2)
-    private Calendar time;
+    protected Calendar time;
 
-
-    @Displayed
     @FieldSettings(displayName = "Описание", editable = true, orderNumb = 3)
-    private String description;
+    protected String description;
 
     public  Task() {
 
@@ -36,7 +31,6 @@ public class Task {
         this.time = time;
         this.description = description;
     }
-
 
 
     public int getId() {
