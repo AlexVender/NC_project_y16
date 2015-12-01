@@ -3,23 +3,36 @@ package org.netcracker.unc.group16.model;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.util.*;
 
+
 @XmlRootElement(name="tasks")
 //@XmlAccessorType(XmlAccessType.FIELD)
-public class TaskManagerModel {
+public class TaskManagerModel implements Observable {
 
 
     private Map<Integer, Task> hashMapTasks;
 
-
+    @XmlTransient
+    private List<Observer> observers;
 
     private TreeSet<Integer> availableIDs;
 
     public TaskManagerModel() {
         hashMapTasks = new HashMap<>();
         availableIDs = new TreeSet<>();
+        Thread myThready = new Thread(new Runnable()
+        {
+            public void run() //Этот метод будет выполняться в побочном потоке
+            {
+                NotificaticatorModel notificaticatorModel = new NotificaticatorModel();
+                System.out.println("Привет из побочного потока!");
+            }
+        });
+        myThready.start();
+
 
         // Стартовый ID тасок
         availableIDs.add(1);
@@ -30,6 +43,9 @@ public class TaskManagerModel {
         elm.setTitle(title);
         elm.setTime(time);
         elm.setDescription(description);
+        for (Observer observer: observers){
+            observer.update(elm);
+        }
     }
 
     public void addTask(String title, Calendar time, String description) {
@@ -106,4 +122,15 @@ public class TaskManagerModel {
     public void setHashMapTasks(Map<Integer, Task> hashMapTasks) {
         this.hashMapTasks = hashMapTasks;
     }
+
+    @Override
+    public void registerObserver(Observer o) {
+        observers.add(o);
+    }
+
+    @Override
+    public void removeObserver(Observer o) {
+        observers.remove(o);
+    }
+
 }
