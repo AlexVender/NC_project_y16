@@ -5,7 +5,7 @@ import java.lang.reflect.Field;
 
 
 public class TaskFieldPanelFactory {
-    public static TaskFieldPanel createPanel(Class aClass, Field field, String displayName, Integer order, Boolean editable) {
+    public TaskFieldPanel createPanel(Class aClass, Field field, String displayName, Integer order, Boolean editable) {
         switch (aClass.getSimpleName()) {
             case "String":
                 return new TaskStringFieldPanel(field, displayName, order, editable);

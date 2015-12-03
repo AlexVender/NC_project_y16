@@ -8,20 +8,20 @@ import java.util.*;
 @XmlRootElement(name="tasks")
 //@XmlAccessorType(XmlAccessType.FIELD)
 public class TaskManagerModel implements Observable {
-
-
     private Map<Integer, Task> hashMapTasks;
 
     @XmlTransient
     private List<Observer> observers;
 
-    private TreeSet<Integer> availableIDs;
+    private Integer tasksCnt;
+
+    public static final String TASK = "Task";
+    public static final String APPOINTMENT = "Appointment";
 
     public TaskManagerModel() {
         hashMapTasks = new HashMap<>();
-        availableIDs = new TreeSet<>();
-        // Стартовый ID тасок
-        availableIDs.add(1);
+        tasksCnt = 0;
+
 //        Thread myThready = new Thread(new Runnable()
 //        {
 //            public void run() //Этот метод будет выполняться в побочном потоке
@@ -46,59 +46,61 @@ public class TaskManagerModel implements Observable {
         }
     }
 
-    public void addTask(String title, Calendar time, String description) {
-        Integer id = availableIDs.pollFirst();
-        if (availableIDs.isEmpty()) {
-            availableIDs.add(id + 1);
-        }
+
+    public void addTask(Integer id, String title, Calendar time, String description) {
 
         Task task = new Task(id, title, time, description);
         hashMapTasks.put(id, task);
     }
 
-    public void addTask(Task task) {
-        Integer id = availableIDs.pollFirst();
-        if (availableIDs.isEmpty()) {
-            availableIDs.add(id + 1);
-        }
+    public void addTask(String title, Calendar time, String description) {
+        tasksCnt++;
+        addTask(tasksCnt, title, time, description);
+    }
 
+
+    public void addAppointment(Integer id, String title, Calendar time, Calendar endTime, String description) {
+        Task task = new Appointment(id, title, time, endTime, description);
         hashMapTasks.put(id, task);
+    }
+
+    public void addAppointment(String title, Calendar time, Calendar endTime, String description) {
+        tasksCnt++;
+        addAppointment(tasksCnt, title, time, endTime, description);
+    }
+
+    public void addTask(Task task) {
+        tasksCnt++;
+
+        hashMapTasks.put(tasksCnt, (Task) task.clone());
     }
 
     public void deleteTask(Integer id) {
         hashMapTasks.remove(id);
-        availableIDs.add(id);
     }
 
     public Task getTask(Integer id) {
-        return hashMapTasks.get(id);
+        return (Task) hashMapTasks.get(id).clone();
     }
 
-    public Map<Integer, Task> getTasksByDate(int year, int month, int day) {
+    public Map<Integer, Task> getTasksByDate(String taskType, int year, int month, int day) {
         Map<Integer, Task> tempHashMapTasks = new HashMap<>();
         Calendar dateStart = new GregorianCalendar(year, month, day);
         Calendar dateEnd = new GregorianCalendar(year, month, day + 1);
         dateEnd.add(Calendar.MILLISECOND, -1);
 
         for (HashMap.Entry<Integer, Task> entry : hashMapTasks.entrySet()) {
-            Integer key = entry.getKey();
             Task value = entry.getValue();
+            Calendar time = value.getTime();
 
-            if (value.getTime().after(dateStart) && value.getTime().before(dateEnd)){
-                tempHashMapTasks.put(key, value);
+            if (value.getClass().getSimpleName().equals(taskType) && time.after(dateStart) && time.before(dateEnd)) {
+                tempHashMapTasks.put(entry.getKey(), (Task) value.clone());
             }
         }
         return  tempHashMapTasks;
     }
 
 
-
-
-
-    public Task getTestTask(){
-        Task testTask = new Task(1, "TestTask", Calendar.getInstance(), "TestTask");
-        return testTask;
-    }
     public void load(){
 
     }

@@ -1,5 +1,6 @@
 package org.netcracker.unc.group16.view;
 
+import org.netcracker.unc.group16.model.Appointment;
 import org.netcracker.unc.group16.model.Task;
 import org.netcracker.unc.group16.model.TaskManagerModel;
 
@@ -8,20 +9,25 @@ import java.awt.*;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.Map;
 
 
 public class DayTimetablePanel extends JPanel {
     private final Color ELAPSED_TIME_BG_COLOR = new Color(200, 200, 200);
     private final Color TASKS_BG_COLOR = new Color(213, 230, 244);
-    
+
+    private static final int ROWS_HEIGHT = 50;
+    private static final int TIME_COLUMN_WIDTH = 55;
+
+    private static final int SCROLL_SPEED = 25;
+
+
     TaskManagerModel taskManagerModel;
 
     private int shift;
     private Calendar date;
 
-    private static final int ROWS_HEIGHT = 50;
-    private static final int TIME_COLUMN_WIDTH = 55;
     private boolean isPresentDay;
 
     private Map<Integer, Task> tasks;
@@ -36,20 +42,20 @@ public class DayTimetablePanel extends JPanel {
     }
 
     public void updateTasks() {
-        tasks = taskManagerModel.getTasksByDate(date.get(Calendar.YEAR), date.get(Calendar.MONTH), date.get(Calendar.DAY_OF_MONTH));
+        tasks = taskManagerModel.getTasksByDate(TaskManagerModel.APPOINTMENT, date.get(Calendar.YEAR), date.get(Calendar.MONTH), date.get(Calendar.DAY_OF_MONTH));
     }
 
 
     private void addListeners() {
         addMouseWheelListener(e -> {
-            shift += e.getWheelRotation() * 25;
+            shift += e.getWheelRotation() * SCROLL_SPEED;
             if (shift < 0) {
                 shift = 0;
             }
 
-            int maxShift = ROWS_HEIGHT * 24;
-            if (shift + getHeight() > maxShift) {
-                shift = maxShift - getHeight();
+            int maxShift = ROWS_HEIGHT * 24 - getHeight();
+            if (shift > maxShift) {
+                shift = maxShift;
             }
 
             repaint();
@@ -126,12 +132,22 @@ public class DayTimetablePanel extends JPanel {
         // Размещение тасок
         for (Task task : tasks.values()) {
             g2d.setColor(TASKS_BG_COLOR);
-            Calendar taskTime = task.getTime();
-            int hour = taskTime.get(Calendar.HOUR_OF_DAY);
-            int min = taskTime.get(Calendar.MINUTE);
+            Calendar taskTimeStart = task.getTime();
+            int hourStart = taskTimeStart.get(Calendar.HOUR_OF_DAY);
+            int minStart = taskTimeStart.get(Calendar.MINUTE);
 
-            int y1 = (int) Math.round((hour   + (double) min / 60) * ROWS_HEIGHT) - shift + 1;
-            int y2 = (int) Math.round((hour+1 + (double) min / 60) * ROWS_HEIGHT) - shift;
+            Calendar taskTimeEnd = ((Appointment)task).getEndTime();
+            int hourEnd = taskTimeEnd.get(Calendar.HOUR_OF_DAY);
+            int minEnd = taskTimeEnd.get(Calendar.MINUTE);
+
+            int y1 = (int) Math.round((hourStart   + (double) minStart / 60) * ROWS_HEIGHT) - shift + 1;
+            int y2 = (int) Math.round((hourEnd     + (double) minEnd   / 60) * ROWS_HEIGHT) - shift;
+
+            if (taskTimeStart.get(Calendar.YEAR) < taskTimeEnd.get(Calendar.YEAR) ||
+                    taskTimeStart.get(Calendar.MONTH) < taskTimeEnd.get(Calendar.MONTH) ||
+                    taskTimeStart.get(Calendar.DAY_OF_MONTH) < taskTimeEnd.get(Calendar.DAY_OF_MONTH)) {
+                y2 = 24 * ROWS_HEIGHT - shift - 1;
+            }
 
             g2d.fillRect(TIME_COLUMN_WIDTH + 2,
                     y1,

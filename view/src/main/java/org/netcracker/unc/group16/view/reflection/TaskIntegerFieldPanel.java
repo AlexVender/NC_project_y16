@@ -7,12 +7,14 @@ import java.lang.reflect.Field;
 
 
 public class TaskIntegerFieldPanel extends TaskFieldPanel {
-    JTextField textField;
+    JSpinner textField;
+    private final SpinnerModel spinnerModel;
 
     public TaskIntegerFieldPanel(Field field, String displayName, Integer order, Boolean editable) {
         super(field, displayName, order, editable);
 
-        textField = new JTextField();
+        spinnerModel = new SpinnerNumberModel(0, null, null, 1);
+        textField = new JSpinner(spinnerModel);
         textField.setEnabled(editable);
         textField.setPreferredSize(new Dimension(100, 20));
         add(textField);
@@ -21,7 +23,7 @@ public class TaskIntegerFieldPanel extends TaskFieldPanel {
     @Override
     public boolean isValidData() {
         try {
-            Integer integer  = Integer.parseInt(textField.getText());
+            Integer integer  = Integer.parseInt(spinnerModel.getValue().toString());
         } catch(NumberFormatException ex ) {
             return false;
         }
@@ -30,6 +32,6 @@ public class TaskIntegerFieldPanel extends TaskFieldPanel {
 
     @Override
     public Object getData() {
-        return Integer.parseInt(textField.getText());
+        return spinnerModel.getValue();
     }
 }
