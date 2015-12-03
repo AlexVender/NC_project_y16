@@ -5,12 +5,26 @@
 package org.netcracker.unc.group16.model;
 
 
+import java.util.Calendar;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 
 public class NotificatorModel implements Observer {
     private Task currentTask;
 
+
     private TaskManagerModel taskManagerModel;
+
+    ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
+
+    ScheduledFuture scheduledFuture = scheduler.schedule(new Runnable() {
+        @Override
+        public void run() {
+            System.out.println("Executed!");
+        }
+    }, getTimeBeforExecution(), TimeUnit.MILLISECONDS);
 
 
     public NotificatorModel(TaskManagerModel taskManagerModel){
@@ -24,7 +38,6 @@ public class NotificatorModel implements Observer {
     public void postpone(){
 
     }
-
     public void dismiss(){
 
     }
@@ -54,5 +67,10 @@ public class NotificatorModel implements Observer {
         if (task.getId() == currentTask.getId()){
             currentTask = task;
         }
+    }
+
+    public long getTimeBeforExecution(){
+        Calendar cal = Calendar.getInstance();
+        return currentTask.getTime().getTimeInMillis() - cal.getTimeInMillis();
     }
 }
