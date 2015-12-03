@@ -1,6 +1,8 @@
 package org.netcracker.unc.group16;
 
+import org.netcracker.unc.group16.controller.TaskManager;
 import org.netcracker.unc.group16.model.JAXB;
+import org.netcracker.unc.group16.model.NotificatorModel;
 import org.netcracker.unc.group16.model.TaskManagerModel;
 import org.netcracker.unc.group16.view.TaskManagerView;
 
@@ -17,7 +19,11 @@ public class Main {
 
         JAXB jaxb = new JAXB();
         jaxb.write(taskManagerModel);
-        TaskManagerView taskManagerView = new TaskManagerView(taskManagerModel);
+
+        TaskManagerView taskManagerView = new
+                TaskManagerView(new NotificatorModel(taskManagerModel));
+
+//        TaskManagerView taskManagerView = new TaskManagerView(taskManagerModel);
 
     }
 }

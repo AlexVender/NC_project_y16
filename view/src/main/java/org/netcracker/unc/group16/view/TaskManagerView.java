@@ -1,5 +1,7 @@
 package org.netcracker.unc.group16.view;
 
+import org.netcracker.unc.group16.controller.TaskManager;
+import org.netcracker.unc.group16.model.NotificatorModel;
 import org.netcracker.unc.group16.model.TaskManagerModel;
 
 import javax.swing.*;
@@ -11,6 +13,7 @@ import java.util.Calendar;
 
 public class TaskManagerView implements ProgramInterface {
     TaskManagerModel taskManagerModel;
+    NotificatorModel notificatorModel;
 
     private JFrame mainFrame;
     private Panel leftControlPanel;
@@ -42,6 +45,23 @@ public class TaskManagerView implements ProgramInterface {
 
     public TaskManagerView(TaskManagerModel taskManagerModel) {
         this.taskManagerModel = taskManagerModel;
+        menuState = States.calendar;
+
+        try {
+            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+        } catch (Exception e) {
+            e.printStackTrace();
+            return;
+        }
+
+        initGUI();
+        addListeners();
+    }
+
+    public TaskManagerView(NotificatorModel notificatorModel){
+        this.notificatorModel = notificatorModel;
+        this.taskManagerModel = notificatorModel.getTaskManagerModel();
+
         menuState = States.calendar;
 
         try {

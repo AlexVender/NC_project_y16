@@ -22,15 +22,15 @@ public class TaskManagerModel implements Observable {
         availableIDs = new TreeSet<>();
         // Стартовый ID тасок
         availableIDs.add(1);
-        Thread myThready = new Thread(new Runnable()
-        {
-            public void run() //Этот метод будет выполняться в побочном потоке
-            {
-                NotificatorModel notificaticatorModel = new NotificatorModel();
-                System.out.println("Привет из побочного потока!");
-            }
-        });
-        myThready.start();
+//        Thread myThready = new Thread(new Runnable()
+//        {
+//            public void run() //Этот метод будет выполняться в побочном потоке
+//            {
+//                NotificatorModel notificaticatorModel = new NotificatorModel();
+//                System.out.println("Привет из побочного потока!");
+//            }
+//        });
+//        myThready.start();
 
 
 
