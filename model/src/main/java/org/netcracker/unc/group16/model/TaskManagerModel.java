@@ -1,10 +1,7 @@
 package org.netcracker.unc.group16.model;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.util.*;
 
 
@@ -23,19 +20,20 @@ public class TaskManagerModel implements Observable {
     public TaskManagerModel() {
         hashMapTasks = new HashMap<>();
         availableIDs = new TreeSet<>();
+        // Стартовый ID тасок
+        availableIDs.add(1);
         Thread myThready = new Thread(new Runnable()
         {
             public void run() //Этот метод будет выполняться в побочном потоке
             {
-                NotificaticatorModel notificaticatorModel = new NotificaticatorModel();
+                NotificatorModel notificaticatorModel = new NotificatorModel();
                 System.out.println("Привет из побочного потока!");
             }
         });
         myThready.start();
 
 
-        // Стартовый ID тасок
-        availableIDs.add(1);
+
     }
 
     public void editTask(Integer id, String title, Calendar time, String description) {

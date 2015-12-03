@@ -7,7 +7,7 @@ package org.netcracker.unc.group16.model;
 
 import java.util.concurrent.ScheduledFuture;
 
-public class NotificaticatorModel implements Observer {
+public class NotificatorModel implements Observer {
     private Task currentTask;
 
     public void notificate(){
