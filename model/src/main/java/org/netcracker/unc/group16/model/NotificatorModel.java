@@ -5,14 +5,14 @@
 package org.netcracker.unc.group16.model;
 
 
-import java.util.Calendar;
+import java.util.*;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 public class NotificatorModel implements Observer {
-    private Task currentTask;
+    private List<Task> currentTasks;
 
 
     private TaskManagerModel taskManagerModel;
@@ -24,7 +24,8 @@ public class NotificatorModel implements Observer {
         public void run() {
             System.out.println("Executed!");
         }
-    }, getTimeBeforExecution(), TimeUnit.MILLISECONDS);
+    }, tempFunction(), TimeUnit.SECONDS);
+
 
 
     public NotificatorModel(TaskManagerModel taskManagerModel){
@@ -46,12 +47,12 @@ public class NotificatorModel implements Observer {
 
     }
 
-    public Task getCurrentTask() {
-        return currentTask;
+    public List<Task> getCurrentTasks() {
+        return currentTasks;
     }
 
-    public void setCurrentTask(Task currentTask) {
-        this.currentTask = currentTask;
+    public void setCurrentTasks(List<Task> currentTasks) {
+        this.currentTasks = currentTasks;
     }
 
     public TaskManagerModel getTaskManagerModel(){
@@ -62,15 +63,53 @@ public class NotificatorModel implements Observer {
         this.taskManagerModel = taskManagerModel;
     }
 
-    @Override
-    public void update(Task task) {
-        if (task.getId() == currentTask.getId()){
-            currentTask = task;
+    //Загружаем в нотификатор ближайшую таску
+    //Причем если в одно время несколько тасок то возвращаем их
+    private Map<Integer, Task> getTasksForNotificator(){
+        Map<Integer, Task> tempHashMapTasks = new HashMap<>();
+
+        //Ищем таску с минимальной датой
+        Map.Entry<Integer, Task> min = null;
+        for (HashMap.Entry<Integer, Task> entry : taskManagerModel.getHashMapTasks().entrySet()) {
+            Integer key = entry.getKey();
+            Task value = entry.getValue();
+
+            if (min == null || min.getValue().getTime().getTimeInMillis() > value.getTime().getTimeInMillis()){
+                min = entry;
+            }
+
         }
+        tempHashMapTasks.put(min.getKey(), min.getValue());
+
+        //Добавляем остальные таски
+        if (min != null){
+            for (HashMap.Entry<Integer, Task> entry : taskManagerModel.getHashMapTasks().entrySet()) {
+                Integer key = entry.getKey();
+                Task value = entry.getValue();
+
+                if (value.getTime().getTimeInMillis() == min.getValue().getTime().getTimeInMillis()){
+                    tempHashMapTasks.put(key, value);
+                }
+            }
+        }
+        return  tempHashMapTasks;
     }
 
-    public long getTimeBeforExecution(){
+    @Override
+    public void update(Task task) {
+//        if (task.getId() == currentTasks.getId()){
+//            currentTasks = task;
+//        }
+    }
+
+//    public long getTimeBeforExecution(){
+//        Calendar cal = Calendar.getInstance();
+//        return currentTasks.getTime().getTimeInMillis() - cal.getTimeInMillis();
+//    }
+
+    public  long tempFunction(){
         Calendar cal = Calendar.getInstance();
-        return currentTask.getTime().getTimeInMillis() - cal.getTimeInMillis();
+        System.out.println(cal.getTimeInMillis()/1000 + 5);
+        return cal.getTimeInMillis() / 1000 + 5;
     }
 }

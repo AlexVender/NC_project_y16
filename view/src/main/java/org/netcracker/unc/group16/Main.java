@@ -18,8 +18,9 @@ public class Main {
         taskManagerModel.addTask("TestTask", Calendar.getInstance(),"TestTask");
 
         JAXB jaxb = new JAXB();
-        jaxb.write(taskManagerModel);
+    //    jaxb.write(taskManagerModel);
 
+  //      System.out.println (Calendar.getInstance());
         TaskManagerView taskManagerView = new
                 TaskManagerView(new NotificatorModel(taskManagerModel));
 
