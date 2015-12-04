@@ -1,6 +1,5 @@
 package org.netcracker.unc.group16.view;
 
-import org.netcracker.unc.group16.controller.TaskManager;
 import org.netcracker.unc.group16.model.NotificatorModel;
 import org.netcracker.unc.group16.model.TaskManagerModel;
 
@@ -8,7 +7,11 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.time.DayOfWeek;
+import java.time.Month;
+import java.time.format.TextStyle;
 import java.util.Calendar;
+import java.util.Locale;
 
 
 public class TaskManagerView implements ProgramInterface {
@@ -18,6 +21,7 @@ public class TaskManagerView implements ProgramInterface {
     private JFrame mainFrame;
     private Panel leftControlPanel;
     private Panel rightControlPanel;
+    private JButton btnCreateAppointment;
     private JButton btnCreateTask;
     private JButton btnViewTask;
     private JButton btnBack;
@@ -39,9 +43,6 @@ public class TaskManagerView implements ProgramInterface {
 
     private States menuState;
 
-    private static final String[] months = {
-            "Январь", "Февраль", "Март", "Апрель", "Май", "Июнь", "Июль", "Август", "Сентябрь", "Октябрь", "Ноябрь", "Декабрь"
-    };
 
     public TaskManagerView(TaskManagerModel taskManagerModel) {
         this.taskManagerModel = taskManagerModel;
@@ -93,7 +94,7 @@ public class TaskManagerView implements ProgramInterface {
 
         c1.anchor = GridBagConstraints.NORTH;
 
-// First line
+    // First line
         leftControlPanel = new Panel();
         rightControlPanel = new Panel();
 
@@ -108,12 +109,15 @@ public class TaskManagerView implements ProgramInterface {
         c2.gridy = 0;
         c2.anchor = GridBagConstraints.WEST;
         c2.gridx = 0;
+        btnCreateAppointment = new JButton("Создать встречу");
+        leftControlPanel.add(btnCreateAppointment, c2);
+        c2.gridx = 1;
         btnCreateTask = new JButton("Создать задачу");
         leftControlPanel.add(btnCreateTask, c2);
-        c2.gridx = 1;
+        c2.gridx = 3;
         btnViewTask = new JButton("Просмотр задач");
         leftControlPanel.add(btnViewTask, c2);
-        c2.gridx = 2;
+        c2.gridx = 4;
         btnBack = new JButton("<- Назад");
         btnBack.setVisible(false);
         leftControlPanel.add(btnBack, c2);
@@ -141,7 +145,7 @@ public class TaskManagerView implements ProgramInterface {
         btnDoubleNext = new JButton("  >>  ");
         rightControlPanel.add(btnDoubleNext, c2);
 
-// Second line
+    // Second line
         monthYearPanel = new Panel();
         c1.gridx = 0;
         c1.gridy = 1;
@@ -153,7 +157,7 @@ public class TaskManagerView implements ProgramInterface {
         monthYearPanel.add(lblMonthYear);
 
 
-// Third line
+    // Third line
         workPanel = new JPanel();
         workPanel.setLayout(new CardLayout());
         mainFrame.add(workPanel);
@@ -169,6 +173,7 @@ public class TaskManagerView implements ProgramInterface {
         mainFrame.pack();
         mainFrame.setVisible(true);
     }
+
 
     private void addListeners() {
         // Кнопка назад
@@ -237,8 +242,8 @@ public class TaskManagerView implements ProgramInterface {
             updateMonthLabel();
         });
 
-        btnCreateTask.addActionListener(e -> {
-            NewTaskDialog newTaskDialog = new NewTaskDialog(mainFrame);
+        btnCreateAppointment.addActionListener(e -> {
+            NewTaskDialog newTaskDialog = new NewTaskDialog();
             if (newTaskDialog.showDialog() == NewTaskDialog.OK) {
                 taskManagerModel.addTask(newTaskDialog.getResult());
                 calendarPanel.repaint();
@@ -258,10 +263,10 @@ public class TaskManagerView implements ProgramInterface {
                     int y = e.getY();
 
                     if (y > CalendarPanel.WEEKDAYS_HEIGHT) {
-                        int r = (int) ((y - CalendarPanel.WEEKDAYS_HEIGHT) / calendarPanel.getYGridStep());
-                        int c = (int) (x / calendarPanel.getXGridStep());
+                        int row = (int) ((y - CalendarPanel.WEEKDAYS_HEIGHT) / calendarPanel.getYGridStep());
+                        int column = (int) (x / calendarPanel.getXGridStep());
 
-                        Calendar date = calendarPanel.getDateOfCell(r, c);
+                        Calendar date = calendarPanel.getDateOfCell(row, column);
                         dayTimetablePanel.setDate(date);
                         CardLayout cardLayout = (CardLayout) (workPanel.getLayout());
                         cardLayout.show(workPanel, "DayTimetable");
@@ -286,21 +291,19 @@ public class TaskManagerView implements ProgramInterface {
     }
 
     public void updateMonthLabel() {
+        String month;
         switch (menuState) {
             case calendar:
-                lblMonthYear.setText(months[calendarPanel.getMonth()] + " " + calendarPanel.getYear());
+                month = Month.of(calendarPanel.getMonth() + 1).getDisplayName(TextStyle.FULL_STANDALONE, Locale.getDefault());
+                lblMonthYear.setText(month + " " + calendarPanel.getYear());
                 break;
 
             case dayTimetable:
                 Calendar date = dayTimetablePanel.getDate();
-
-                String month = months[date.get(Calendar.MONTH)];
-                if (date.get(Calendar.MONTH) == 2 || date.get(Calendar.MONTH) == 7) {
-                    month = month + 'а';
-                } else {
-                    month = month.substring(0, month.length() - 1) + 'я';
-                }
-                lblMonthYear.setText(date.get(Calendar.DAY_OF_MONTH) + " " + month + ", " + date.get(Calendar.YEAR));
+                int dayOfWeekInt = date.get(Calendar.DAY_OF_WEEK);
+                String dayOfWeek = DayOfWeek.of((dayOfWeekInt > 1) ? (dayOfWeekInt - 1) : 7).getDisplayName(TextStyle.FULL_STANDALONE, Locale.getDefault());
+                month = Month.of(calendarPanel.getMonth() + 1).getDisplayName(TextStyle.FULL, Locale.getDefault());
+                lblMonthYear.setText(date.get(Calendar.DAY_OF_MONTH) + " " + month + ", " + date.get(Calendar.YEAR) + " – " + dayOfWeek);
                 break;
 
         }

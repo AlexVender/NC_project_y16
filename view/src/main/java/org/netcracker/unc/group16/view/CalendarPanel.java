@@ -1,6 +1,5 @@
 package org.netcracker.unc.group16.view;
 
-import org.netcracker.unc.group16.model.Appointment;
 import org.netcracker.unc.group16.model.Task;
 import org.netcracker.unc.group16.model.TaskManagerModel;
 
@@ -30,15 +29,17 @@ public class CalendarPanel extends JPanel {
             "Понедельник", "Вторник", "Среда", "Четверг", "Пятница", "Суббота", "Воскресенье"
     };
 
-    private static final String suffix = "..";
+    private static final String suffix = "...";
 
     public static final int WEEKDAYS_HEIGHT = 24;
     public static final int CELL_HEAD_HEIGHT = 18;
 
-    private static final Color LINES_COLOR = Color.BLACK;
-    private static final Color WEEKENDS_COLOR = new Color(213, 230, 244);
-    private static final Color ANOTHER_MONTH_COLOR = new Color(237,237,237);
-    private static final Color ANOTHER_MONTH_WEEKENDS_COLOR = new Color(225, 233, 240);
+    private static final Color SEPARATING_LINES_COLOR = new Color(0, 0, 0);
+    private static final Color HORIZONTAL_LINE_IN_CELLS_COLOR = new Color(166, 166, 166);
+    private static final Color WEEKENDS_BG_COLOR = new Color(213, 230, 244);
+    private static final Color ANOTHER_MONTH_BG_COLOR = new Color(237,237,237);
+    private static final Color ANOTHER_MONTH_WEEKENDS_BG_COLOR = new Color(225, 233, 240);
+    private static final Color TODAY_DATE_TEXT_COLOR = new Color(0, 0, 230);
 
     public CalendarPanel(TaskManagerModel taskManagerModel) {
         this.taskManagerModel = taskManagerModel;
@@ -64,7 +65,7 @@ public class CalendarPanel extends JPanel {
 
     public void setMonth(int month) {
         this.month = (month % 12) + ((month < 0) ? 12 : 0);
-        this.year += month / 12 + ((month < 0) ? -1 : 0);
+        this.year += (month / 12) + ((month < 0) ? -1 : 0);
         repaint();
     }
 
@@ -92,7 +93,7 @@ public class CalendarPanel extends JPanel {
         // Выключить сглаживание для текста
         g2d.setRenderingHint ( RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_OFF );
 
-        g2d.setColor(WEEKENDS_COLOR);
+        g2d.setColor(WEEKENDS_BG_COLOR);
         g2d.fillRect((int)(xGridStep *5), WEEKDAYS_HEIGHT, (int)(width - xGridStep *5), height - WEEKDAYS_HEIGHT);
 
 
@@ -100,27 +101,27 @@ public class CalendarPanel extends JPanel {
         calendarIter.setMinimalDaysInFirstWeek(7);
         calendarIter.set(Calendar.WEEK_OF_MONTH, calendarIter.getActualMinimum(Calendar.WEEK_OF_MONTH));
         calendarIter.set(Calendar.DAY_OF_WEEK, calendarIter.getFirstDayOfWeek());
-        for (int r = 0; r < 6; r++) {
-            int yDatePos = (int) (WEEKDAYS_HEIGHT + yGridStep * r + (CELL_HEAD_HEIGHT + g2d.getFontMetrics().getAscent()) / 2);
-            for (int c = 0; c < 7; c++) {
+        for (int row = 0; row < 6; row++) {
+            int yDatePos = (int) (WEEKDAYS_HEIGHT + yGridStep * row + (CELL_HEAD_HEIGHT + g2d.getFontMetrics().getAscent()) / 2);
+            for (int column = 0; column < 7; column++) {
                 int yearIter = calendarIter.get(Calendar.YEAR);
                 int monthIter = calendarIter.get(Calendar.MONTH);
                 int dateIter = calendarIter.get(Calendar.DAY_OF_MONTH);
 
-                Map<Integer, Task> tasks = taskManagerModel.getTasksByDate(yearIter, monthIter, dateIter);
+                Map<Integer, Task> tasks = taskManagerModel.getTasksByDate(TaskManagerModel.APPOINTMENT, yearIter, monthIter, dateIter);
 
                 // Соседний месяц
                 if (monthIter != month) {
                     // Выбор цвета будние/выходные
-                    if (c < 5) {
-                        g2d.setColor(ANOTHER_MONTH_COLOR);
+                    if (column < 5) {
+                        g2d.setColor(ANOTHER_MONTH_BG_COLOR);
                     } else {
-                        g2d.setColor(ANOTHER_MONTH_WEEKENDS_COLOR);
+                        g2d.setColor(ANOTHER_MONTH_WEEKENDS_BG_COLOR);
                     }
 
                     g2d.fillRect(
-                            (int) (xGridStep * c ),
-                            (int) (WEEKDAYS_HEIGHT + yGridStep * r),
+                            (int) (xGridStep * column),
+                            (int) (WEEKDAYS_HEIGHT + yGridStep * row),
                             (int) xGridStep,
                             (int) yGridStep
                     );
@@ -130,20 +131,20 @@ public class CalendarPanel extends JPanel {
                 if (dateIter == presentDay.get(Calendar.DAY_OF_MONTH) &&
                         monthIter == (presentDay.get(Calendar.MONTH) ) &&
                         yearIter == presentDay.get(Calendar.YEAR)) {
-                    g2d.setColor(new Color(0,0, 220));
+                    g2d.setColor(TODAY_DATE_TEXT_COLOR);
                 } else {
                     g2d.setColor(Color.BLACK);
                 }
 
 
                 FontMetrics fontMetrics = g2d.getFontMetrics();
-                int xDatePos = (int) (xGridStep *(c+1) - fontMetrics.stringWidth(String.valueOf(calendarIter.get(Calendar.DAY_OF_MONTH))) - 5);
+                int xDatePos = (int) (xGridStep *(column+1) - fontMetrics.stringWidth(String.valueOf(calendarIter.get(Calendar.DAY_OF_MONTH))) - 5);
                 g2d.drawString(String.valueOf(calendarIter.get(Calendar.DAY_OF_MONTH)), xDatePos, yDatePos);
 
 
                 int tasksOnDayCnt = 0;
                 for (Task task : tasks.values()) {
-                    int shift = (int)(WEEKDAYS_HEIGHT + yGridStep * r + CELL_HEAD_HEIGHT);
+                    int shift = (int)(WEEKDAYS_HEIGHT + yGridStep * row + CELL_HEAD_HEIGHT);
                     int taskHeight = 14;
                     int yTaskPos = (taskHeight + 2) * tasksOnDayCnt;
 
@@ -153,7 +154,7 @@ public class CalendarPanel extends JPanel {
 
                     g2d.setColor(Color.ORANGE);
                     g2d.fillRect(
-                            (int) (xGridStep * c) + 2,
+                            (int) (xGridStep * column) + 2,
                             shift + yTaskPos + 2,
                             (int) xGridStep - 3,
                             taskHeight);
@@ -176,7 +177,7 @@ public class CalendarPanel extends JPanel {
                         }
                         formedText = formedText + suffix;
                     }
-                    g2d.drawString(formedText, (int) (xGridStep * c) + 3, shift + yTaskPos + fontMetrics.getAscent());
+                    g2d.drawString(formedText, (int) (xGridStep * column) + 3, shift + yTaskPos + fontMetrics.getAscent());
 
                     tasksOnDayCnt++;
                 }
@@ -188,9 +189,9 @@ public class CalendarPanel extends JPanel {
         // Сетка
         //   Горизонтальные линии
         for (int i = 0; i < 6; i++) {
-            g2d.setColor(new Color(166, 166, 166));
+            g2d.setColor(HORIZONTAL_LINE_IN_CELLS_COLOR);
             g2d.drawLine(0, WEEKDAYS_HEIGHT + CELL_HEAD_HEIGHT + (int) (yGridStep * i), width, WEEKDAYS_HEIGHT + CELL_HEAD_HEIGHT + (int) (yGridStep * i));
-            g2d.setColor(LINES_COLOR);
+            g2d.setColor(SEPARATING_LINES_COLOR);
             g2d.drawLine(0, WEEKDAYS_HEIGHT + (int)(yGridStep *i), width, WEEKDAYS_HEIGHT + (int)(yGridStep *i));
         }
         //   Вертикальные линии
