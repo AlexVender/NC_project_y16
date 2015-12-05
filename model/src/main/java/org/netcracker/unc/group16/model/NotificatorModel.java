@@ -14,7 +14,6 @@ import java.util.concurrent.TimeUnit;
 public class NotificatorModel implements Observer {
     private List<Task> currentTasks;
 
-
     private TaskManagerModel taskManagerModel;
 
     ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
@@ -30,6 +29,8 @@ public class NotificatorModel implements Observer {
 
     public NotificatorModel(TaskManagerModel taskManagerModel){
         this.taskManagerModel = taskManagerModel;
+        //Регистрируем наблюдателя
+        taskManagerModel.registerObserver(this);
     }
 
     public void notificate(){
@@ -96,10 +97,8 @@ public class NotificatorModel implements Observer {
     }
 
     @Override
-    public void update(Task task) {
-//        if (task.getId() == currentTasks.getId()){
-//            currentTasks = task;
-//        }
+    public void update(Map<Integer, Task> hashMapTasks, Integer tasksCnt) {
+        //Здесь будет код с апдейтом
     }
 
 //    public long getTimeBeforExecution(){

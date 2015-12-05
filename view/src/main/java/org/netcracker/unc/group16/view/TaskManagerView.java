@@ -1,6 +1,8 @@
 package org.netcracker.unc.group16.view;
 
 import org.netcracker.unc.group16.model.NotificatorModel;
+import org.netcracker.unc.group16.model.Observer;
+import org.netcracker.unc.group16.model.Task;
 import org.netcracker.unc.group16.model.TaskManagerModel;
 
 import javax.swing.*;
@@ -12,9 +14,10 @@ import java.time.Month;
 import java.time.format.TextStyle;
 import java.util.Calendar;
 import java.util.Locale;
+import java.util.Map;
 
 
-public class TaskManagerView implements ProgramInterface {
+public class TaskManagerView implements ProgramInterface, Observer {
     TaskManagerModel taskManagerModel;
     NotificatorModel notificatorModel;
 
@@ -46,6 +49,7 @@ public class TaskManagerView implements ProgramInterface {
 
     public TaskManagerView(TaskManagerModel taskManagerModel) {
         this.taskManagerModel = taskManagerModel;
+        taskManagerModel.registerObserver(this);
         menuState = States.calendar;
 
         try {
@@ -307,5 +311,10 @@ public class TaskManagerView implements ProgramInterface {
                 break;
 
         }
+    }
+
+    //Если как-то изменяются эти два поля - все наблюдатели об этом знают
+    public void update(Map<Integer, Task> hashMapTasks, Integer tasksCnt){
+
     }
 }

@@ -6,4 +6,5 @@ package org.netcracker.unc.group16.model;
 public interface Observable {
     void registerObserver(Observer o);
     void removeObserver(Observer o);
+    void notifyObservers();
 }

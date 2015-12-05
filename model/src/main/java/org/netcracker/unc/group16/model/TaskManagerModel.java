@@ -41,9 +41,7 @@ public class TaskManagerModel implements Observable {
         elm.setTitle(title);
         elm.setTime(time);
         elm.setDescription(description);
-        for (Observer observer: observers){
-            observer.update(elm);
-        }
+        notifyObservers();
     }
 
 
@@ -51,17 +49,20 @@ public class TaskManagerModel implements Observable {
 
         Task task = new Task(id, title, time, description);
         hashMapTasks.put(id, task);
+        notifyObservers();
     }
 
     public void addTask(String title, Calendar time, String description) {
         tasksCnt++;
         addTask(tasksCnt, title, time, description);
+        notifyObservers();
     }
 
 
     public void addAppointment(Integer id, String title, Calendar time, Calendar endTime, String description) {
         Task task = new Appointment(id, title, time, endTime, description);
         hashMapTasks.put(id, task);
+        notifyObservers();
     }
 
     public void addAppointment(String title, Calendar time, Calendar endTime, String description) {
@@ -73,10 +74,12 @@ public class TaskManagerModel implements Observable {
         tasksCnt++;
 
         hashMapTasks.put(tasksCnt, (Task) task.clone());
+        notifyObservers();
     }
 
     public void deleteTask(Integer id) {
         hashMapTasks.remove(id);
+        notifyObservers();
     }
 
     public Task getTask(Integer id) {
@@ -131,6 +134,15 @@ public class TaskManagerModel implements Observable {
     @Override
     public void removeObserver(Observer o) {
         observers.remove(o);
+    }
+
+
+    @Override
+    public void notifyObservers(){
+        for (Observer observer: observers){
+            //Если как-то изменяются эти два поля - все наблюдатели об этом знают
+            observer.update(hashMapTasks, tasksCnt);
+        }
     }
 
 }
