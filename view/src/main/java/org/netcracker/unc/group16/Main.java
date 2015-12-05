@@ -1,6 +1,6 @@
 package org.netcracker.unc.group16;
 
-import org.netcracker.unc.group16.controller.TaskManager;
+import org.netcracker.unc.group16.controller.NotificatorModel;
 import org.netcracker.unc.group16.model.*;
 import org.netcracker.unc.group16.view.TaskManagerView;
 

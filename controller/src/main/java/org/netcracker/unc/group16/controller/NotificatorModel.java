@@ -2,8 +2,10 @@
  * Created by Ivan.Chikhanov on 08.11.2015.
  */
 
-package org.netcracker.unc.group16.model;
+package org.netcracker.unc.group16.controller;
 
+
+import org.netcracker.unc.group16.model.*;
 
 import java.util.*;
 import java.util.concurrent.Executors;
@@ -11,7 +13,7 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
-public class NotificatorModel implements Observer {
+public class NotificatorModel implements org.netcracker.unc.group16.model.Observer {
     private List<Task> currentTasks;
 
     private TaskManagerModel taskManagerModel;

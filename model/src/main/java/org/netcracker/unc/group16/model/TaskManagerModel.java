@@ -49,20 +49,20 @@ public class TaskManagerModel implements Observable {
 
         Task task = new Task(id, title, time, description);
         hashMapTasks.put(id, task);
-        notifyObservers();
+        //notifyObservers();
     }
 
     public void addTask(String title, Calendar time, String description) {
         tasksCnt++;
         addTask(tasksCnt, title, time, description);
-        notifyObservers();
+        //notifyObservers();
     }
 
 
     public void addAppointment(Integer id, String title, Calendar time, Calendar endTime, String description) {
         Task task = new Appointment(id, title, time, endTime, description);
         hashMapTasks.put(id, task);
-        notifyObservers();
+     //   notifyObservers();
     }
 
     public void addAppointment(String title, Calendar time, Calendar endTime, String description) {
@@ -128,7 +128,7 @@ public class TaskManagerModel implements Observable {
 
     @Override
     public void registerObserver(Observer o) {
-        observers.add(o);
+//        observers.add(o);
     }
 
     @Override
@@ -139,10 +139,12 @@ public class TaskManagerModel implements Observable {
 
     @Override
     public void notifyObservers(){
-        for (Observer observer: observers){
-            //Если как-то изменяются эти два поля - все наблюдатели об этом знают
-            observer.update(hashMapTasks, tasksCnt);
-        }
+        if (!observers.isEmpty()){ //Временно
+            for (Observer observer: observers){
+                //Если как-то изменяются эти два поля - все наблюдатели об этом знают
+                observer.update(hashMapTasks, tasksCnt);
+
+        }}
     }
 
 }
