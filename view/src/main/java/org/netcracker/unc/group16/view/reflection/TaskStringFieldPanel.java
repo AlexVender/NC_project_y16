@@ -9,12 +9,15 @@ import java.lang.reflect.Field;
 public class TaskStringFieldPanel extends TaskFieldPanel {
     private JTextField textField;
 
-    public TaskStringFieldPanel(Field field, String displayName, Integer order, Boolean editable) {
+    public TaskStringFieldPanel(Field field, Object defaultVal, String displayName, Integer order, Boolean editable) {
         super(field, displayName, order, editable);
 
         GridBagConstraints c = new GridBagConstraints();
         c.gridx = 1;
         textField = new JTextField();
+        if (defaultVal != null) {
+            textField.setText(defaultVal.toString());
+        }
         textField.setEnabled(editable);
         textField.setPreferredSize(new Dimension(200, 20));
         add(textField, c);

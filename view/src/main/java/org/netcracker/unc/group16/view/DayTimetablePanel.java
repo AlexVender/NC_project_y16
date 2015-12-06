@@ -1,16 +1,15 @@
 package org.netcracker.unc.group16.view;
 
+import org.netcracker.unc.group16.controller.TaskManagerController;
 import org.netcracker.unc.group16.model.Appointment;
 import org.netcracker.unc.group16.model.Task;
-import org.netcracker.unc.group16.model.TaskManagerModel;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.Map;
+import java.util.*;
+import java.util.List;
 
 
 public class DayTimetablePanel extends JPanel {
@@ -23,17 +22,17 @@ public class DayTimetablePanel extends JPanel {
     private static final int SCROLL_SPEED = 25;
 
 
-    TaskManagerModel taskManagerModel;
+    TaskManagerController taskManagerController;
 
     private int shift;
     private Calendar date;
 
     private boolean isPresentDay;
 
-    private Map<Integer, Task> tasks;
+    private List<Appointment> tasks;
     
-    public DayTimetablePanel(TaskManagerModel taskManagerModel) {
-        this.taskManagerModel = taskManagerModel;
+    public DayTimetablePanel(TaskManagerController taskManagerController) {
+        this.taskManagerController = taskManagerController;
 
         setFont(new Font("Verdana", Font.BOLD, 12));
 
@@ -41,7 +40,7 @@ public class DayTimetablePanel extends JPanel {
     }
 
     public void updateTasks() {
-        tasks = taskManagerModel.getTasksByDate(Appointment.class, date);
+        tasks = taskManagerController.getByDate(Appointment.class, date);
     }
 
 
@@ -109,9 +108,6 @@ public class DayTimetablePanel extends JPanel {
         g2d.drawLine(TIME_COLUMN_WIDTH, 0, TIME_COLUMN_WIDTH, height);
         g2d.drawLine(width - 1, 0, width - 1, height);
 
-        Stroke st1 = g2d.getStroke();
-        Stroke st2 = new BasicStroke();
-
         for (int i = 0; i < 24; i++) {
             g2d.drawString(( i<10 ? "0" : "" ) + i + ":00",  7, 15 + ROWS_HEIGHT * i - shift);
             g2d.drawLine(0, ROWS_HEIGHT * i - shift, width, ROWS_HEIGHT * i - shift);
@@ -129,7 +125,7 @@ public class DayTimetablePanel extends JPanel {
         g2d.setStroke(defaultStroke);
 
         // Размещение тасок
-        for (Task task : tasks.values()) {
+        for (Task task : tasks) {
             g2d.setColor(TASKS_BG_COLOR);
             Calendar taskTimeStart = task.getTime();
             int hourStart = taskTimeStart.get(Calendar.HOUR_OF_DAY);

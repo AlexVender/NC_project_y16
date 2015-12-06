@@ -42,7 +42,7 @@ public class TaskCalendarFieldPanel extends TaskFieldPanel {
                 cal.add(getCalendarField(), 1);
             }
             Date next = cal.getTime();
-            return ((getEnd() == null) || (getEnd().compareTo(next) >= 0)) ? next : null;
+            return ((getEnd() == null) || (((Date)getEnd()).compareTo(next) >= 0)) ? next : null;
         }
 
         @Override
@@ -55,7 +55,7 @@ public class TaskCalendarFieldPanel extends TaskFieldPanel {
                 cal.add(getCalendarField(), -1);
             }
             Date prev = cal.getTime();
-            return ((getStart() == null) || (getStart().compareTo(prev) <= 0)) ? prev : null;
+            return ((getStart() == null) || (((Date)getStart()).compareTo(prev) <= 0)) ? prev : null;
         }
 
         @Override
@@ -73,7 +73,7 @@ public class TaskCalendarFieldPanel extends TaskFieldPanel {
         }
     }
 
-    public TaskCalendarFieldPanel(Field field, String displayName, Integer order, Boolean editable) {
+    public TaskCalendarFieldPanel(Field field, Object defaultVal, String displayName, Integer order, Boolean editable) {
         super(field, displayName, order, editable);
 
         GridBagConstraints c = new GridBagConstraints();
@@ -85,6 +85,7 @@ public class TaskCalendarFieldPanel extends TaskFieldPanel {
         timeSpinner = new JSpinner(spinnerDateModel);
         JSpinner.DateEditor timeEditor = new JSpinner.DateEditor(timeSpinner, "HH:mm");
         timeSpinner.setEditor(timeEditor);
+        timeSpinner.setEnabled(editable);
         timeSpinner.setPreferredSize(new Dimension(55, 23));
         add(timeSpinner, c);
 
@@ -119,9 +120,27 @@ public class TaskCalendarFieldPanel extends TaskFieldPanel {
             }
         });
         datePicker.setTextEditable(true);
+        datePanel.setEnabled(editable);
         datePicker.setPreferredSize(new Dimension(110, 23));
 
         add(datePicker, c);
+
+
+        if (defaultVal != null) {
+            Calendar calendar = (Calendar) defaultVal;
+
+            // Setting spinner
+            spinnerDateModel.setCalendarField(Calendar.HOUR_OF_DAY);
+            spinnerDateModel.setValue(calendar.getTime());
+            spinnerDateModel.setCalendarField(Calendar.MINUTE);
+            spinnerDateModel.setValue(calendar.getTime());
+
+            // Setting calendar
+            int year = calendar.get(Calendar.YEAR);
+            int month = calendar.get(Calendar.MONTH);
+            int day = calendar.get(Calendar.DAY_OF_MONTH);
+            dateModel.setDate(year, month, day);
+        }
     }
 
     @Override

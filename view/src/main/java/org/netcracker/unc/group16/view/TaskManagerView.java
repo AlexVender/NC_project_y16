@@ -1,12 +1,15 @@
 package org.netcracker.unc.group16.view;
 
 import org.netcracker.unc.group16.controller.NotificatorModel;
+import org.netcracker.unc.group16.controller.TaskManagerController;
 import org.netcracker.unc.group16.model.Observer;
 import org.netcracker.unc.group16.model.Task;
 import org.netcracker.unc.group16.model.Appointment;
 import org.netcracker.unc.group16.model.TaskManagerModel;
 
 import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableColumn;
 import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
@@ -19,8 +22,9 @@ import java.util.Map;
 
 
 public class TaskManagerView extends JFrame implements ProgramInterface, Observer {
-    TaskManagerModel taskManagerModel;
-    NotificatorModel notificatorModel;
+    private TaskManagerModel taskManagerModel;
+    private TaskManagerController taskManagerController;
+    private NotificatorModel notificatorModel;
 
 //    private JFrame mainFrame;
     private Panel leftControlPanel;
@@ -39,7 +43,9 @@ public class TaskManagerView extends JFrame implements ProgramInterface, Observe
 
     private CalendarPanel calendarPanel;
     private DayTimetablePanel dayTimetablePanel;
+    private TasksTableModel tableModel;
     private JTable tasksTable;
+    private JScrollPane scrollPane;
 
 
     enum States {
@@ -49,8 +55,9 @@ public class TaskManagerView extends JFrame implements ProgramInterface, Observe
     private States menuState;
 
 
-    public TaskManagerView(TaskManagerModel taskManagerModel) {
-        this.taskManagerModel = taskManagerModel;
+    public TaskManagerView(TaskManagerController taskManagerController) {
+        this.taskManagerController = taskManagerController;
+        this.taskManagerModel = taskManagerController.getTaskManagerModel();
         taskManagerModel.registerObserver(this);
         menuState = States.calendar;
 
@@ -170,14 +177,35 @@ public class TaskManagerView extends JFrame implements ProgramInterface, Observe
         workPanel.setLayout(new CardLayout());
         add(workPanel);
 
-        calendarPanel = new  CalendarPanel(taskManagerModel);
+        calendarPanel = new  CalendarPanel(taskManagerController);
         workPanel.add(calendarPanel, "Calendar");
 
-        dayTimetablePanel = new DayTimetablePanel(taskManagerModel);
+        dayTimetablePanel = new DayTimetablePanel(taskManagerController);
         workPanel.add(dayTimetablePanel, "DayTimetable");
 
-        tasksTable = new JTable();
-        JScrollPane scrollPane = new JScrollPane(tasksTable);
+        Calendar date = Calendar.getInstance();
+        date.set(Calendar.MONTH, calendarPanel.getMonth());
+        date.set(Calendar.YEAR, calendarPanel.getYear());
+        tableModel = new TasksTableModel(taskManagerController, date, false);
+        tableModel.updateData();
+        tasksTable = new JTable(tableModel);
+        TableColumn column = null;
+        for (int i = 0; i < tasksTable.getColumnCount(); i++) {
+            column = tasksTable.getColumnModel().getColumn(i);
+            int width;
+            switch (i) {
+                case 0: width = 50; break;
+                case 1: width = 65; break;
+                case 2: width = 250; break;
+                case 3: continue;
+
+                default: width = 200;
+            }
+
+            column.setPreferredWidth(width);
+            column.setMaxWidth(width);
+        }
+        scrollPane = new JScrollPane(tasksTable);
         workPanel.add(scrollPane, "TasksTable");
 
         updateMonthLabel();
@@ -290,38 +318,35 @@ public class TaskManagerView extends JFrame implements ProgramInterface, Observe
         });
 
         btnViewTasks.addActionListener(e -> {
-            TasksTableModel tableModel = null;
-
             switch (menuState) {
                 case calendar:
                     Calendar date = Calendar.getInstance();
                     date.set(Calendar.MONTH, calendarPanel.getMonth());
                     date.set(Calendar.YEAR, calendarPanel.getYear());
 
-                    tableModel = new TasksTableModel(taskManagerModel, date, false);
+                    tableModel.setCalendar(date);
+                    tableModel.setOnDay(false);
                     break;
 
                 case dayTimetable:
-                    tableModel = new TasksTableModel(taskManagerModel, dayTimetablePanel.getDate(), true);
+                    tableModel.setCalendar(dayTimetablePanel.getDate());
+                    tableModel.setOnDay(true);
                     break;
 
                 default:
                     return;
             }
 
-//            DefaultTableModel tableModel = new DefaultTableModel(5, 2);
-
             btnBack.setVisible(true);
-            tasksTable.setModel(tableModel);
             menuState = States.tasksTable;
+            tableModel.updateData();
             CardLayout cardLayout = (CardLayout) (workPanel.getLayout());
             cardLayout.show(workPanel, "TasksTable");
         });
 
         calendarPanel.addMouseListener(new MouseListener() {
             @Override
-            public void mouseClicked(MouseEvent e) {
-            }
+            public void mouseClicked(MouseEvent e) {}
 
             @Override
             public void mousePressed(MouseEvent e) {
@@ -351,16 +376,43 @@ public class TaskManagerView extends JFrame implements ProgramInterface, Observe
             }
 
             @Override
-            public void mouseReleased(MouseEvent e) {
+            public void mouseReleased(MouseEvent e) {}
+
+            @Override
+            public void mouseEntered(MouseEvent e) {}
+
+            @Override
+            public void mouseExited(MouseEvent e) {}
+        });
+
+        tasksTable.addMouseListener(new MouseListener() {
+            @Override
+            public void mouseClicked(MouseEvent e) {}
+
+            @Override
+            public void mousePressed(MouseEvent e) {
+                if (e.getClickCount() == 2) {
+                    int row = tasksTable.rowAtPoint(e.getPoint());
+                    int col = tasksTable.columnAtPoint(e.getPoint());
+                    Integer id = (Integer) tableModel.getValueAt(row, 0);
+                    Task task = taskManagerController.getTaskManagerModel().getTask(id);
+
+                    NewTaskDialog newTaskDialog = new NewTaskDialog(getContentPane(), task);
+                    if (newTaskDialog.showDialog() == NewTaskDialog.OK) {
+                        taskManagerModel.addTask(newTaskDialog.getResult());
+                        calendarPanel.repaint();
+                    }
+                }
             }
 
             @Override
-            public void mouseEntered(MouseEvent e) {
-            }
+            public void mouseReleased(MouseEvent e) {}
 
             @Override
-            public void mouseExited(MouseEvent e) {
-            }
+            public void mouseEntered(MouseEvent e) {}
+
+            @Override
+            public void mouseExited(MouseEvent e) {}
         });
     }
 

@@ -76,14 +76,16 @@ public class NewTaskDialog extends JDialog {
             if (taskFieldNotDisplayed != null || taskFieldSettings == null) {
                 continue;
             }
+            Object defaultVal = null;
+            try {
+                taskField.setAccessible(true);
+                defaultVal = taskField.get(task);
+            } catch (IllegalAccessException ignored) {}
 
-            TaskFieldPanel newFieldPanel = taskFieldPanelFactory.createPanel(taskField.getType(), taskField,
+            TaskFieldPanel newFieldPanel = taskFieldPanelFactory.createPanel(taskField.getType(), taskField, defaultVal,
                     taskFieldSettings.displayName(), taskFieldSettings.orderNumb(), taskFieldSettings.editable());
 
             if (newFieldPanel != null) {
-                if (!taskFieldSettings.editable() && !editMode) {
-                    break;
-                }
                 panels.add(newFieldPanel);
             }
         }
@@ -172,7 +174,6 @@ public class NewTaskDialog extends JDialog {
                 Object instance = task;
                 do {
                     try {
-//                        Method setter = instance.getClass().getDeclaredMethod(setterName, field.getType());
                         Method[] methods = instance.getClass().getDeclaredMethods();
                         for (Method method : methods) {
                             if (method.getName().equals(setterName)) {

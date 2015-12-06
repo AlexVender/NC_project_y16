@@ -1,5 +1,6 @@
 package org.netcracker.unc.group16.view;
 
+import org.netcracker.unc.group16.controller.TaskManagerController;
 import org.netcracker.unc.group16.model.Appointment;
 import org.netcracker.unc.group16.model.Task;
 import org.netcracker.unc.group16.model.TaskManagerModel;
@@ -7,13 +8,13 @@ import org.netcracker.unc.group16.model.TaskManagerModel;
 import javax.swing.*;
 import javax.swing.border.LineBorder;
 import java.awt.*;
-import java.util.Calendar;
-import java.util.GregorianCalendar;
-import java.util.Map;
+import java.util.*;
+import java.util.List;
 
 
 public class CalendarPanel extends JPanel {
     TaskManagerModel taskManagerModel;
+    TaskManagerController taskManagerController;
 
     // Дата текущего дня
     private GregorianCalendar presentDay;
@@ -41,8 +42,9 @@ public class CalendarPanel extends JPanel {
     private static final Color ANOTHER_MONTH_BG_COLOR = new Color(237,237,237);
     private static final Color ANOTHER_MONTH_WEEKENDS_BG_COLOR = new Color(225, 233, 240);
 
-    public CalendarPanel(TaskManagerModel taskManagerModel) {
-        this.taskManagerModel = taskManagerModel;
+    public CalendarPanel(TaskManagerController taskManagerController) {
+        this.taskManagerController = taskManagerController;
+        this.taskManagerModel = taskManagerController.getTaskManagerModel();
 
         setFont(new Font("Verdana", Font.BOLD, 12));
 
@@ -106,7 +108,7 @@ public class CalendarPanel extends JPanel {
         for (int row = 0; row < 6; row++) {
             int yDatePos = (int) (WEEKDAYS_HEIGHT + yGridStep * row + (CELL_HEAD_HEIGHT + g2d.getFontMetrics().getAscent()) / 2);
             for (int column = 0; column < 7; column++) {
-                Map<Integer, Task> tasks = taskManagerModel.getTasksByDate(Appointment.class, calendarIter);
+                List<Appointment> tasks = taskManagerController.getByDate(Appointment.class, calendarIter);
 
                 int yearIter = calendarIter.get(Calendar.YEAR);
                 int monthIter = calendarIter.get(Calendar.MONTH);
@@ -148,7 +150,7 @@ public class CalendarPanel extends JPanel {
 
 
                 int tasksOnDayCnt = 0;
-                for (Task task : tasks.values()) {
+                for (Appointment task : tasks) {
                     int shift = (int)(WEEKDAYS_HEIGHT + yGridStep * row + CELL_HEAD_HEIGHT);
                     int taskHeight = 14;
                     int yTaskPos = (taskHeight + 2) * tasksOnDayCnt;

@@ -2,7 +2,9 @@ package org.netcracker.unc.group16.model;
 
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
+import java.awt.*;
 import java.util.*;
+import java.util.List;
 
 
 @XmlRootElement(name="tasks")
@@ -95,7 +97,8 @@ public class TaskManagerModel implements Observable {
     }
 
     public Task getTask(Integer id) {
-        return (Task) hashMapTasks.get(id).clone();
+        Task result = hashMapTasks.get(id);
+        return (result != null) ? (Task) result.clone() : null;
     }
 
     public Map<Integer, Task> getTasksByDate(Class taskClass, Calendar date) {
@@ -117,21 +120,15 @@ public class TaskManagerModel implements Observable {
         return  tempHashMapTasks;
     }
 
-
-    public void load(){
-
+    public Integer getTasksCnt() {
+        return tasksCnt;
     }
 
-    public void save(){
-
+    public void setTasksCnt(Integer tasksCnt) {
+        this.tasksCnt = tasksCnt;
     }
 
-    public void init(){
-
-    }
-
-
-  //  @XmlJavaTypeAdapter(value = HashMapAdapter.class)
+    //  @XmlJavaTypeAdapter(value = HashMapAdapter.class)
     public Map<Integer, Task> getHashMapTasks() {
         return hashMapTasks;
     }

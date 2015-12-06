@@ -10,10 +10,10 @@ import java.util.Calendar;
 
 
 public class Task implements Cloneable {
-    @FieldSettings(displayName = "ID", editable = true, orderNumb = 0)
+    @FieldSettings(displayName = "ID", editable = false, orderNumb = 0)
     protected Integer id;
 
-    @FieldSettings(displayName = "Название", editable = true, orderNumb = 1)
+    @FieldSettings(displayName = "Тема", editable = true, orderNumb = 1)
     protected String title;
 
     @FieldSettings(displayName = "Дата", editable = true, orderNumb = 2)
