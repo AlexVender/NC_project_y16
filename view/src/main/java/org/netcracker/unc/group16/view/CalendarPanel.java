@@ -1,5 +1,6 @@
 package org.netcracker.unc.group16.view;
 
+import org.netcracker.unc.group16.model.Appointment;
 import org.netcracker.unc.group16.model.Task;
 import org.netcracker.unc.group16.model.TaskManagerModel;
 
@@ -39,7 +40,6 @@ public class CalendarPanel extends JPanel {
     private static final Color WEEKENDS_BG_COLOR = new Color(213, 230, 244);
     private static final Color ANOTHER_MONTH_BG_COLOR = new Color(237,237,237);
     private static final Color ANOTHER_MONTH_WEEKENDS_BG_COLOR = new Color(225, 233, 240);
-    private static final Color TODAY_DATE_TEXT_COLOR = new Color(0, 0, 230);
 
     public CalendarPanel(TaskManagerModel taskManagerModel) {
         this.taskManagerModel = taskManagerModel;
@@ -81,10 +81,11 @@ public class CalendarPanel extends JPanel {
         Graphics2D g2d = (Graphics2D)g;
         int height = getHeight();
         int width = getWidth();
-        xGridStep = width / 7;
-        yGridStep = (height - WEEKDAYS_HEIGHT) / 6;
+        xGridStep = Math.round(((double) width) / 7.0);
+        yGridStep = Math.round((double)(height - WEEKDAYS_HEIGHT) / 6.0);
 
 
+        // Фон
         g2d.setColor(Color.WHITE);
         g2d.fillRect(0, 0, width, height);
 
@@ -93,6 +94,7 @@ public class CalendarPanel extends JPanel {
         // Выключить сглаживание для текста
         g2d.setRenderingHint ( RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_OFF );
 
+        // Фон выходных
         g2d.setColor(WEEKENDS_BG_COLOR);
         g2d.fillRect((int)(xGridStep *5), WEEKDAYS_HEIGHT, (int)(width - xGridStep *5), height - WEEKDAYS_HEIGHT);
 
@@ -104,11 +106,12 @@ public class CalendarPanel extends JPanel {
         for (int row = 0; row < 6; row++) {
             int yDatePos = (int) (WEEKDAYS_HEIGHT + yGridStep * row + (CELL_HEAD_HEIGHT + g2d.getFontMetrics().getAscent()) / 2);
             for (int column = 0; column < 7; column++) {
+                Map<Integer, Task> tasks = taskManagerModel.getTasksByDate(Appointment.class, calendarIter);
+
                 int yearIter = calendarIter.get(Calendar.YEAR);
                 int monthIter = calendarIter.get(Calendar.MONTH);
                 int dateIter = calendarIter.get(Calendar.DAY_OF_MONTH);
 
-                Map<Integer, Task> tasks = taskManagerModel.getTasksByDate(TaskManagerModel.APPOINTMENT, yearIter, monthIter, dateIter);
 
                 // Соседний месяц
                 if (monthIter != month) {
@@ -122,8 +125,8 @@ public class CalendarPanel extends JPanel {
                     g2d.fillRect(
                             (int) (xGridStep * column),
                             (int) (WEEKDAYS_HEIGHT + yGridStep * row),
-                            (int) xGridStep,
-                            (int) yGridStep
+                            (int) xGridStep + 1,
+                            (int) yGridStep + 1
                     );
                 }
 
@@ -131,14 +134,16 @@ public class CalendarPanel extends JPanel {
                 if (dateIter == presentDay.get(Calendar.DAY_OF_MONTH) &&
                         monthIter == (presentDay.get(Calendar.MONTH) ) &&
                         yearIter == presentDay.get(Calendar.YEAR)) {
-                    g2d.setColor(TODAY_DATE_TEXT_COLOR);
-                } else {
-                    g2d.setColor(Color.BLACK);
+                    g2d.setColor(Color.RED);
+                    int x = (int) (xGridStep * column);
+                    int y = (int) (yGridStep * row) + WEEKDAYS_HEIGHT;
+                    g2d.drawRoundRect(x - 1, y - 1, (int) xGridStep + 2, CELL_HEAD_HEIGHT + 2, 15, 15);
                 }
 
 
+                g2d.setColor(Color.BLACK);
                 FontMetrics fontMetrics = g2d.getFontMetrics();
-                int xDatePos = (int) (xGridStep *(column+1) - fontMetrics.stringWidth(String.valueOf(calendarIter.get(Calendar.DAY_OF_MONTH))) - 5);
+                int xDatePos = (int) (xGridStep *(column+1) - fontMetrics.stringWidth(String.valueOf(calendarIter.get(Calendar.DAY_OF_MONTH))) - 7);
                 g2d.drawString(String.valueOf(calendarIter.get(Calendar.DAY_OF_MONTH)), xDatePos, yDatePos);
 
 

@@ -3,6 +3,7 @@ package org.netcracker.unc.group16.view;
 import jdk.nashorn.internal.runtime.regexp.joni.constants.Arguments;
 import org.netcracker.unc.group16.annotations.FieldSettings;
 import org.netcracker.unc.group16.annotations.NotDisplayed;
+import org.netcracker.unc.group16.exceptions.IllegalTimeSetException;
 import org.netcracker.unc.group16.model.Appointment;
 import org.netcracker.unc.group16.model.Task;
 import org.netcracker.unc.group16.view.reflection.TaskFieldPanel;
@@ -13,6 +14,8 @@ import java.awt.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 
 
@@ -30,29 +33,38 @@ public class NewTaskDialog extends JDialog {
 
     private Boolean editMode;
 
-    public NewTaskDialog(/*Task task*/) {
+    public NewTaskDialog(Component parentComponent, Task task) {
         setModal(true);
         setResizable(false);
-        setTitle("Создать новую встречу");
+        setTitle("Редактировать");
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
-//        if (editMode == null) {
-//            editMode = true;
-//        }
+
+        this.task = task;
+        editMode = true;
 
         initGUI();
         addListeners();
 
         pack();
-        setLocationRelativeTo(null);
+        setLocationRelativeTo(parentComponent);
     }
 
-//    public NewTaskDialog(Class aClass) {
-//        try {
-//            new NewTaskDialog((Class) aClass.newInstance());
-//        } catch (InstantiationException | IllegalAccessException e) {
-//            e.printStackTrace();
-//        }
-//    }
+    public NewTaskDialog(Component parentComponent, Class aClass) throws IllegalAccessException, InstantiationException {
+        setModal(true);
+        setResizable(false);
+        setTitle("Создать");
+        setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+
+        this.task = (Task) aClass.newInstance();
+        editMode = false;
+
+
+        initGUI();
+        addListeners();
+
+        pack();
+        setLocationRelativeTo(parentComponent);
+    }
 
     private void analyze(Object o) {
         TaskFieldPanelFactory taskFieldPanelFactory = new TaskFieldPanelFactory();
@@ -60,27 +72,26 @@ public class NewTaskDialog extends JDialog {
         Field[] taskFields = o.getClass().getDeclaredFields();
         for (Field taskField : taskFields) {
             NotDisplayed taskFieldNotDisplayed = taskField.getDeclaredAnnotation(NotDisplayed.class);
-            if (taskFieldNotDisplayed != null) {
-                continue;
-            }
-
             FieldSettings taskFieldSettings = taskField.getDeclaredAnnotation(FieldSettings.class);
-            if (taskFieldSettings == null) {
+            if (taskFieldNotDisplayed != null || taskFieldSettings == null) {
                 continue;
             }
 
-            TaskFieldPanel newFieldPanel = taskFieldPanelFactory.createPanel(
-                    taskField.getType(), taskField,
+            TaskFieldPanel newFieldPanel = taskFieldPanelFactory.createPanel(taskField.getType(), taskField,
                     taskFieldSettings.displayName(), taskFieldSettings.orderNumb(), taskFieldSettings.editable());
 
             if (newFieldPanel != null) {
+                if (!taskFieldSettings.editable() && !editMode) {
+                    break;
+                }
                 panels.add(newFieldPanel);
             }
         }
 
         try {
-            if (o.getClass().getSuperclass() != null && o.getClass().getSuperclass() != Object.class) {
-                Object instance = o.getClass().getSuperclass().newInstance();
+            Class superClass = o.getClass().getSuperclass();
+            if (superClass != Object.class && superClass != null) {
+                Object instance = superClass.newInstance();
                 analyze(instance);
             }
         } catch (InstantiationException | IllegalAccessException e) {
@@ -103,7 +114,6 @@ public class NewTaskDialog extends JDialog {
 
 
         panels = new ArrayList<>();
-        task = new Appointment();
         analyze(task);
 
         panels.sort((o1, o2) -> o1.getOrder().compareTo(o2.getOrder()));
@@ -146,37 +156,60 @@ public class NewTaskDialog extends JDialog {
 
 
         btnOK.addActionListener(e -> {
+            status = OK;
             for (TaskFieldPanel panel : panels) {
                 if (!panel.isValidData()) {
                     JOptionPane.showMessageDialog(this,
-                            "Введены некорректные данные.",
+                            "Введены некорректные данные",
                             "Ошибка ввода",
                             JOptionPane.WARNING_MESSAGE);
-
                     return;
                 }
 
                 Field field = panel.getField();
-                field.setAccessible(true);
-                try {
-                    field.set(task, panel.getData());
-                } catch (IllegalAccessException e1) {
-                    e1.printStackTrace();
-                }
-
-                /* old - using setter
                 String fieldName = field.getName();
                 String setterName = "set" + Character.toUpperCase(fieldName.charAt(0)) + fieldName.substring(1);
-                try {
-                    Method setter = task.getClass().getDeclaredMethod(setterName, field.getType());
-                    setter.invoke(task, panel.getData());
-
-                } catch (IllegalAccessException | NoSuchMethodException | InvocationTargetException ex) {
-                    ex.printStackTrace();
-                }*/
+                Object instance = task;
+                do {
+                    try {
+//                        Method setter = instance.getClass().getDeclaredMethod(setterName, field.getType());
+                        Method[] methods = instance.getClass().getDeclaredMethods();
+                        for (Method method : methods) {
+                            if (method.getName().equals(setterName)) {
+                                instance = null;
+                                method.invoke(task, panel.getData());
+                                break;
+                            }
+                        }
+                    } catch (IllegalArgumentException | IllegalAccessException ex) {
+                        ex.printStackTrace();
+                    } catch (InvocationTargetException ex) {
+                        Throwable exCause = ex.getCause();
+                        if (exCause.getClass() == IllegalTimeSetException.class) {
+                            String exMessage = exCause.getLocalizedMessage();
+                            JOptionPane.showMessageDialog(this,
+                                    exMessage,
+                                    "Ошибка ввода",
+                                    JOptionPane.WARNING_MESSAGE);
+                            status = CANCEL;
+                        }
+                    }
+                    // Go to the super class
+                    if (instance != null) {
+                        Class superClass = instance.getClass().getSuperclass();
+                        if (superClass != Object.class && superClass != null) {
+                            try {
+                                instance = superClass.newInstance();
+                            } catch (InstantiationException | IllegalAccessException e1) {
+                                e1.printStackTrace();
+                            }
+                        }
+                    }
+                } while (instance != null);
             }
-            status = OK;
-            setVisible(false);
+            if (status == OK) {
+                setVisible(false);
+            }
         });
     }
 

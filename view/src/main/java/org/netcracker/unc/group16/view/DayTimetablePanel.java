@@ -17,7 +17,7 @@ public class DayTimetablePanel extends JPanel {
     private final Color ELAPSED_TIME_BG_COLOR = new Color(200, 200, 200);
     private final Color TASKS_BG_COLOR = new Color(213, 230, 244);
 
-    private static final int ROWS_HEIGHT = 50;
+    private static final int ROWS_HEIGHT = 60;
     private static final int TIME_COLUMN_WIDTH = 55;
 
     private static final int SCROLL_SPEED = 25;
@@ -35,14 +35,13 @@ public class DayTimetablePanel extends JPanel {
     public DayTimetablePanel(TaskManagerModel taskManagerModel) {
         this.taskManagerModel = taskManagerModel;
 
-        setFont(new Font("Verdana", Font.BOLD, 13));
-
+        setFont(new Font("Verdana", Font.BOLD, 12));
 
         addListeners();
     }
 
     public void updateTasks() {
-        tasks = taskManagerModel.getTasksByDate(TaskManagerModel.APPOINTMENT, date.get(Calendar.YEAR), date.get(Calendar.MONTH), date.get(Calendar.DAY_OF_MONTH));
+        tasks = taskManagerModel.getTasksByDate(Appointment.class, date);
     }
 
 
@@ -140,7 +139,7 @@ public class DayTimetablePanel extends JPanel {
             int hourEnd = taskTimeEnd.get(Calendar.HOUR_OF_DAY);
             int minEnd = taskTimeEnd.get(Calendar.MINUTE);
 
-            int y1 = (int) Math.round((hourStart   + (double) minStart / 60) * ROWS_HEIGHT) - shift + 1;
+            int y1 = (int) Math.round((hourStart   + (double) minStart / 60) * ROWS_HEIGHT) - shift;
             int y2 = (int) Math.round((hourEnd     + (double) minEnd   / 60) * ROWS_HEIGHT) - shift;
 
             if (taskTimeStart.get(Calendar.YEAR) < taskTimeEnd.get(Calendar.YEAR) ||
@@ -150,7 +149,7 @@ public class DayTimetablePanel extends JPanel {
             }
 
             g2d.fillRect(TIME_COLUMN_WIDTH + 2,
-                    y1,
+                    y1 + 1,
                     width - TIME_COLUMN_WIDTH - 4,
                     y2 - y1);
 

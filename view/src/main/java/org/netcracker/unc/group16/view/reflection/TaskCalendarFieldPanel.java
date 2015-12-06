@@ -18,10 +18,60 @@ import java.util.Properties;
 
 public class TaskCalendarFieldPanel extends TaskFieldPanel {
     private final SimpleDateFormat dateFormatter = new SimpleDateFormat("dd.MM.yyyy");
+    private final DateModel<Date> dateModel;
 
-    private final DateModel dateModel;
+    private static final Integer MINUTES_SPLIT = 15;
+
     private JSpinner timeSpinner;
     private JDatePickerImpl datePicker;
+
+    @SuppressWarnings("MagicConstant")
+    class SpinnerTimeModel extends SpinnerDateModel {
+        public SpinnerTimeModel() {
+            super(new Date(), null, null, Calendar.DAY_OF_MONTH);
+        }
+
+        @Override
+        public Object getNextValue() {
+            Calendar cal = Calendar.getInstance();
+            cal.setTime((Date) getValue());
+            int calendarField = getCalendarField();
+            if (getCalendarField() == Calendar.MINUTE) {
+                cal.add(getCalendarField(), MINUTES_SPLIT);
+            } else {
+                cal.add(getCalendarField(), 1);
+            }
+            Date next = cal.getTime();
+            return ((getEnd() == null) || (getEnd().compareTo(next) >= 0)) ? next : null;
+        }
+
+        @Override
+        public Object getPreviousValue() {
+            Calendar cal = Calendar.getInstance();
+            cal.setTime((Date) getValue());
+            if (getCalendarField() == Calendar.MINUTE) {
+                cal.add(getCalendarField(), -MINUTES_SPLIT);
+            } else {
+                cal.add(getCalendarField(), -1);
+            }
+            Date prev = cal.getTime();
+            return ((getStart() == null) || (getStart().compareTo(prev) <= 0)) ? prev : null;
+        }
+
+        @Override
+        public void setValue(Object value) {
+            if ((value == null) || !(value instanceof Date)) {
+                throw new IllegalArgumentException("illegal value");
+            }
+
+            Date time = (Date) value;
+            if (time.getMinutes() % MINUTES_SPLIT != 0) {
+                time.setMinutes(time.getMinutes() + (MINUTES_SPLIT - (time.getMinutes() % MINUTES_SPLIT)));
+            }
+
+            super.setValue(time);
+        }
+    }
 
     public TaskCalendarFieldPanel(Field field, String displayName, Integer order, Boolean editable) {
         super(field, displayName, order, editable);
@@ -29,14 +79,19 @@ public class TaskCalendarFieldPanel extends TaskFieldPanel {
         GridBagConstraints c = new GridBagConstraints();
 
         c.gridx = 1;
-        timeSpinner = new JSpinner( new SpinnerDateModel() );
+        SpinnerTimeModel spinnerDateModel = new SpinnerTimeModel();
+        spinnerDateModel.setValue(Calendar.getInstance().getTime());
+
+        timeSpinner = new JSpinner(spinnerDateModel);
         JSpinner.DateEditor timeEditor = new JSpinner.DateEditor(timeSpinner, "HH:mm");
         timeSpinner.setEditor(timeEditor);
         timeSpinner.setPreferredSize(new Dimension(55, 23));
         add(timeSpinner, c);
 
+
         c.gridx = 2;
         add(Box.createRigidArea(new Dimension(10,0)), c);
+
 
         c.gridx = 3;
         dateModel = new UtilDateModel();

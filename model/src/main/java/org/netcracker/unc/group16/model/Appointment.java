@@ -1,6 +1,7 @@
 package org.netcracker.unc.group16.model;
 
 import org.netcracker.unc.group16.annotations.FieldSettings;
+import org.netcracker.unc.group16.exceptions.IllegalTimeSetException;
 
 import java.util.Calendar;
 
@@ -23,11 +24,25 @@ public class Appointment extends Task {
         this.endTime = (Calendar) appointment.endTime.clone();
     }
 
+    @Override
+    public void setTime(Calendar time) throws IllegalArgumentException {
+        if (endTime != null && (time.after(endTime) || time.equals(endTime))) {
+            throw new IllegalTimeSetException();
+        }
+
+        super.setTime(time);
+    }
+
+
     public Calendar getEndTime() {
         return (Calendar) endTime.clone();
     }
 
-    public void setEndTime(Calendar endTime) {
+    public void setEndTime(Calendar endTime) throws IllegalArgumentException {
+        if (time != null && (endTime.before(time) || endTime.equals(time))) {
+            throw new IllegalTimeSetException();
+        }
+
         this.endTime = (Calendar) endTime.clone();
     }
 

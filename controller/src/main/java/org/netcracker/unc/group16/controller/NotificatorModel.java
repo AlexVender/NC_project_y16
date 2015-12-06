@@ -110,7 +110,7 @@ public class NotificatorModel implements org.netcracker.unc.group16.model.Observ
 
     public  long tempFunction(){
         Calendar cal = Calendar.getInstance();
-        System.out.println(cal.getTimeInMillis()/1000 + 5);
+//        System.out.println(cal.getTimeInMillis()/1000 + 5);
         return cal.getTimeInMillis() / 1000 + 5;
     }
 }

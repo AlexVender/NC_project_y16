@@ -15,9 +15,6 @@ public class TaskManagerModel implements Observable {
 
     private Integer tasksCnt;
 
-    public static final String TASK = "Task";
-    public static final String APPOINTMENT = "Appointment";
-
     public TaskManagerModel() {
         hashMapTasks = new HashMap<>();
         tasksCnt = 0;
@@ -45,7 +42,12 @@ public class TaskManagerModel implements Observable {
     }
 
 
-    public void addTask(Integer id, String title, Calendar time, String description) {
+    public void addTask(Integer id, String title, Calendar time, String description) throws IllegalArgumentException{
+        if (id == null || id == 0) {
+            id = ++tasksCnt;
+        } else if (id < 0) {
+            throw new IllegalArgumentException("id should be positive");
+        }
 
         Task task = new Task(id, title, time, description);
         hashMapTasks.put(id, task);
@@ -53,27 +55,37 @@ public class TaskManagerModel implements Observable {
     }
 
     public void addTask(String title, Calendar time, String description) {
-        tasksCnt++;
-        addTask(tasksCnt, title, time, description);
+        addTask(null, title, time, description);
         //notifyObservers();
     }
 
 
-    public void addAppointment(Integer id, String title, Calendar time, Calendar endTime, String description) {
+    public void addAppointment(Integer id, String title, Calendar time, Calendar endTime, String description) throws IllegalArgumentException {
+        if (id == null || id == 0) {
+            id = ++tasksCnt;
+        } else if (id < 0) {
+            throw new IllegalArgumentException("id should be positive");
+        }
+
         Task task = new Appointment(id, title, time, endTime, description);
         hashMapTasks.put(id, task);
      //   notifyObservers();
     }
 
     public void addAppointment(String title, Calendar time, Calendar endTime, String description) {
-        tasksCnt++;
-        addAppointment(tasksCnt, title, time, endTime, description);
+        addAppointment(null, title, time, endTime, description);
     }
 
-    public void addTask(Task task) {
-        tasksCnt++;
-
-        hashMapTasks.put(tasksCnt, (Task) task.clone());
+    public void addTask(Task task) throws IllegalArgumentException {
+        Integer id = task.getId();
+        if (task.id == null || task.id == 0) {
+            id = ++tasksCnt;
+            task.setId(id);
+        } else if (task.id < 0) {
+            throw new IllegalArgumentException("Task id should be positive");
+        }
+    
+        hashMapTasks.put(id, (Task) task.clone());
         notifyObservers();
     }
 
@@ -86,17 +98,19 @@ public class TaskManagerModel implements Observable {
         return (Task) hashMapTasks.get(id).clone();
     }
 
-    public Map<Integer, Task> getTasksByDate(String taskType, int year, int month, int day) {
+    public Map<Integer, Task> getTasksByDate(Class taskClass, Calendar date) {
         Map<Integer, Task> tempHashMapTasks = new HashMap<>();
-        Calendar dateStart = new GregorianCalendar(year, month, day);
-        Calendar dateEnd = new GregorianCalendar(year, month, day + 1);
+        Calendar dateStart = (Calendar) date.clone();
+        Calendar dateEnd = (Calendar) date.clone();
+        dateEnd.add(Calendar.DAY_OF_MONTH, 1);
         dateEnd.add(Calendar.MILLISECOND, -1);
 
         for (HashMap.Entry<Integer, Task> entry : hashMapTasks.entrySet()) {
             Task value = entry.getValue();
             Calendar time = value.getTime();
 
-            if (value.getClass().getSimpleName().equals(taskType) && time.after(dateStart) && time.before(dateEnd)) {
+            if (value.getClass() == taskClass &&
+                    time.after(dateStart) && time.before(dateEnd)) {
                 tempHashMapTasks.put(entry.getKey(), (Task) value.clone());
             }
         }
@@ -139,12 +153,12 @@ public class TaskManagerModel implements Observable {
 
     @Override
     public void notifyObservers(){
-        if (!observers.isEmpty()){ //Временно
-            for (Observer observer: observers){
-                //Если как-то изменяются эти два поля - все наблюдатели об этом знают
-                observer.update(hashMapTasks, tasksCnt);
-
-        }}
+//        if (!observers.isEmpty()){ //Временно
+//            for (Observer observer: observers){
+//                Если как-то изменяются эти два поля - все наблюдатели об этом знают
+//                observer.update(hashMapTasks, tasksCnt);
+//
+//        }}
     }
 
 }

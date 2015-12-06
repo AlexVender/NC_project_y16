@@ -3,6 +3,7 @@ package org.netcracker.unc.group16.view;
 import org.netcracker.unc.group16.controller.NotificatorModel;
 import org.netcracker.unc.group16.model.Observer;
 import org.netcracker.unc.group16.model.Task;
+import org.netcracker.unc.group16.model.Appointment;
 import org.netcracker.unc.group16.model.TaskManagerModel;
 
 import javax.swing.*;
@@ -17,16 +18,16 @@ import java.util.Locale;
 import java.util.Map;
 
 
-public class TaskManagerView implements ProgramInterface, Observer {
+public class TaskManagerView extends JFrame implements ProgramInterface, Observer {
     TaskManagerModel taskManagerModel;
     NotificatorModel notificatorModel;
 
-    private JFrame mainFrame;
+//    private JFrame mainFrame;
     private Panel leftControlPanel;
     private Panel rightControlPanel;
     private JButton btnCreateAppointment;
     private JButton btnCreateTask;
-    private JButton btnViewTask;
+    private JButton btnViewTasks;
     private JButton btnBack;
     private JButton btnPrev;
     private JButton btnNext;
@@ -38,10 +39,11 @@ public class TaskManagerView implements ProgramInterface, Observer {
 
     private CalendarPanel calendarPanel;
     private DayTimetablePanel dayTimetablePanel;
+    private JTable tasksTable;
 
 
     enum States {
-        calendar, dayTimetable
+        calendar, dayTimetable, tasksTable
     }
 
     private States menuState;
@@ -51,13 +53,6 @@ public class TaskManagerView implements ProgramInterface, Observer {
         this.taskManagerModel = taskManagerModel;
         taskManagerModel.registerObserver(this);
         menuState = States.calendar;
-
-        try {
-            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-        } catch (Exception e) {
-            e.printStackTrace();
-            return;
-        }
 
         initGUI();
         addListeners();
@@ -69,6 +64,11 @@ public class TaskManagerView implements ProgramInterface, Observer {
 
         menuState = States.calendar;
 
+        initGUI();
+        addListeners();
+    }
+
+    private void initGUI() {
         try {
             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
         } catch (Exception e) {
@@ -76,84 +76,88 @@ public class TaskManagerView implements ProgramInterface, Observer {
             return;
         }
 
-        initGUI();
-        addListeners();
-    }
+        setTitle("Task manager");
+        setResizable(true);
+        setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+        setPreferredSize(new Dimension(1000, 800));
+        setMinimumSize(new Dimension(750, 650));
+        setLocationRelativeTo(null);
+        setIconImage(Toolkit.getDefaultToolkit().getImage("view/resources/icon.png"));
 
-    private void initGUI() {
-        mainFrame = new JFrame("Task manager");
-        mainFrame.setResizable(true);
-        mainFrame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-//        mainFrame.setPreferredSize(new Dimension(1440, 900));
-        mainFrame.setMinimumSize(new Dimension(750, 650));
-        mainFrame.setLocationRelativeTo(null);
-        mainFrame.setIconImage(Toolkit.getDefaultToolkit().getImage("view/resources/icon.png"));
-
-        mainFrame.setLayout(new BorderLayout());
+        setLayout(new BorderLayout());
         JPanel contentPane = new JPanel();
-        mainFrame.getContentPane().add(contentPane, BorderLayout.PAGE_START);
+        add(contentPane, BorderLayout.PAGE_START);
 
         contentPane.setLayout(new GridBagLayout());
         GridBagConstraints c1 = new GridBagConstraints();
 
-        c1.anchor = GridBagConstraints.NORTH;
 
     // First line
         leftControlPanel = new Panel();
-        rightControlPanel = new Panel();
+        leftControlPanel.setLayout(new BoxLayout(leftControlPanel, BoxLayout.LINE_AXIS));
 
-        c1.gridwidth = 1;
-        c1.weightx = 1;
-        c1.insets = new Insets(10,10,10,10);
-        c1.anchor = GridBagConstraints.WEST;
-        contentPane.add(leftControlPanel, c1);
-        leftControlPanel.setLayout(new GridBagLayout());
-
-        GridBagConstraints c2 = new GridBagConstraints();
-        c2.gridy = 0;
-        c2.anchor = GridBagConstraints.WEST;
-        c2.gridx = 0;
         btnCreateAppointment = new JButton("Создать встречу");
-        leftControlPanel.add(btnCreateAppointment, c2);
-        c2.gridx = 1;
+        leftControlPanel.add(btnCreateAppointment);
+
+        leftControlPanel.add(Box.createHorizontalStrut(5));
+
         btnCreateTask = new JButton("Создать задачу");
-        leftControlPanel.add(btnCreateTask, c2);
-        c2.gridx = 3;
-        btnViewTask = new JButton("Просмотр задач");
-        leftControlPanel.add(btnViewTask, c2);
-        c2.gridx = 4;
+        leftControlPanel.add(btnCreateTask);
+
+        leftControlPanel.add(Box.createHorizontalStrut(5));
+
+        btnViewTasks = new JButton("Просмотр задач");
+        leftControlPanel.add(btnViewTasks);
+
+        leftControlPanel.add(Box.createHorizontalStrut(5));
+
         btnBack = new JButton("<- Назад");
         btnBack.setVisible(false);
-        leftControlPanel.add(btnBack, c2);
-
-        c1.gridx = 1;
-        c1.weightx = 0;
-        c1.anchor = GridBagConstraints.EAST;
-        contentPane.add(rightControlPanel, c1);
-        rightControlPanel.setLayout(new GridBagLayout());
+        leftControlPanel.add(btnBack);
 
 
-        c2.gridx = 0;
-        btnDoublePrev = new JButton("  <<  ");
-        rightControlPanel.add(btnDoublePrev, c2);
-        c2.gridx = 1;
-        c2.insets = new Insets(0, 5, 0, 0);
+        rightControlPanel = new Panel();
+        rightControlPanel.setLayout(new BoxLayout(rightControlPanel, BoxLayout.LINE_AXIS));
+
+        btnDoublePrev = new JButton(" << ");
+        rightControlPanel.add(btnDoublePrev);
+
+        rightControlPanel.add(Box.createHorizontalStrut(5));
+
         btnPrev = new JButton("  <  ");
-        rightControlPanel.add(btnPrev, c2);
-        c2.gridx = 2;
-        c2.insets = new Insets(0, 0, 0, 5);
+        rightControlPanel.add(btnPrev);
+
         btnNext = new JButton("  >  ");
-        rightControlPanel.add(btnNext, c2);
-        c2.gridx = 3;
-        c2.insets = new Insets(0, 0, 0, 0);
-        btnDoubleNext = new JButton("  >>  ");
-        rightControlPanel.add(btnDoubleNext, c2);
+        rightControlPanel.add(btnNext);
+
+        rightControlPanel.add(Box.createHorizontalStrut(5));
+
+        btnDoubleNext = new JButton(" >> ");
+        rightControlPanel.add(btnDoubleNext);
+
+
+        c1.gridx = 0;
+        c1.insets = new Insets(5, 5, 5, 0);
+        c1.anchor = GridBagConstraints.NORTHWEST;
+        contentPane.add(leftControlPanel, c1);
+
+        c1.gridx = 0;
+        c1.weightx = 1.0;
+        c1.anchor = GridBagConstraints.CENTER;
+        contentPane.add(Box.createHorizontalGlue(), c1);
+
+        c1.gridx = 2;
+        c1.weightx = 0.0;
+        c1.insets = new Insets(5, 0, 5, 5);
+        c1.anchor = GridBagConstraints.NORTHEAST;
+        contentPane.add(rightControlPanel, c1);
+
 
     // Second line
         monthYearPanel = new Panel();
         c1.gridx = 0;
         c1.gridy = 1;
-        c1.gridwidth = 2;
+        c1.gridwidth = 3;
         c1.anchor = GridBagConstraints.CENTER;
         contentPane.add(monthYearPanel, c1);
         lblMonthYear = new JLabel();
@@ -164,18 +168,21 @@ public class TaskManagerView implements ProgramInterface, Observer {
     // Third line
         workPanel = new JPanel();
         workPanel.setLayout(new CardLayout());
-        mainFrame.add(workPanel);
+        add(workPanel);
 
         calendarPanel = new  CalendarPanel(taskManagerModel);
         workPanel.add(calendarPanel, "Calendar");
 
         dayTimetablePanel = new DayTimetablePanel(taskManagerModel);
-        dayTimetablePanel.setVisible(false);
         workPanel.add(dayTimetablePanel, "DayTimetable");
 
+        tasksTable = new JTable();
+        JScrollPane scrollPane = new JScrollPane(tasksTable);
+        workPanel.add(scrollPane, "TasksTable");
+
         updateMonthLabel();
-        mainFrame.pack();
-        mainFrame.setVisible(true);
+        pack();
+        setVisible(true);
     }
 
 
@@ -200,6 +207,9 @@ public class TaskManagerView implements ProgramInterface, Observer {
                     Calendar date = dayTimetablePanel.getDate();
                     date.add(Calendar.DAY_OF_MONTH, -1);
                     dayTimetablePanel.setDate(date);
+                    break;
+
+                case tasksTable:
             }
             updateMonthLabel();
         });
@@ -214,6 +224,9 @@ public class TaskManagerView implements ProgramInterface, Observer {
                     Calendar date = dayTimetablePanel.getDate();
                     date.add(Calendar.DAY_OF_MONTH, 1);
                     dayTimetablePanel.setDate(date);
+                    break;
+
+                case tasksTable:
             }
             updateMonthLabel();
         });
@@ -228,6 +241,9 @@ public class TaskManagerView implements ProgramInterface, Observer {
                     Calendar date = dayTimetablePanel.getDate();
                     date.add(Calendar.MONTH, - 1);
                     dayTimetablePanel.setDate(date);
+                    break;
+
+                case tasksTable:
             }
             updateMonthLabel();
         });
@@ -242,22 +258,70 @@ public class TaskManagerView implements ProgramInterface, Observer {
                     Calendar date = dayTimetablePanel.getDate();
                     date.add(Calendar.MONTH, + 1);
                     dayTimetablePanel.setDate(date);
+                    break;
+
+                case tasksTable:
             }
             updateMonthLabel();
         });
 
         btnCreateAppointment.addActionListener(e -> {
-            NewTaskDialog newTaskDialog = new NewTaskDialog();
-            if (newTaskDialog.showDialog() == NewTaskDialog.OK) {
-                taskManagerModel.addTask(newTaskDialog.getResult());
-                calendarPanel.repaint();
+            try {
+                NewTaskDialog newTaskDialog = new NewTaskDialog(this, Appointment.class);
+                if (newTaskDialog.showDialog() == NewTaskDialog.OK) {
+                    taskManagerModel.addTask(newTaskDialog.getResult());
+                    calendarPanel.repaint();
+                }
+            } catch (IllegalAccessException | InstantiationException ex) {
+                ex.printStackTrace();
             }
         });
 
+        btnCreateTask.addActionListener(e -> {
+            try {
+                NewTaskDialog newTaskDialog = new NewTaskDialog(this, Task.class);
+                if (newTaskDialog.showDialog() == NewTaskDialog.OK) {
+                    taskManagerModel.addTask(newTaskDialog.getResult());
+                    calendarPanel.repaint();
+                }
+            } catch (IllegalAccessException | InstantiationException ex) {
+                ex.printStackTrace();
+            }
+        });
+
+        btnViewTasks.addActionListener(e -> {
+            TasksTableModel tableModel = null;
+
+            switch (menuState) {
+                case calendar:
+                    Calendar date = Calendar.getInstance();
+                    date.set(Calendar.MONTH, calendarPanel.getMonth());
+                    date.set(Calendar.YEAR, calendarPanel.getYear());
+
+                    tableModel = new TasksTableModel(taskManagerModel, date, false);
+                    break;
+
+                case dayTimetable:
+                    tableModel = new TasksTableModel(taskManagerModel, dayTimetablePanel.getDate(), true);
+                    break;
+
+                default:
+                    return;
+            }
+
+//            DefaultTableModel tableModel = new DefaultTableModel(5, 2);
+
+            btnBack.setVisible(true);
+            tasksTable.setModel(tableModel);
+            menuState = States.tasksTable;
+            CardLayout cardLayout = (CardLayout) (workPanel.getLayout());
+            cardLayout.show(workPanel, "TasksTable");
+        });
 
         calendarPanel.addMouseListener(new MouseListener() {
             @Override
-            public void mouseClicked(MouseEvent e) {}
+            public void mouseClicked(MouseEvent e) {
+            }
 
             @Override
             public void mousePressed(MouseEvent e) {
@@ -272,25 +336,31 @@ public class TaskManagerView implements ProgramInterface, Observer {
 
                         Calendar date = calendarPanel.getDateOfCell(row, column);
                         dayTimetablePanel.setDate(date);
-                        CardLayout cardLayout = (CardLayout) (workPanel.getLayout());
-                        cardLayout.show(workPanel, "DayTimetable");
 
+                        btnBack.setVisible(true);
                         menuState = States.dayTimetable;
                         updateMonthLabel();
 
-                        btnBack.setVisible(true);
+                        CardLayout cardLayout = (CardLayout) (workPanel.getLayout());
+                        cardLayout.show(workPanel, "DayTimetable");
+
+                        revalidate();
+                        repaint();
                     }
                 }
             }
 
             @Override
-            public void mouseReleased(MouseEvent e) {}
+            public void mouseReleased(MouseEvent e) {
+            }
 
             @Override
-            public void mouseEntered(MouseEvent e) {}
+            public void mouseEntered(MouseEvent e) {
+            }
 
             @Override
-            public void mouseExited(MouseEvent e) {}
+            public void mouseExited(MouseEvent e) {
+            }
         });
     }
 
