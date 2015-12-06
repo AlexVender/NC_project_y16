@@ -20,19 +20,6 @@ public class TaskManagerModel implements Observable {
     public TaskManagerModel() {
         hashMapTasks = new HashMap<>();
         tasksCnt = 0;
-
-//        Thread myThready = new Thread(new Runnable()
-//        {
-//            public void run() //Этот метод будет выполняться в побочном потоке
-//            {
-//                NotificatorModel notificaticatorModel = new NotificatorModel();
-//                System.out.println("Привет из побочного потока!");
-//            }
-//        });
-//        myThready.start();
-
-
-
     }
 
     public void editTask(Integer id, String title, Calendar time, String description) {

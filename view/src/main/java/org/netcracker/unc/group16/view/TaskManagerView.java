@@ -1,6 +1,6 @@
 package org.netcracker.unc.group16.view;
 
-import org.netcracker.unc.group16.controller.NotificatorModel;
+import org.netcracker.unc.group16.controller.NotificationController;
 import org.netcracker.unc.group16.controller.TaskManagerController;
 import org.netcracker.unc.group16.model.Observer;
 import org.netcracker.unc.group16.model.Task;
@@ -8,7 +8,6 @@ import org.netcracker.unc.group16.model.Appointment;
 import org.netcracker.unc.group16.model.TaskManagerModel;
 
 import javax.swing.*;
-import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumn;
 import java.awt.*;
 import java.awt.event.MouseEvent;
@@ -24,7 +23,7 @@ import java.util.Map;
 public class TaskManagerView extends JFrame implements ProgramInterface, Observer {
     private TaskManagerModel taskManagerModel;
     private TaskManagerController taskManagerController;
-    private NotificatorModel notificatorModel;
+    private NotificationController notificationController;
 
 //    private JFrame mainFrame;
     private Panel leftControlPanel;
@@ -65,15 +64,16 @@ public class TaskManagerView extends JFrame implements ProgramInterface, Observe
         addListeners();
     }
 
-    public TaskManagerView(NotificatorModel notificatorModel){
-        this.notificatorModel = notificatorModel;
-        this.taskManagerModel = notificatorModel.getTaskManagerModel();
+    public TaskManagerView(NotificationController notificationController){
+        this.notificationController = notificationController;
+        this.taskManagerModel = notificationController.getTaskManagerModel();
 
         menuState = States.calendar;
 
         initGUI();
         addListeners();
     }
+
 
     private void initGUI() {
         try {
@@ -346,7 +346,8 @@ public class TaskManagerView extends JFrame implements ProgramInterface, Observe
 
         calendarPanel.addMouseListener(new MouseListener() {
             @Override
-            public void mouseClicked(MouseEvent e) {}
+            public void mouseClicked(MouseEvent e) {
+            }
 
             @Override
             public void mousePressed(MouseEvent e) {
@@ -376,13 +377,16 @@ public class TaskManagerView extends JFrame implements ProgramInterface, Observe
             }
 
             @Override
-            public void mouseReleased(MouseEvent e) {}
+            public void mouseReleased(MouseEvent e) {
+            }
 
             @Override
-            public void mouseEntered(MouseEvent e) {}
+            public void mouseEntered(MouseEvent e) {
+            }
 
             @Override
-            public void mouseExited(MouseEvent e) {}
+            public void mouseExited(MouseEvent e) {
+            }
         });
 
         tasksTable.addMouseListener(new MouseListener() {

@@ -13,7 +13,7 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
-public class NotificatorModel implements org.netcracker.unc.group16.model.Observer {
+public class NotificationController implements org.netcracker.unc.group16.model.Observer {
     private List<Task> currentTasks;
 
     private TaskManagerModel taskManagerModel;
@@ -29,7 +29,7 @@ public class NotificatorModel implements org.netcracker.unc.group16.model.Observ
 
 
 
-    public NotificatorModel(TaskManagerModel taskManagerModel){
+    public NotificationController(TaskManagerModel taskManagerModel){
         this.taskManagerModel = taskManagerModel;
         //Регистрируем наблюдателя
         taskManagerModel.registerObserver(this);
