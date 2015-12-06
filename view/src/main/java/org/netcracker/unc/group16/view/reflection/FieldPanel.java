@@ -7,14 +7,14 @@ import java.awt.*;
 import java.lang.reflect.Field;
 
 
-public abstract class TaskFieldPanel extends JPanel {
+public abstract class FieldPanel extends JPanel {
     protected Field field;
     protected Integer order;
     protected Boolean editable;
 
     protected JLabel lblDisplayName;
 
-    public TaskFieldPanel(Field field, String displayName, Integer order, Boolean editable) {
+    public FieldPanel(Field field, String displayName, Integer order, Boolean editable) {
         this.field = field;
         lblDisplayName = new JLabel(displayName);
         this.order = order;

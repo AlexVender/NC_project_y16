@@ -16,7 +16,7 @@ import java.util.Date;
 import java.util.Properties;
 
 
-public class TaskCalendarFieldPanel extends TaskFieldPanel {
+public class CalendarFieldPanel extends FieldPanel {
     private final SimpleDateFormat dateFormatter = new SimpleDateFormat("dd.MM.yyyy");
     private final DateModel<Date> dateModel;
 
@@ -73,7 +73,7 @@ public class TaskCalendarFieldPanel extends TaskFieldPanel {
         }
     }
 
-    public TaskCalendarFieldPanel(Field field, Object defaultVal, String displayName, Integer order, Boolean editable) {
+    public CalendarFieldPanel(Field field, Object defaultVal, String displayName, Integer order, Boolean editable) {
         super(field, displayName, order, editable);
 
         GridBagConstraints c = new GridBagConstraints();

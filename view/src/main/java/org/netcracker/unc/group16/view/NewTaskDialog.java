@@ -1,12 +1,10 @@
 package org.netcracker.unc.group16.view;
 
-import jdk.nashorn.internal.runtime.regexp.joni.constants.Arguments;
 import org.netcracker.unc.group16.annotations.FieldSettings;
 import org.netcracker.unc.group16.annotations.NotDisplayed;
 import org.netcracker.unc.group16.exceptions.IllegalTimeSetException;
-import org.netcracker.unc.group16.model.Appointment;
 import org.netcracker.unc.group16.model.Task;
-import org.netcracker.unc.group16.view.reflection.TaskFieldPanel;
+import org.netcracker.unc.group16.view.reflection.FieldPanel;
 import org.netcracker.unc.group16.view.reflection.TaskFieldPanelFactory;
 
 import javax.swing.*;
@@ -28,7 +26,7 @@ public class NewTaskDialog extends JDialog {
     private JButton btnCancel;
     private JButton btnOK;
     
-    private ArrayList<TaskFieldPanel> panels;
+    private ArrayList<FieldPanel> panels;
     private Task task;
 
     private Boolean editMode;
@@ -82,7 +80,7 @@ public class NewTaskDialog extends JDialog {
                 defaultVal = taskField.get(task);
             } catch (IllegalAccessException ignored) {}
 
-            TaskFieldPanel newFieldPanel = taskFieldPanelFactory.createPanel(taskField.getType(), taskField, defaultVal,
+            FieldPanel newFieldPanel = taskFieldPanelFactory.createPanel(taskField.getType(), taskField, defaultVal,
                     taskFieldSettings.displayName(), taskFieldSettings.orderNumb(), taskFieldSettings.editable());
 
             if (newFieldPanel != null) {
@@ -121,7 +119,7 @@ public class NewTaskDialog extends JDialog {
         panels.sort((o1, o2) -> o1.getOrder().compareTo(o2.getOrder()));
 
         c.gridy = 0;
-        for (TaskFieldPanel panel : panels) {
+        for (FieldPanel panel : panels) {
             mainPanel.add(panel, c);
             c.gridy++;
         }
@@ -159,7 +157,7 @@ public class NewTaskDialog extends JDialog {
 
         btnOK.addActionListener(e -> {
             status = OK;
-            for (TaskFieldPanel panel : panels) {
+            for (FieldPanel panel : panels) {
                 if (!panel.isValidData()) {
                     JOptionPane.showMessageDialog(this,
                             "Введены некорректные данные",

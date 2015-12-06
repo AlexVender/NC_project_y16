@@ -6,11 +6,11 @@ import java.awt.*;
 import java.lang.reflect.Field;
 
 
-public class TaskIntegerFieldPanel extends TaskFieldPanel {
+public class IntegerFieldPanel extends FieldPanel {
     JTextField textField;
     private final SpinnerModel spinnerModel;
 
-    public TaskIntegerFieldPanel(Field field, Object defaultVal, String displayName, Integer order, Boolean editable) {
+    public IntegerFieldPanel(Field field, Object defaultVal, String displayName, Integer order, Boolean editable) {
         super(field, displayName, order, editable);
 
         spinnerModel = new SpinnerNumberModel(0, null, null, 1);

@@ -6,10 +6,10 @@ import java.awt.*;
 import java.lang.reflect.Field;
 
 
-public class TaskStringFieldPanel extends TaskFieldPanel {
+public class StringFieldPanel extends FieldPanel {
     private JTextField textField;
 
-    public TaskStringFieldPanel(Field field, Object defaultVal, String displayName, Integer order, Boolean editable) {
+    public StringFieldPanel(Field field, Object defaultVal, String displayName, Integer order, Boolean editable) {
         super(field, displayName, order, editable);
 
         GridBagConstraints c = new GridBagConstraints();

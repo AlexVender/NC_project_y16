@@ -5,16 +5,16 @@ import java.lang.reflect.Field;
 
 
 public class TaskFieldPanelFactory {
-    public TaskFieldPanel createPanel(Class aClass, Field field, Object defaultVal, String displayName, Integer order, Boolean editable) {
+    public FieldPanel createPanel(Class aClass, Field field, Object defaultVal, String displayName, Integer order, Boolean editable) {
         switch (aClass.getSimpleName()) {
             case "String":
-                return new TaskStringFieldPanel(field, defaultVal, displayName, order, editable);
+                return new StringFieldPanel(field, defaultVal, displayName, order, editable);
 
             case "Integer":
-                return new TaskIntegerFieldPanel(field, defaultVal, displayName, order, editable);
+                return new IntegerFieldPanel(field, defaultVal, displayName, order, editable);
 
             case "Calendar":
-                return new TaskCalendarFieldPanel(field, defaultVal, displayName, order, editable);
+                return new CalendarFieldPanel(field, defaultVal, displayName, order, editable);
 
             default:
                 return null;
