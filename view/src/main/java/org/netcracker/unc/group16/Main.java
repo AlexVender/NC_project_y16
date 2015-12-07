@@ -15,16 +15,16 @@ public class Main {
 
         Calendar t1 = new GregorianCalendar(2015, Calendar.DECEMBER, 3, 0, 0);
         Calendar t2 = new GregorianCalendar(2015, Calendar.DECEMBER, 3, 2, 0);
-        taskManagerModel.addAppointment("Test1", t1, t2, "TestTask");
+        taskManagerModel.add(new Appointment("Test1", t1, t2, "TestTask"));
         Calendar t3 = Calendar.getInstance();
         Calendar t4 = Calendar.getInstance();
         t4.add(Calendar.HOUR_OF_DAY, 2);
-        taskManagerModel.addAppointment("Today Appointment", t3, t4, "Task of the today");
+        taskManagerModel.add(new Appointment("Today Appointment", t3, t4, "Task of the today"));
 
         Calendar t5 = new GregorianCalendar(2015, Calendar.DECEMBER, 6, 15, 31);
-        taskManagerModel.addTask("Test2", Calendar.getInstance(), "TestTask");
-        taskManagerModel.addTask("TestTask", t3, "TestTask");
-        taskManagerModel.addTask("TestTask2", Calendar.getInstance(), "TestTask");
+        taskManagerModel.add(new Task("Test2", Calendar.getInstance(), "TestTask"));
+        taskManagerModel.add(new Task("TestTask", t3, "TestTask"));
+        taskManagerModel.add(new Task("TestTask2", Calendar.getInstance(), "TestTask"));
 
         TaskManagerController taskManagerController = new TaskManagerController(taskManagerModel);
 

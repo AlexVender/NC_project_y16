@@ -190,7 +190,7 @@ public class TaskManagerView extends JFrame implements ProgramInterface, Observe
         tableModel = new TasksTableModel(taskManagerController, date, false);
         tableModel.updateData();
         tasksTable = new JTable(tableModel);
-        TableColumn column = null;
+        TableColumn column;
         for (int i = 0; i < tasksTable.getColumnCount(); i++) {
             column = tasksTable.getColumnModel().getColumn(i);
             int width;
@@ -298,7 +298,7 @@ public class TaskManagerView extends JFrame implements ProgramInterface, Observe
             try {
                 NewTaskDialog newTaskDialog = new NewTaskDialog(this, Appointment.class);
                 if (newTaskDialog.showDialog() == NewTaskDialog.OK) {
-                    taskManagerModel.addTask(newTaskDialog.getResult());
+                    taskManagerModel.add(newTaskDialog.getResult());
                     calendarPanel.repaint();
                 }
             } catch (IllegalAccessException | InstantiationException ex) {
@@ -310,7 +310,7 @@ public class TaskManagerView extends JFrame implements ProgramInterface, Observe
             try {
                 NewTaskDialog newTaskDialog = new NewTaskDialog(this, Task.class);
                 if (newTaskDialog.showDialog() == NewTaskDialog.OK) {
-                    taskManagerModel.addTask(newTaskDialog.getResult());
+                    taskManagerModel.add(newTaskDialog.getResult());
                     calendarPanel.repaint();
                 }
             } catch (IllegalAccessException | InstantiationException ex) {
@@ -400,11 +400,11 @@ public class TaskManagerView extends JFrame implements ProgramInterface, Observe
                     int row = tasksTable.rowAtPoint(e.getPoint());
                     int col = tasksTable.columnAtPoint(e.getPoint());
                     Integer id = (Integer) tableModel.getValueAt(row, 0);
-                    Task task = taskManagerController.getTaskManagerModel().getTask(id);
+                    Task task = taskManagerController.getTaskManagerModel().get(id);
 
                     NewTaskDialog newTaskDialog = new NewTaskDialog(getContentPane(), task);
                     if (newTaskDialog.showDialog() == NewTaskDialog.OK) {
-                        taskManagerModel.addTask(newTaskDialog.getResult());
+                        taskManagerModel.add(newTaskDialog.getResult());
                         calendarPanel.repaint();
                     }
                 }

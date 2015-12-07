@@ -14,12 +14,17 @@ public class Appointment extends Task {
 
     }
 
+    public Appointment(String title, Calendar time, Calendar endTime, String description) {
+        super(title, time, description);
+        this.endTime = (Calendar) endTime.clone();
+    }
+
     public Appointment(Integer id, String title, Calendar time, Calendar endTime, String description) {
         super(id, title, time, description);
         this.endTime = (Calendar) endTime.clone();
     }
 
-    public Appointment(Appointment appointment ) {
+    public Appointment(Appointment appointment) {
         super(appointment.id, appointment.title, appointment.time, appointment.description);
         this.endTime = (Calendar) appointment.endTime.clone();
     }

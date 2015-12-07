@@ -4,7 +4,6 @@ import org.netcracker.unc.group16.model.Appointment;
 import org.netcracker.unc.group16.model.Task;
 import org.netcracker.unc.group16.model.TaskManagerModel;
 
-import java.lang.reflect.ParameterizedType;
 import java.util.*;
 
 
@@ -31,7 +30,7 @@ public class TaskManagerController implements TaskManager {
         Calendar dateEnd = new GregorianCalendar(year, month, day + 1);
 
         for (int i = 1; i <= taskManagerModel.getTasksCnt(); i++) {
-            Task task = taskManagerModel.getTask(i);
+            Task task = taskManagerModel.get(i);
             if (task == null) {
                 continue;
             }
@@ -53,7 +52,7 @@ public class TaskManagerController implements TaskManager {
                 }
             }
         }
-        result.sort((o1, o2) -> ((Task) o1).getTime().compareTo(((Task)o2).getTime()));
+        result.sort((o1, o2) -> o1.getTime().compareTo(o2.getTime()));
 
         return result;
     }
@@ -62,7 +61,7 @@ public class TaskManagerController implements TaskManager {
         List<Task> result = new ArrayList<>();
 
         for (int i = 1; i <= taskManagerModel.getTasksCnt(); i++) {
-            Task task = taskManagerModel.getTask(i);
+            Task task = taskManagerModel.get(i);
             if (task == null) {
                 continue;
             }
@@ -74,7 +73,7 @@ public class TaskManagerController implements TaskManager {
             }
         }
 
-        result.sort((o1, o2) -> ((Task) o1).getTime().compareTo(((Task)o2).getTime()));
+        result.sort((o1, o2) -> o1.getTime().compareTo(o2.getTime()));
 
         return result;
     }
@@ -89,7 +88,7 @@ public class TaskManagerController implements TaskManager {
 
     //    Только по идее id не должно передаваться, а должно генерироваться в model
 //    public void performedAddTask(int id, String title, Date time, String comment){
-//        taskManager.addTask(id, title, time, comment);
+//        taskManager.add(id, title, time, comment);
 //    }
 
 //    public void performedDeleteTask(int id){

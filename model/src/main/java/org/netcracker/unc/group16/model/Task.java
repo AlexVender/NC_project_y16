@@ -26,6 +26,10 @@ public class Task implements Cloneable {
 
     }
 
+    public Task(String title, Calendar time, String description) {
+        this(0, title, time, description);
+    }
+
     public Task(int id, String title, Calendar time, String description) {
         this.id = id;
         this.title = title;
