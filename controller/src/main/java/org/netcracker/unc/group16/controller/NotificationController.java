@@ -13,8 +13,10 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
-public class NotificationController implements org.netcracker.unc.group16.model.Observer {
+public class NotificationController implements org.netcracker.unc.group16.model.Observer, NotificationObservable {
     private Map<Integer, Task> currentTasks;
+
+    private List<NotificationObserver> notificationObservers = new ArrayList<>();
 
     private TaskManagerModel taskManagerModel;
 
@@ -33,27 +35,34 @@ public class NotificationController implements org.netcracker.unc.group16.model.
         this.setTaskManagerController(taskManagerController);
         this.setTaskManagerModel(taskManagerController.getTaskManagerModel());
         this.setCurrentTasks(getTasksForNotification());
-        initNC();
+
+        //Если таски для нотификатора есть
+        if (!(getCurrentTasks().isEmpty())){
+            initNC();
+        }
     }
 
     public void initNC(){
 
-        System.out.println("В нотификаторе лежат следующие таски:");
+      //  System.out.println("В нотификаторе лежат следующие таски:");
         for (HashMap.Entry<Integer, Task> entry : getCurrentTasks().entrySet()) {
             Integer key = entry.getKey();
             Task value = entry.getValue();
-            System.out.println("ID:" + key + ";unix timestamp время:" + (value.getTime().getTimeInMillis() / 1000));
+          //  System.out.println("ID:" + key + ";unix timestamp время:" + (value.getTime().getTimeInMillis() / 1000));
 
         }
         ScheduledFuture scheduledFuture = scheduler.schedule(new Runnable() {
             @Override
             public void run() {
-                System.out.println("Окно появилось");
-                System.out.println("postpone - напомнить через 10 секунд\n" +
+                notifyObservers();
+                /*System.out.println("postpone - напомнить через 10 секунд\n" +
                         "dismiss - отклонить, перейти к следующей такске\n" +
-                        "close закрыть окно = postpone");
+                        "close закрыть окно = postpone");*/
             }
         }, getTimeBeforeExecution(), TimeUnit.SECONDS);
+        if (scheduledFuture.isDone()){
+            initNC();
+        }
 
         if (dismiss()){
 
@@ -96,30 +105,39 @@ public class NotificationController implements org.netcracker.unc.group16.model.
     private Map<Integer, Task> getTasksForNotification(){
         Map<Integer, Task> tempHashMapTasks = new HashMap<>();
 
-        //Ищем таску с минимальной датой
-        Map.Entry<Integer, Task> min = null;
+        //Ищем таску с минимальной датой и датой > sysdate
+        long min = 0;
         for (HashMap.Entry<Integer, Task> entry : getTaskManagerModel().getHashMapTasks().entrySet()) {
             Integer key = entry.getKey();
             Task value = entry.getValue();
-            if (min == null || min.getValue().getTime().getTimeInMillis() > value.getTime().getTimeInMillis()){
-                min = entry;
+            long valueMS = value.getTime().getTimeInMillis();
+            long sysdate = Calendar.getInstance().getTimeInMillis();
+
+
+
+            if(value.getClass().getSimpleName().equals("Appointment")){// Только для встреч
+                if (min == 0) {
+                    min = valueMS;
+                }
+
+                if ((valueMS > sysdate) && (valueMS > min) && (min < sysdate)){
+                    min = valueMS;
+                }
+                else if ((valueMS > sysdate) && (valueMS < min)){
+                        min = valueMS;
+                }
             }
 
         }
 
-        //У таски время > sysdate
-        if(min.getValue().getTime().getTimeInMillis() > Calendar.getInstance().getTimeInMillis()){
-            tempHashMapTasks.put(min.getKey(), min.getValue());
-        }
-
-        //Добавляем остальные таски
-        if (min != null){
+        //Добавляем таски
+        if (min != 0){
             for (HashMap.Entry<Integer, Task> entry : getTaskManagerModel().getHashMapTasks().entrySet()) {
                 Integer key = entry.getKey();
                 Task value = entry.getValue();
+                long valueMS = value.getTime().getTimeInMillis();
 
-                if (!(entry.equals(min)) //Повторяющаяся таска
-                        &&(value.getTime().getTimeInMillis() == min.getValue().getTime().getTimeInMillis())){
+                if (valueMS == min){
                     tempHashMapTasks.put(key, value);
                 }
             }
@@ -139,6 +157,8 @@ public class NotificationController implements org.netcracker.unc.group16.model.
             Integer key = entry.getKey();
             Task value = entry.getValue();
 
+          //  System.out.println("ID:" + entry.getKey() + ";Time:" + entry.getValue().getTime().getTimeInMillis());
+
 
 
             if (min == null || min.getValue().getTime().getTimeInMillis() > value.getTime().getTimeInMillis()){
@@ -148,7 +168,7 @@ public class NotificationController implements org.netcracker.unc.group16.model.
 
         }
         try{
-            System.out.println("Нотификатор сработает через " + ((int) (min.getValue().getTime().getTimeInMillis() - cal.getTimeInMillis()) / 1000) + " секунд.");
+         //   System.out.println("Нотификатор сработает через " + ((int) (min.getValue().getTime().getTimeInMillis() - cal.getTimeInMillis()) / 1000) + " секунд.");
 
 
         }
@@ -165,11 +185,6 @@ public class NotificationController implements org.netcracker.unc.group16.model.
         }
     }
 
-    public  long tempFunction(){
-        Calendar cal = Calendar.getInstance();
-//        System.out.println(cal.getTimeInMillis()/1000 + 5);
-        return cal.getTimeInMillis() / 1000 + 5;
-    }
 
     public TaskManagerController getTaskManagerController() {
         return taskManagerController;
@@ -177,5 +192,20 @@ public class NotificationController implements org.netcracker.unc.group16.model.
 
     public void setTaskManagerController(TaskManagerController taskManagerController) {
         this.taskManagerController = taskManagerController;
+    }
+
+    @Override
+    public void registerObserver(NotificationObserver o){
+        notificationObservers.add(o);
+    }
+    @Override
+    public void removeObserver(NotificationObserver o){
+        notificationObservers.remove(o);
+    }
+    @Override
+    public void notifyObservers(){
+        for (NotificationObserver notificationObserver: notificationObservers){
+            notificationObserver.updateFromNotification();
+        }
     }
 }

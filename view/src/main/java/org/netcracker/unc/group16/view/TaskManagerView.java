@@ -1,6 +1,8 @@
 package org.netcracker.unc.group16.view;
 
 import org.netcracker.unc.group16.controller.NotificationController;
+import org.netcracker.unc.group16.controller.NotificationObservable;
+import org.netcracker.unc.group16.controller.NotificationObserver;
 import org.netcracker.unc.group16.controller.TaskManagerController;
 import org.netcracker.unc.group16.model.Observer;
 import org.netcracker.unc.group16.model.Task;
@@ -20,7 +22,7 @@ import java.util.Locale;
 import java.util.Map;
 
 
-public class TaskManagerView extends JFrame implements ProgramInterface, Observer {
+public class TaskManagerView extends JFrame implements ProgramInterface, Observer, NotificationObserver {
     private TaskManagerModel taskManagerModel;
     private TaskManagerController taskManagerController;
     private NotificationController notificationController;
@@ -68,6 +70,9 @@ public class TaskManagerView extends JFrame implements ProgramInterface, Observe
         this.notificationController = notificationController;
         this.taskManagerController = notificationController.getTaskManagerController();
         this.taskManagerModel = notificationController.getTaskManagerModel();
+
+        this.notificationController.registerObserver(this);
+
 
         menuState = States.calendar;
 
@@ -443,5 +448,10 @@ public class TaskManagerView extends JFrame implements ProgramInterface, Observe
     //Если как-то изменяются эти два поля - все наблюдатели об этом знают
     public void update(Map<Integer, Task> hashMapTasks, Integer tasksCnt){
 
+    }
+
+
+    public void updateFromNotification(){
+        System.out.println("HELLOOOO");
     }
 }
