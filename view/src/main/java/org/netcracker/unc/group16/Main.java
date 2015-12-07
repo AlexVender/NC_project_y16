@@ -18,9 +18,9 @@ public class Main {
         Calendar t3 = new GregorianCalendar(2015, Calendar.DECEMBER, 7, 15, 31);
         taskManagerModel.addAppointment("Test1", t1, t2, "TestTask");
 
-//       taskManagerModel.addTask("Test2", Calendar.getInstance(), "TestTask");
+        taskManagerModel.addTask("Test2", Calendar.getInstance(), "TestTask");
         taskManagerModel.addTask("TestTask", t3, "TestTask");
-//        taskManagerModel.addTask("TestTask2", Calendar.getInstance(), "TestTask");
+        taskManagerModel.addTask("TestTask2", Calendar.getInstance(), "TestTask");
 
 
         TaskManagerController taskManagerController = new TaskManagerController(taskManagerModel);
