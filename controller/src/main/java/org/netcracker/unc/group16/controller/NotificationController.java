@@ -142,7 +142,8 @@ public class NotificationController implements org.netcracker.unc.group16.model.
 
 
             if (min == null || min.getValue().getTime().getTimeInMillis() > value.getTime().getTimeInMillis()){
-                min = entry;            }
+                min = entry;
+            }
 
 
         }
