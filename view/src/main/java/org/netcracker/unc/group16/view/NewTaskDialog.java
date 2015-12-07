@@ -18,8 +18,8 @@ import java.util.ArrayList;
 
 
 public class NewTaskDialog extends JDialog {
-    public static int CANCEL = 0;
-    public static int OK = 1;
+    public static final int CANCEL = 0;
+    public static final int OK = 1;
 
     private static int status = CANCEL;
 

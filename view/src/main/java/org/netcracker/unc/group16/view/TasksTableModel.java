@@ -44,7 +44,7 @@ public class TasksTableModel extends DefaultTableModel {
 
     public void updateData() {
         if (onDay) {
-            tasksList = taskManagerController.getByDate(Task.class, calendar);
+            tasksList = taskManagerController.getByDay(Task.class, calendar);
         } else {
             tasksList = taskManagerController.getAll(Task.class);
         }

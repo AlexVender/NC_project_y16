@@ -7,13 +7,11 @@ import java.lang.reflect.Field;
 
 
 public class IntegerFieldPanel extends FieldPanel {
-    JTextField textField;
-    private final SpinnerModel spinnerModel;
+    private final JTextField textField;
 
     public IntegerFieldPanel(Field field, Object defaultVal, String displayName, Integer order, Boolean editable) {
         super(field, displayName, order, editable);
 
-        spinnerModel = new SpinnerNumberModel(0, null, null, 1);
         textField = new JTextField();
         if (defaultVal != null) {
             textField.setText(defaultVal.toString());
@@ -23,10 +21,15 @@ public class IntegerFieldPanel extends FieldPanel {
         add(textField);
     }
 
+    @SuppressWarnings("ResultOfMethodCallIgnored")
     @Override
     public boolean isValidData() {
+        if (textField.getText().equals("")) {
+            return true;
+        }
+
         try {
-            Integer integer  = Integer.parseInt(spinnerModel.getValue().toString());
+            Integer.parseInt(textField.getText());
         } catch(NumberFormatException ex ) {
             return false;
         }
@@ -35,6 +38,10 @@ public class IntegerFieldPanel extends FieldPanel {
 
     @Override
     public Object getData() {
-        return spinnerModel.getValue();
+        if (!textField.getText().equals("")) {
+            return Integer.parseInt(textField.getText());
+        } else {
+            return null;
+        }
     }
 }

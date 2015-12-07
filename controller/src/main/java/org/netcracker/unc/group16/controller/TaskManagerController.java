@@ -16,7 +16,23 @@ public class TaskManagerController implements TaskManager {
 
     }
 
-    public List getByDate(Class requiredClass, Calendar date) {
+    public void add(Task task) throws IllegalArgumentException {
+        taskManagerModel.add(task);
+    }
+
+    public Task get(Integer id) {
+        return taskManagerModel.get(id);
+    }
+
+    public void edit(Integer id, Task task) throws IllegalArgumentException {
+        taskManagerModel.edit(id, task);
+    }
+
+    public void remove(Integer id) {
+        taskManagerModel.remove(id);
+    }
+
+    public List getByDay(Class requiredClass, Calendar date) {
         if (!(requiredClass.equals(Task.class)) && !requiredClass.equals(Appointment.class)) {
             throw new IllegalArgumentException();
         }
@@ -66,14 +82,31 @@ public class TaskManagerController implements TaskManager {
                 continue;
             }
 
-            Calendar taskTime = task.getTime();
-
             if (task.getClass().equals(requiredClass)) {
                 result.add(task);
             }
         }
 
         result.sort((o1, o2) -> o1.getTime().compareTo(o2.getTime()));
+
+        return result;
+    }
+
+    public List getClosestNext(Class requiredClass){
+        // Отсортированный список всех тасок
+        List<Task> result = getAll(requiredClass);
+
+        // Убираем завершённые
+        Calendar currentDate = Calendar.getInstance();
+        result.removeIf(task -> task.getTime().compareTo(currentDate) < 0);
+
+        if (result.size() == 0) {
+            return null;
+        }
+
+        // Убираем все после минимальной
+        Calendar minDate = result.get(0).getTime();
+        result.removeIf(task -> task.getTime().compareTo(minDate) > 0);
 
         return result;
     }
@@ -101,7 +134,7 @@ public class TaskManagerController implements TaskManager {
 //
 //
 //    public Map<Integer, Task> performedGetTasks(Date date1, Date date2){
-//        return hashMapTasks = taskManager.getByDate(date1, date2);
+//        return hashMapTasks = taskManager.getByDay(date1, date2);
 //    }
 
 }
