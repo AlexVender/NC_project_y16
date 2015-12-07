@@ -14,21 +14,13 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 public class NotificationController implements org.netcracker.unc.group16.model.Observer {
-    private List<Task> currentTasks;
+    private Map<Integer, Task> currentTasks;
 
     private TaskManagerModel taskManagerModel;
 
     private TaskManagerController taskManagerController;
 
     ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
-
-    ScheduledFuture scheduledFuture = scheduler.schedule(new Runnable() {
-        @Override
-        public void run() {
-            System.out.println("Executed!");
-        }
-    }, tempFunction(), TimeUnit.SECONDS);
-
 
 
 //    public NotificationController(TaskManagerModel taskManagerModel){
@@ -40,6 +32,32 @@ public class NotificationController implements org.netcracker.unc.group16.model.
     public NotificationController(TaskManagerController taskManagerController){
         this.setTaskManagerController(taskManagerController);
         this.setTaskManagerModel(taskManagerController.getTaskManagerModel());
+        this.setCurrentTasks(getTasksForNotification());
+        initNC();
+    }
+
+    public void initNC(){
+
+        System.out.println("В нотификаторе лежат следующие таски:");
+        for (HashMap.Entry<Integer, Task> entry : getCurrentTasks().entrySet()) {
+            Integer key = entry.getKey();
+            Task value = entry.getValue();
+            System.out.println("ID:" + key + ";unix timestamp время:" + (value.getTime().getTimeInMillis() / 1000));
+
+        }
+        ScheduledFuture scheduledFuture = scheduler.schedule(new Runnable() {
+            @Override
+            public void run() {
+                System.out.println("Окно появилось");
+                System.out.println("postpone - напомнить через 10 секунд\n" +
+                        "dismiss - отклонить, перейти к следующей такске\n" +
+                        "close закрыть окно = postpone");
+            }
+        }, getTimeBeforeExecution(), TimeUnit.SECONDS);
+
+        if (dismiss()){
+
+        }
     }
 
     public void notificate(){
@@ -49,19 +67,19 @@ public class NotificationController implements org.netcracker.unc.group16.model.
     public void postpone(){
 
     }
-    public void dismiss(){
-
+    public boolean dismiss(){
+        return true;
     }
 
     public void getLastTask(){
 
     }
 
-    public List<Task> getCurrentTasks() {
+    public Map<Integer, Task> getCurrentTasks() {
         return currentTasks;
     }
 
-    public void setCurrentTasks(List<Task> currentTasks) {
+    public void setCurrentTasks(Map<Integer, Task> currentTasks) {
         this.currentTasks = currentTasks;
     }
 
@@ -75,7 +93,7 @@ public class NotificationController implements org.netcracker.unc.group16.model.
 
     //Загружаем в нотификатор ближайшую таску
     //Причем если в одно время несколько тасок то возвращаем их
-    private Map<Integer, Task> getTasksForNotificator(){
+    private Map<Integer, Task> getTasksForNotification(){
         Map<Integer, Task> tempHashMapTasks = new HashMap<>();
 
         //Ищем таску с минимальной датой
@@ -83,13 +101,16 @@ public class NotificationController implements org.netcracker.unc.group16.model.
         for (HashMap.Entry<Integer, Task> entry : getTaskManagerModel().getHashMapTasks().entrySet()) {
             Integer key = entry.getKey();
             Task value = entry.getValue();
-
             if (min == null || min.getValue().getTime().getTimeInMillis() > value.getTime().getTimeInMillis()){
                 min = entry;
             }
 
         }
-        tempHashMapTasks.put(min.getKey(), min.getValue());
+
+        //У таски время > sysdate
+        if(min.getValue().getTime().getTimeInMillis() > Calendar.getInstance().getTimeInMillis()){
+            tempHashMapTasks.put(min.getKey(), min.getValue());
+        }
 
         //Добавляем остальные таски
         if (min != null){
@@ -97,7 +118,8 @@ public class NotificationController implements org.netcracker.unc.group16.model.
                 Integer key = entry.getKey();
                 Task value = entry.getValue();
 
-                if (value.getTime().getTimeInMillis() == min.getValue().getTime().getTimeInMillis()){
+                if (!(entry.equals(min)) //Повторяющаяся таска
+                        &&(value.getTime().getTimeInMillis() == min.getValue().getTime().getTimeInMillis())){
                     tempHashMapTasks.put(key, value);
                 }
             }
@@ -110,10 +132,23 @@ public class NotificationController implements org.netcracker.unc.group16.model.
         //Здесь будет код с апдейтом
     }
 
-//    public long getTimeBeforExecution(){
-//        Calendar cal = Calendar.getInstance();
-//        return currentTasks.getTime().getTimeInMillis() - cal.getTimeInMillis();
-//    }
+    public int getTimeBeforeExecution(){
+        Calendar cal = Calendar.getInstance();
+        Map.Entry<Integer, Task> min = null;
+        for (HashMap.Entry<Integer, Task> entry : getCurrentTasks().entrySet()) {
+            Integer key = entry.getKey();
+            Task value = entry.getValue();
+
+
+
+            if (min == null || min.getValue().getTime().getTimeInMillis() > value.getTime().getTimeInMillis()){
+                min = entry;            }
+
+
+        }
+        System.out.println("Нотификатор сработает через " + ((int) (min.getValue().getTime().getTimeInMillis() - cal.getTimeInMillis()) / 1000) + " секунд.");
+        return (int) (min.getValue().getTime().getTimeInMillis() - cal.getTimeInMillis()) / 1000;
+    }
 
     public  long tempFunction(){
         Calendar cal = Calendar.getInstance();
