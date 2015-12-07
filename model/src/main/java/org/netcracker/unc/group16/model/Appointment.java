@@ -14,23 +14,32 @@ public class Appointment extends Task {
 
     }
 
+    public Appointment(String title, Calendar time, Calendar endTime, String description) {
+        super(title, time, description);
+        this.endTime = (Calendar) endTime.clone();
+    }
+
     public Appointment(Integer id, String title, Calendar time, Calendar endTime, String description) {
         super(id, title, time, description);
         this.endTime = (Calendar) endTime.clone();
     }
 
-    public Appointment(Appointment appointment ) {
+    public Appointment(Appointment appointment) {
         super(appointment.id, appointment.title, appointment.time, appointment.description);
         this.endTime = (Calendar) appointment.endTime.clone();
     }
 
     @Override
     public void setTime(Calendar time) throws IllegalArgumentException {
+        Calendar tmpCalendar = (Calendar) time.clone();
+        tmpCalendar.set(Calendar.SECOND, 0);
+        tmpCalendar.set(Calendar.MILLISECOND, 0);
+
         if (endTime != null && (time.after(endTime) || time.equals(endTime))) {
             throw new IllegalTimeSetException();
         }
 
-        super.setTime(time);
+        this.time = tmpCalendar;
     }
 
 
@@ -39,11 +48,15 @@ public class Appointment extends Task {
     }
 
     public void setEndTime(Calendar endTime) throws IllegalArgumentException {
-        if (time != null && (endTime.before(time) || endTime.equals(time))) {
+        Calendar tmpCalendar = (Calendar) endTime.clone();
+        tmpCalendar.set(Calendar.SECOND, 0);
+        tmpCalendar.set(Calendar.MILLISECOND, 0);
+
+        if (time != null && (tmpCalendar.before(time) || tmpCalendar.equals(time))) {
             throw new IllegalTimeSetException();
         }
 
-        this.endTime = (Calendar) endTime.clone();
+        this.endTime = tmpCalendar;
     }
 
     @Override

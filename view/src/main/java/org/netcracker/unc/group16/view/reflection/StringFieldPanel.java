@@ -7,7 +7,7 @@ import java.lang.reflect.Field;
 
 
 public class StringFieldPanel extends FieldPanel {
-    private JTextField textField;
+    private final JTextField textField;
 
     public StringFieldPanel(Field field, Object defaultVal, String displayName, Integer order, Boolean editable) {
         super(field, displayName, order, editable);

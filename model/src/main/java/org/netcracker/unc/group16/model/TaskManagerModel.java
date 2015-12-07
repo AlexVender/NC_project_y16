@@ -2,9 +2,9 @@ package org.netcracker.unc.group16.model;
 
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
-import java.awt.*;
-import java.util.*;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 
 @XmlRootElement(name="tasks")
@@ -22,50 +22,8 @@ public class TaskManagerModel implements Observable {
         tasksCnt = 0;
     }
 
-    public void editTask(Integer id, String title, Calendar time, String description) {
-        Task elm = hashMapTasks.get(id);
-        elm.setTitle(title);
-        elm.setTime(time);
-        elm.setDescription(description);
-        notifyObservers();
-    }
 
-
-    public void addTask(Integer id, String title, Calendar time, String description) throws IllegalArgumentException{
-        if (id == null || id == 0) {
-            id = ++tasksCnt;
-        } else if (id < 0) {
-            throw new IllegalArgumentException("id should be positive");
-        }
-
-        Task task = new Task(id, title, time, description);
-        hashMapTasks.put(id, task);
-        //notifyObservers();
-    }
-
-    public void addTask(String title, Calendar time, String description) {
-        addTask(null, title, time, description);
-        //notifyObservers();
-    }
-
-
-    public void addAppointment(Integer id, String title, Calendar time, Calendar endTime, String description) throws IllegalArgumentException {
-        if (id == null || id == 0) {
-            id = ++tasksCnt;
-        } else if (id < 0) {
-            throw new IllegalArgumentException("id should be positive");
-        }
-
-        Task task = new Appointment(id, title, time, endTime, description);
-        hashMapTasks.put(id, task);
-     //   notifyObservers();
-    }
-
-    public void addAppointment(String title, Calendar time, Calendar endTime, String description) {
-        addAppointment(null, title, time, endTime, description);
-    }
-
-    public void addTask(Task task) throws IllegalArgumentException {
+    public void add(Task task) throws IllegalArgumentException {
         Integer id = task.getId();
         if (task.id == null || task.id == 0) {
             id = ++tasksCnt;
@@ -73,39 +31,32 @@ public class TaskManagerModel implements Observable {
         } else if (task.id < 0) {
             throw new IllegalArgumentException("Task id should be positive");
         }
-    
+
         hashMapTasks.put(id, (Task) task.clone());
         notifyObservers();
     }
 
-    public void deleteTask(Integer id) {
-        hashMapTasks.remove(id);
-        notifyObservers();
-    }
-
-    public Task getTask(Integer id) {
+    public Task get(Integer id) {
         Task result = hashMapTasks.get(id);
         return (result != null) ? (Task) result.clone() : null;
     }
 
-    public Map<Integer, Task> getTasksByDate(Class taskClass, Calendar date) {
-        Map<Integer, Task> tempHashMapTasks = new HashMap<>();
-        Calendar dateStart = (Calendar) date.clone();
-        Calendar dateEnd = (Calendar) date.clone();
-        dateEnd.add(Calendar.DAY_OF_MONTH, 1);
-        dateEnd.add(Calendar.MILLISECOND, -1);
-
-        for (HashMap.Entry<Integer, Task> entry : hashMapTasks.entrySet()) {
-            Task value = entry.getValue();
-            Calendar time = value.getTime();
-
-            if (value.getClass() == taskClass &&
-                    time.after(dateStart) && time.before(dateEnd)) {
-                tempHashMapTasks.put(entry.getKey(), (Task) value.clone());
-            }
+    public void edit(Integer id, Task task) throws IllegalArgumentException {
+        if (hashMapTasks.get(id) == null) {
+            throw new IllegalArgumentException("Could not find task with this ID");
         }
-        return  tempHashMapTasks;
+        Task result = (Task) task.clone();
+        result.setId(id);
+
+        hashMapTasks.put(id, result);
+        notifyObservers();
     }
+
+    public void remove(Integer id) {
+        hashMapTasks.remove(id);
+        notifyObservers();
+    }
+
 
     public Integer getTasksCnt() {
         return tasksCnt;
@@ -115,6 +66,7 @@ public class TaskManagerModel implements Observable {
         this.tasksCnt = tasksCnt;
     }
 
+
     //  @XmlJavaTypeAdapter(value = HashMapAdapter.class)
     public Map<Integer, Task> getHashMapTasks() {
         return hashMapTasks;
@@ -123,6 +75,7 @@ public class TaskManagerModel implements Observable {
     public void setHashMapTasks(Map<Integer, Task> hashMapTasks) {
         this.hashMapTasks = hashMapTasks;
     }
+
 
     @Override
     public void registerObserver(Observer o) {

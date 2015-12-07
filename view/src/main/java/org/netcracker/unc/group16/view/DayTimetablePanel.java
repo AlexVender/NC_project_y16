@@ -22,7 +22,7 @@ public class DayTimetablePanel extends JPanel {
     private static final int SCROLL_SPEED = 25;
 
 
-    TaskManagerController taskManagerController;
+    private TaskManagerController taskManagerController;
 
     private int shift;
     private Calendar date;
@@ -40,7 +40,7 @@ public class DayTimetablePanel extends JPanel {
     }
 
     public void updateTasks() {
-        tasks = taskManagerController.getByDate(Appointment.class, date);
+        tasks = taskManagerController.getByDay(Appointment.class, date);
     }
 
 

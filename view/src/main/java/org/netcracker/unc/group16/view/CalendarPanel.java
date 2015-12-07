@@ -2,7 +2,6 @@ package org.netcracker.unc.group16.view;
 
 import org.netcracker.unc.group16.controller.TaskManagerController;
 import org.netcracker.unc.group16.model.Appointment;
-import org.netcracker.unc.group16.model.Task;
 import org.netcracker.unc.group16.model.TaskManagerModel;
 
 import javax.swing.*;
@@ -13,8 +12,7 @@ import java.util.List;
 
 
 public class CalendarPanel extends JPanel {
-    TaskManagerModel taskManagerModel;
-    TaskManagerController taskManagerController;
+    private TaskManagerController taskManagerController;
 
     // Дата текущего дня
     private GregorianCalendar presentDay;
@@ -44,7 +42,6 @@ public class CalendarPanel extends JPanel {
 
     public CalendarPanel(TaskManagerController taskManagerController) {
         this.taskManagerController = taskManagerController;
-        this.taskManagerModel = taskManagerController.getTaskManagerModel();
 
         setFont(new Font("Verdana", Font.BOLD, 12));
 
@@ -108,7 +105,7 @@ public class CalendarPanel extends JPanel {
         for (int row = 0; row < 6; row++) {
             int yDatePos = (int) (WEEKDAYS_HEIGHT + yGridStep * row + (CELL_HEAD_HEIGHT + g2d.getFontMetrics().getAscent()) / 2);
             for (int column = 0; column < 7; column++) {
-                List<Appointment> tasks = taskManagerController.getByDate(Appointment.class, calendarIter);
+                List<Appointment> tasks = taskManagerController.getByDay(Appointment.class, calendarIter);
 
                 int yearIter = calendarIter.get(Calendar.YEAR);
                 int monthIter = calendarIter.get(Calendar.MONTH);

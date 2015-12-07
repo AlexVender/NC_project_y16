@@ -2,17 +2,16 @@ package org.netcracker.unc.group16.view.reflection;
 
 
 import javax.swing.*;
-import javax.swing.text.html.ObjectView;
 import java.awt.*;
 import java.lang.reflect.Field;
 
 
 public abstract class FieldPanel extends JPanel {
-    protected Field field;
-    protected Integer order;
-    protected Boolean editable;
+    protected final Field field;
+    protected final Integer order;
+    protected final Boolean editable;
 
-    protected JLabel lblDisplayName;
+    protected final JLabel lblDisplayName;
 
     public FieldPanel(Field field, String displayName, Integer order, Boolean editable) {
         this.field = field;

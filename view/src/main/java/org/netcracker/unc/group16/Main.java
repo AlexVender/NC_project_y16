@@ -12,20 +12,24 @@ import java.util.GregorianCalendar;
 public class Main {
     public static void main(String[] args) {
         TaskManagerModel taskManagerModel = new TaskManagerModel();
+        TaskManagerController taskManagerController = new TaskManagerController(taskManagerModel);
 
         Calendar t1 = new GregorianCalendar(2015, Calendar.DECEMBER, 3, 0, 0);
         Calendar t2 = new GregorianCalendar(2015, Calendar.DECEMBER, 3, 2, 0);
-        taskManagerModel.addAppointment("Test1", t1, t2, "TestTask");
+        taskManagerController.add(new Appointment("Test1", t1, t2, "TestTask"));
         Calendar t3 = Calendar.getInstance();
         Calendar t4 = Calendar.getInstance();
         t4.add(Calendar.HOUR_OF_DAY, 2);
-        taskManagerModel.addAppointment("Today Appointment", t3, t4, "Task of the today");
+        taskManagerController.add(new Appointment("Today Appointment", t3, t4, "Appointment of the today"));
 
         Calendar t5 = new GregorianCalendar(2015, Calendar.DECEMBER, 6, 15, 31);
-        taskManagerModel.addTask("Test2", Calendar.getInstance(), "TestTask");
-        taskManagerModel.addTask("TestTask", t3, "TestTask");
-        taskManagerModel.addTask("TestTask2", Calendar.getInstance(), "TestTask");
+        taskManagerController.add(new Task("Today Task", Calendar.getInstance(), "Task of the today"));
+        taskManagerController.add(new Task("TestTask", t5, "TestTask"));
+        taskManagerController.add(new Task("TestTask2", Calendar.getInstance(), "TestTask"));
 
+        taskManagerController.add(new Task("111", new GregorianCalendar(2015, Calendar.DECEMBER, 15, 17, 0), ""));
+        taskManagerController.add(new Task("222", new GregorianCalendar(2015, Calendar.DECEMBER, 15, 17, 0), ""));
+        taskManagerController.add(new Task("333", new GregorianCalendar(2015, Calendar.DECEMBER, 17, 18, 15), ""));
         Calendar t12 = new GregorianCalendar(2015, Calendar.DECEMBER, 12, 8, 0);
         Calendar t13 = new GregorianCalendar(2015, Calendar.DECEMBER, 12, 9, 0);
 
@@ -42,17 +46,14 @@ public class Main {
 
         TaskManagerController taskManagerController = new TaskManagerController(taskManagerModel);
 
-        NotificationController notificationController = new NotificationController(taskManagerController);
 
-// TaskManagerView taskManagerView = new TaskManagerView(taskManagerController);
+
+        NotificationController notificationController = new NotificationController(taskManagerController);
         TaskManagerView taskManagerView = new TaskManagerView(notificationController);
 
 
         JAXB jaxb = new JAXB();
 //          jaxb.write(taskManagerModel);
-
-
-//        TaskManagerView taskManagerView = new TaskManagerView(taskManagerModel);
 
     }
 }

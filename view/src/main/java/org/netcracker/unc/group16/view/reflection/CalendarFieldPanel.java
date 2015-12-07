@@ -22,8 +22,8 @@ public class CalendarFieldPanel extends FieldPanel {
 
     private static final Integer MINUTES_SPLIT = 15;
 
-    private JSpinner timeSpinner;
-    private JDatePickerImpl datePicker;
+    private final JSpinner timeSpinner;
+    private final JDatePickerImpl datePicker;
 
     @SuppressWarnings("MagicConstant")
     class SpinnerTimeModel extends SpinnerDateModel {
@@ -35,7 +35,6 @@ public class CalendarFieldPanel extends FieldPanel {
         public Object getNextValue() {
             Calendar cal = Calendar.getInstance();
             cal.setTime((Date) getValue());
-            int calendarField = getCalendarField();
             if (getCalendarField() == Calendar.MINUTE) {
                 cal.add(getCalendarField(), MINUTES_SPLIT);
             } else {

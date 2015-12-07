@@ -4,7 +4,6 @@ import org.netcracker.unc.group16.model.Appointment;
 import org.netcracker.unc.group16.model.Task;
 import org.netcracker.unc.group16.model.TaskManagerModel;
 
-import java.lang.reflect.ParameterizedType;
 import java.util.*;
 
 
@@ -17,7 +16,23 @@ public class TaskManagerController implements TaskManager {
 
     }
 
-    public List getByDate(Class requiredClass, Calendar date) {
+    public void add(Task task) throws IllegalArgumentException {
+        taskManagerModel.add(task);
+    }
+
+    public Task get(Integer id) {
+        return taskManagerModel.get(id);
+    }
+
+    public void edit(Integer id, Task task) throws IllegalArgumentException {
+        taskManagerModel.edit(id, task);
+    }
+
+    public void remove(Integer id) {
+        taskManagerModel.remove(id);
+    }
+
+    public List getByDay(Class requiredClass, Calendar date) {
         if (!(requiredClass.equals(Task.class)) && !requiredClass.equals(Appointment.class)) {
             throw new IllegalArgumentException();
         }
@@ -31,7 +46,7 @@ public class TaskManagerController implements TaskManager {
         Calendar dateEnd = new GregorianCalendar(year, month, day + 1);
 
         for (int i = 1; i <= taskManagerModel.getTasksCnt(); i++) {
-            Task task = taskManagerModel.getTask(i);
+            Task task = taskManagerModel.get(i);
             if (task == null) {
                 continue;
             }
@@ -53,7 +68,7 @@ public class TaskManagerController implements TaskManager {
                 }
             }
         }
-        result.sort((o1, o2) -> ((Task) o1).getTime().compareTo(((Task)o2).getTime()));
+        result.sort((o1, o2) -> o1.getTime().compareTo(o2.getTime()));
 
         return result;
     }
@@ -62,19 +77,36 @@ public class TaskManagerController implements TaskManager {
         List<Task> result = new ArrayList<>();
 
         for (int i = 1; i <= taskManagerModel.getTasksCnt(); i++) {
-            Task task = taskManagerModel.getTask(i);
+            Task task = taskManagerModel.get(i);
             if (task == null) {
                 continue;
             }
-
-            Calendar taskTime = task.getTime();
 
             if (task.getClass().equals(requiredClass)) {
                 result.add(task);
             }
         }
 
-        result.sort((o1, o2) -> ((Task) o1).getTime().compareTo(((Task)o2).getTime()));
+        result.sort((o1, o2) -> o1.getTime().compareTo(o2.getTime()));
+
+        return result;
+    }
+
+    public List getClosestNext(Class requiredClass){
+        // Отсортированный список всех тасок
+        List<Task> result = getAll(requiredClass);
+
+        // Убираем завершённые
+        Calendar currentDate = Calendar.getInstance();
+        result.removeIf(task -> task.getTime().compareTo(currentDate) < 0);
+
+        if (result.size() == 0) {
+            return null;
+        }
+
+        // Убираем все после минимальной
+        Calendar minDate = result.get(0).getTime();
+        result.removeIf(task -> task.getTime().compareTo(minDate) > 0);
 
         return result;
     }
@@ -89,7 +121,7 @@ public class TaskManagerController implements TaskManager {
 
     //    Только по идее id не должно передаваться, а должно генерироваться в model
 //    public void performedAddTask(int id, String title, Date time, String comment){
-//        taskManager.addTask(id, title, time, comment);
+//        taskManager.add(id, title, time, comment);
 //    }
 
 //    public void performedDeleteTask(int id){
@@ -102,7 +134,7 @@ public class TaskManagerController implements TaskManager {
 //
 //
 //    public Map<Integer, Task> performedGetTasks(Date date1, Date date2){
-//        return hashMapTasks = taskManager.getByDate(date1, date2);
+//        return hashMapTasks = taskManager.getByDay(date1, date2);
 //    }
 
 }

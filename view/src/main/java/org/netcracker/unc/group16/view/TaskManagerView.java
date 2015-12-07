@@ -17,9 +17,7 @@ import java.awt.event.MouseListener;
 import java.time.DayOfWeek;
 import java.time.Month;
 import java.time.format.TextStyle;
-import java.util.Calendar;
-import java.util.Locale;
-import java.util.Map;
+import java.util.*;
 
 
 public class TaskManagerView extends JFrame implements ProgramInterface, Observer, NotificationObserver {
@@ -195,7 +193,7 @@ public class TaskManagerView extends JFrame implements ProgramInterface, Observe
         tableModel = new TasksTableModel(taskManagerController, date, false);
         tableModel.updateData();
         tasksTable = new JTable(tableModel);
-        TableColumn column = null;
+        TableColumn column;
         for (int i = 0; i < tasksTable.getColumnCount(); i++) {
             column = tasksTable.getColumnModel().getColumn(i);
             int width;
@@ -303,7 +301,7 @@ public class TaskManagerView extends JFrame implements ProgramInterface, Observe
             try {
                 NewTaskDialog newTaskDialog = new NewTaskDialog(this, Appointment.class);
                 if (newTaskDialog.showDialog() == NewTaskDialog.OK) {
-                    taskManagerModel.addTask(newTaskDialog.getResult());
+                    taskManagerController.add(newTaskDialog.getResult());
                     calendarPanel.repaint();
                 }
             } catch (IllegalAccessException | InstantiationException ex) {
@@ -315,7 +313,7 @@ public class TaskManagerView extends JFrame implements ProgramInterface, Observe
             try {
                 NewTaskDialog newTaskDialog = new NewTaskDialog(this, Task.class);
                 if (newTaskDialog.showDialog() == NewTaskDialog.OK) {
-                    taskManagerModel.addTask(newTaskDialog.getResult());
+                    taskManagerController.add(newTaskDialog.getResult());
                     calendarPanel.repaint();
                 }
             } catch (IllegalAccessException | InstantiationException ex) {
@@ -403,13 +401,12 @@ public class TaskManagerView extends JFrame implements ProgramInterface, Observe
             public void mousePressed(MouseEvent e) {
                 if (e.getClickCount() == 2) {
                     int row = tasksTable.rowAtPoint(e.getPoint());
-                    int col = tasksTable.columnAtPoint(e.getPoint());
                     Integer id = (Integer) tableModel.getValueAt(row, 0);
-                    Task task = taskManagerController.getTaskManagerModel().getTask(id);
+                    Task task = taskManagerController.get(id);
 
                     NewTaskDialog newTaskDialog = new NewTaskDialog(getContentPane(), task);
                     if (newTaskDialog.showDialog() == NewTaskDialog.OK) {
-                        taskManagerModel.addTask(newTaskDialog.getResult());
+                        taskManagerController.add(newTaskDialog.getResult());
                         calendarPanel.repaint();
                     }
                 }
