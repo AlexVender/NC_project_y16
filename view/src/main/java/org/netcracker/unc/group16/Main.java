@@ -33,20 +33,16 @@ public class Main {
         Calendar t12 = new GregorianCalendar(2015, Calendar.DECEMBER, 12, 8, 0);
         Calendar t13 = new GregorianCalendar(2015, Calendar.DECEMBER, 12, 9, 0);
 
-        taskManagerModel.addAppointment("12 Dec", t12, t13, "12DecComment");
+        taskManagerController.add(new Appointment("12 Dec", t12, t13, "12DecComment"));
         Calendar t14 = new GregorianCalendar(2015, Calendar.DECEMBER, 12, 15, 0);
         Calendar t15 = new GregorianCalendar(2015, Calendar.DECEMBER, 12, 17, 0);
-        taskManagerModel.addAppointment("12 Dec 2", t14, t15, "12DecComment 2");
+        taskManagerController.add(new Appointment("12 Dec 2", t14, t15, "12DecComment 2"));
 
         Calendar t16 = Calendar.getInstance();
         Calendar t17 = Calendar.getInstance();
         t16.add(Calendar.SECOND, 5);
         t17.add(Calendar.HOUR_OF_DAY, 2);
-        taskManagerModel.addAppointment("2Today Appointment", t16, t17, "Task of the today2");
-
-        TaskManagerController taskManagerController = new TaskManagerController(taskManagerModel);
-
-
+        taskManagerController.add(new Appointment("2Today Appointment", t16, t17, "Task of the today2"));
 
         NotificationController notificationController = new NotificationController(taskManagerController);
         TaskManagerView taskManagerView = new TaskManagerView(notificationController);
