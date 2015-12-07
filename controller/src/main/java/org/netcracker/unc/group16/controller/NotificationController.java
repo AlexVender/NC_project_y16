@@ -147,8 +147,22 @@ public class NotificationController implements org.netcracker.unc.group16.model.
 
 
         }
-        System.out.println("Нотификатор сработает через " + ((int) (min.getValue().getTime().getTimeInMillis() - cal.getTimeInMillis()) / 1000) + " секунд.");
-        return (int) (min.getValue().getTime().getTimeInMillis() - cal.getTimeInMillis()) / 1000;
+        try{
+            System.out.println("Нотификатор сработает через " + ((int) (min.getValue().getTime().getTimeInMillis() - cal.getTimeInMillis()) / 1000) + " секунд.");
+
+
+        }
+        catch (NullPointerException e){
+
+        }
+
+        if (min == null){
+            return 0;
+        }
+        else{
+            return (int) (min.getValue().getTime().getTimeInMillis() - cal.getTimeInMillis()) / 1000;
+
+        }
     }
 
     public  long tempFunction(){
