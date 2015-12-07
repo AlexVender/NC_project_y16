@@ -18,6 +18,8 @@ public class NotificationController implements org.netcracker.unc.group16.model.
 
     private TaskManagerModel taskManagerModel;
 
+    private TaskManagerController taskManagerController;
+
     ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
 
     ScheduledFuture scheduledFuture = scheduler.schedule(new Runnable() {
@@ -29,10 +31,15 @@ public class NotificationController implements org.netcracker.unc.group16.model.
 
 
 
-    public NotificationController(TaskManagerModel taskManagerModel){
-        this.taskManagerModel = taskManagerModel;
-        //Регистрируем наблюдателя
-        taskManagerModel.registerObserver(this);
+//    public NotificationController(TaskManagerModel taskManagerModel){
+//        this.taskManagerModel = taskManagerModel;
+//        Регистрируем наблюдателя
+//        taskManagerModel.registerObserver(this);
+//    }
+
+    public NotificationController(TaskManagerController taskManagerController){
+        this.setTaskManagerController(taskManagerController);
+        this.setTaskManagerModel(taskManagerController.getTaskManagerModel());
     }
 
     public void notificate(){
@@ -73,7 +80,7 @@ public class NotificationController implements org.netcracker.unc.group16.model.
 
         //Ищем таску с минимальной датой
         Map.Entry<Integer, Task> min = null;
-        for (HashMap.Entry<Integer, Task> entry : taskManagerModel.getHashMapTasks().entrySet()) {
+        for (HashMap.Entry<Integer, Task> entry : getTaskManagerModel().getHashMapTasks().entrySet()) {
             Integer key = entry.getKey();
             Task value = entry.getValue();
 
@@ -86,7 +93,7 @@ public class NotificationController implements org.netcracker.unc.group16.model.
 
         //Добавляем остальные таски
         if (min != null){
-            for (HashMap.Entry<Integer, Task> entry : taskManagerModel.getHashMapTasks().entrySet()) {
+            for (HashMap.Entry<Integer, Task> entry : getTaskManagerModel().getHashMapTasks().entrySet()) {
                 Integer key = entry.getKey();
                 Task value = entry.getValue();
 
@@ -112,5 +119,13 @@ public class NotificationController implements org.netcracker.unc.group16.model.
         Calendar cal = Calendar.getInstance();
 //        System.out.println(cal.getTimeInMillis()/1000 + 5);
         return cal.getTimeInMillis() / 1000 + 5;
+    }
+
+    public TaskManagerController getTaskManagerController() {
+        return taskManagerController;
+    }
+
+    public void setTaskManagerController(TaskManagerController taskManagerController) {
+        this.taskManagerController = taskManagerController;
     }
 }

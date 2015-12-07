@@ -23,19 +23,17 @@ public class Main {
         taskManagerModel.addTask("TestTask2", Calendar.getInstance(), "TestTask");
 
 
-        NotificationController notificationController = new NotificationController(taskManagerModel);
-
-
-
-
-
         TaskManagerController taskManagerController = new TaskManagerController(taskManagerModel);
+
+        NotificationController notificationController = new NotificationController(taskManagerController);
+
+
 //        TaskManagerView taskManagerView = new TaskManagerView(taskManagerController);
         TaskManagerView taskManagerView = new TaskManagerView(notificationController);
 
 
         JAXB jaxb = new JAXB();
-        //  jaxb.write(taskManagerModel);
+//          jaxb.write(taskManagerModel);
 
 
 //        TaskManagerView taskManagerView = new TaskManagerView(taskManagerModel);

@@ -66,6 +66,7 @@ public class TaskManagerView extends JFrame implements ProgramInterface, Observe
 
     public TaskManagerView(NotificationController notificationController){
         this.notificationController = notificationController;
+        this.taskManagerController = notificationController.getTaskManagerController();
         this.taskManagerModel = notificationController.getTaskManagerModel();
 
         menuState = States.calendar;
