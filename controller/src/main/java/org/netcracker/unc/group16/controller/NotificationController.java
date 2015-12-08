@@ -55,9 +55,7 @@ public class NotificationController implements org.netcracker.unc.group16.model.
             @Override
             public void run() {
                 notifyObservers();
-                /*System.out.println("postpone - напомнить через 10 секунд\n" +
-                        "dismiss - отклонить, перейти к следующей такске\n" +
-                        "close закрыть окно = postpone");*/
+
             }
         }, getTimeBeforeExecution(), TimeUnit.SECONDS);
         if (scheduledFuture.isDone()){

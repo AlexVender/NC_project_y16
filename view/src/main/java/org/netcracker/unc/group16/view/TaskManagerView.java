@@ -449,6 +449,8 @@ public class TaskManagerView extends JFrame implements ProgramInterface, Observe
 
 
     public void updateFromNotification(){
-        System.out.println("HELLOOOO");
+        NotificationView newTaskDialog = new NotificationView();
+        newTaskDialog.setVisible(true);
+        newTaskDialog.pack();
     }
 }
