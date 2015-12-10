@@ -2,7 +2,10 @@ package org.netcracker.unc.group16;
 
 import org.netcracker.unc.group16.controller.NotificationController;
 import org.netcracker.unc.group16.controller.TaskManagerController;
-import org.netcracker.unc.group16.model.*;
+import org.netcracker.unc.group16.model.Appointment;
+import org.netcracker.unc.group16.model.JAXB;
+import org.netcracker.unc.group16.model.Task;
+import org.netcracker.unc.group16.model.TaskManagerModel;
 import org.netcracker.unc.group16.view.TaskManagerView;
 
 import java.util.Calendar;
@@ -14,8 +17,8 @@ public class Main {
         TaskManagerModel taskManagerModel = new TaskManagerModel();
         TaskManagerController taskManagerController = new TaskManagerController(taskManagerModel);
 
-        Calendar t1 = new GregorianCalendar(2015, Calendar.DECEMBER, 3, 0, 0);
-        Calendar t2 = new GregorianCalendar(2015, Calendar.DECEMBER, 3, 2, 0);
+        Calendar t1 = new GregorianCalendar(2015, Calendar.DECEMBER, 15, 10, 0);
+        Calendar t2 = new GregorianCalendar(2015, Calendar.DECEMBER, 19, 15, 0);
         taskManagerController.add(new Appointment("Test1", t1, t2, "TestTask"));
         Calendar t3 = Calendar.getInstance();
         Calendar t4 = Calendar.getInstance();
@@ -40,9 +43,9 @@ public class Main {
 
         Calendar t16 = Calendar.getInstance();
         Calendar t17 = Calendar.getInstance();
-        t16.add(Calendar.SECOND, 5);
         t17.add(Calendar.HOUR_OF_DAY, 2);
         taskManagerController.add(new Appointment("2Today Appointment", t16, t17, "Task of the today2"));
+
 
         NotificationController notificationController = new NotificationController(taskManagerController);
         TaskManagerView taskManagerView = new TaskManagerView(notificationController);

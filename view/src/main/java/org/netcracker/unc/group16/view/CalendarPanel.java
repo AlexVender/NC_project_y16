@@ -2,12 +2,12 @@ package org.netcracker.unc.group16.view;
 
 import org.netcracker.unc.group16.controller.TaskManagerController;
 import org.netcracker.unc.group16.model.Appointment;
-import org.netcracker.unc.group16.model.TaskManagerModel;
 
 import javax.swing.*;
 import javax.swing.border.LineBorder;
 import java.awt.*;
-import java.util.*;
+import java.util.Calendar;
+import java.util.GregorianCalendar;
 import java.util.List;
 
 
@@ -76,6 +76,7 @@ public class CalendarPanel extends JPanel {
         return month;
     }
 
+    @Override
     public void paintComponent(Graphics g) {
         Graphics2D g2d = (Graphics2D)g;
         int height = getHeight();
@@ -136,7 +137,7 @@ public class CalendarPanel extends JPanel {
                     g2d.setColor(Color.RED);
                     int x = (int) (xGridStep * column);
                     int y = (int) (yGridStep * row) + WEEKDAYS_HEIGHT;
-                    g2d.drawRoundRect(x - 1, y - 1, (int) xGridStep + 2, CELL_HEAD_HEIGHT + 2, 15, 15);
+                    g2d.drawRoundRect(x - 1, y - 1, (int) xGridStep + 2, (int) yGridStep + 2, 15, 15);
                 }
 
 
@@ -163,26 +164,29 @@ public class CalendarPanel extends JPanel {
                             (int) xGridStep - 3,
                             taskHeight);
 
-                    g2d.setColor(Color.BLACK);
-                    int hour = task.getTime().get(Calendar.HOUR_OF_DAY);
-                    int min = task.getTime().get(Calendar.MINUTE);
+                    if (task.getTime().get(Calendar.YEAR) == calendarIter.get(Calendar.YEAR) &&
+                            task.getTime().get(Calendar.MONTH) == calendarIter.get(Calendar.MONTH) &&
+                            task.getTime().get(Calendar.DAY_OF_MONTH) == calendarIter.get(Calendar.DAY_OF_MONTH)) {
 
+                        int hour = task.getTime().get(Calendar.HOUR_OF_DAY);
+                        int min = task.getTime().get(Calendar.MINUTE);
 
-                    String formedText = (hour > 9 ? "" : "0") + hour + ":" +
-                            (min > 9 ? "" : "0") + min + " " + task.getTitle();
+                        String formedText = (hour > 9 ? "" : "0") + hour + ":" +
+                                (min > 9 ? "" : "0") + min + " " + task.getTitle();
 
-                    int dx = fontMetrics.stringWidth(formedText) - ((int) xGridStep - 6 - fontMetrics.stringWidth(suffix));
-                    if (dx > 0) {
-                        for (int i = 1; i < formedText.length(); i++) {
-                            if (fontMetrics.bytesWidth(formedText.getBytes(), formedText.length() - i, i) >= dx) {
-                                formedText = formedText.substring(0, formedText.length() - i);
-                                break;
+                        int dx = fontMetrics.stringWidth(formedText) - ((int) xGridStep - 6 - fontMetrics.stringWidth(suffix));
+                        if (dx > 0) {
+                            for (int i = 1; i < formedText.length(); i++) {
+                                if (fontMetrics.bytesWidth(formedText.getBytes(), formedText.length() - i, i) >= dx) {
+                                    formedText = formedText.substring(0, formedText.length() - i);
+                                    break;
+                                }
                             }
+                            formedText = formedText + suffix;
                         }
-                        formedText = formedText + suffix;
+                        g2d.setColor(Color.BLACK);
+                        g2d.drawString(formedText, (int) (xGridStep * column) + 3, shift + yTaskPos + fontMetrics.getAscent());
                     }
-                    g2d.drawString(formedText, (int) (xGridStep * column) + 3, shift + yTaskPos + fontMetrics.getAscent());
-
                     tasksOnDayCnt++;
                 }
 

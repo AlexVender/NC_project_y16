@@ -20,7 +20,8 @@ public class TasksTableModel extends DefaultTableModel {
             "ID",
             "Дата",
             "Тема",
-            "Описание"
+            "Описание",
+            ""
     };
 
     private static final Class[] columnClasses  = {
@@ -28,6 +29,7 @@ public class TasksTableModel extends DefaultTableModel {
             String.class,
             String.class,
             String.class,
+            String.class
     };
 
     public TasksTableModel(TaskManagerController controller, Calendar calendar, boolean onDay) {
@@ -63,7 +65,7 @@ public class TasksTableModel extends DefaultTableModel {
 
     @Override
     public int getColumnCount() {
-        return 4;
+        return columnNames.length;
     }
 
     @Override
@@ -88,14 +90,10 @@ public class TasksTableModel extends DefaultTableModel {
             case 1:     return dateFormat.format(((Task)tasksList.get(rowIndex)).getTime().getTime());
             case 2:     return ((Task)tasksList.get(rowIndex)).getTitle();
             case 3:     return ((Task)tasksList.get(rowIndex)).getDescription();
+            case 4:     return "X";
             default:    return null;
         }
     }
-
-//    @Override
-//    public void setValueAt(Object value, int rowIndex, int columnIndex) {
-//    }
-
 
     public Calendar getCalendar() {
         return (Calendar) calendar.clone();

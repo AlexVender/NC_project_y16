@@ -143,6 +143,7 @@ public class NewTaskDialog extends JDialog {
 
     private void addListeners() {
         addWindowListener(new WindowAdapter() {
+            @Override
             public void windowClosing(WindowEvent e) {
                 status = CANCEL;
             }

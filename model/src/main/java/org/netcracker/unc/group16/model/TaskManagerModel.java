@@ -25,11 +25,13 @@ public class TaskManagerModel implements Observable {
 
     public void add(Task task) throws IllegalArgumentException {
         Integer id = task.getId();
-        if (task.id == null || task.id == 0) {
+        if (id == null || id == 0) {
             id = ++tasksCnt;
             task.setId(id);
-        } else if (task.id < 0) {
-            throw new IllegalArgumentException("Task id should be positive");
+        } else if (id < 0) {
+            throw new IllegalArgumentException("Task id must be positive");
+        } else if (id >= tasksCnt) {
+            tasksCnt = id;
         }
 
         hashMapTasks.put(id, (Task) task.clone());

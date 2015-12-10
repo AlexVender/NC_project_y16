@@ -1,27 +1,25 @@
 package org.netcracker.unc.group16.view;
 
 import org.netcracker.unc.group16.controller.NotificationController;
-import org.netcracker.unc.group16.controller.NotificationObservable;
 import org.netcracker.unc.group16.controller.NotificationObserver;
 import org.netcracker.unc.group16.controller.TaskManagerController;
+import org.netcracker.unc.group16.model.Appointment;
 import org.netcracker.unc.group16.model.Observer;
 import org.netcracker.unc.group16.model.Task;
-import org.netcracker.unc.group16.model.Appointment;
-import org.netcracker.unc.group16.model.TaskManagerModel;
 
 import javax.swing.*;
-import javax.swing.table.TableColumn;
 import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.time.DayOfWeek;
 import java.time.Month;
 import java.time.format.TextStyle;
-import java.util.*;
+import java.util.Calendar;
+import java.util.Locale;
+import java.util.Map;
 
 
 public class TaskManagerView extends JFrame implements ProgramInterface, Observer, NotificationObserver {
-    private TaskManagerModel taskManagerModel;
     private TaskManagerController taskManagerController;
     private NotificationController notificationController;
 
@@ -56,8 +54,7 @@ public class TaskManagerView extends JFrame implements ProgramInterface, Observe
 
     public TaskManagerView(TaskManagerController taskManagerController) {
         this.taskManagerController = taskManagerController;
-        this.taskManagerModel = taskManagerController.getTaskManagerModel();
-        taskManagerModel.registerObserver(this);
+        taskManagerController.getTaskManagerModel().registerObserver(this);
         menuState = States.calendar;
 
         initGUI();
@@ -67,7 +64,6 @@ public class TaskManagerView extends JFrame implements ProgramInterface, Observe
     public TaskManagerView(NotificationController notificationController){
         this.notificationController = notificationController;
         this.taskManagerController = notificationController.getTaskManagerController();
-        this.taskManagerModel = notificationController.getTaskManagerModel();
 
         this.notificationController.registerObserver(this);
 
@@ -90,8 +86,8 @@ public class TaskManagerView extends JFrame implements ProgramInterface, Observe
         setTitle("Task manager");
         setResizable(true);
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-        setPreferredSize(new Dimension(1000, 800));
-        setMinimumSize(new Dimension(750, 650));
+        setPreferredSize(new Dimension(800, 700));
+        setMinimumSize(new Dimension(650, 650));
         setLocationRelativeTo(null);
         setIconImage(Toolkit.getDefaultToolkit().getImage("view/resources/icon.png"));
 
@@ -192,23 +188,7 @@ public class TaskManagerView extends JFrame implements ProgramInterface, Observe
         date.set(Calendar.YEAR, calendarPanel.getYear());
         tableModel = new TasksTableModel(taskManagerController, date, false);
         tableModel.updateData();
-        tasksTable = new JTable(tableModel);
-        TableColumn column;
-        for (int i = 0; i < tasksTable.getColumnCount(); i++) {
-            column = tasksTable.getColumnModel().getColumn(i);
-            int width;
-            switch (i) {
-                case 0: width = 50; break;
-                case 1: width = 65; break;
-                case 2: width = 250; break;
-                case 3: continue;
-
-                default: width = 200;
-            }
-
-            column.setPreferredWidth(width);
-            column.setMaxWidth(width);
-        }
+        tasksTable = new TasksTable(tableModel);
         scrollPane = new JScrollPane(tasksTable);
         workPanel.add(scrollPane, "TasksTable");
 
@@ -302,7 +282,11 @@ public class TaskManagerView extends JFrame implements ProgramInterface, Observe
                 NewTaskDialog newTaskDialog = new NewTaskDialog(this, Appointment.class);
                 if (newTaskDialog.showDialog() == NewTaskDialog.OK) {
                     taskManagerController.add(newTaskDialog.getResult());
-                    calendarPanel.repaint();
+
+                    if (menuState == States.dayTimetable) {
+                        dayTimetablePanel.updateTasks();
+                    }
+                    repaint();
                 }
             } catch (IllegalAccessException | InstantiationException ex) {
                 ex.printStackTrace();
@@ -330,11 +314,14 @@ public class TaskManagerView extends JFrame implements ProgramInterface, Observe
 
                     tableModel.setCalendar(date);
                     tableModel.setOnDay(false);
+                    menuState = States.tasksTable;
+                    updateMonthLabel();
                     break;
 
                 case dayTimetable:
                     tableModel.setCalendar(dayTimetablePanel.getDate());
                     tableModel.setOnDay(true);
+                    menuState = States.tasksTable;
                     break;
 
                 default:
@@ -342,7 +329,6 @@ public class TaskManagerView extends JFrame implements ProgramInterface, Observe
             }
 
             btnBack.setVisible(true);
-            menuState = States.tasksTable;
             tableModel.updateData();
             CardLayout cardLayout = (CardLayout) (workPanel.getLayout());
             cardLayout.show(workPanel, "TasksTable");
@@ -401,13 +387,22 @@ public class TaskManagerView extends JFrame implements ProgramInterface, Observe
             public void mousePressed(MouseEvent e) {
                 if (e.getClickCount() == 2) {
                     int row = tasksTable.rowAtPoint(e.getPoint());
+                    int col = tasksTable.columnAtPoint(e.getPoint());
+
                     Integer id = (Integer) tableModel.getValueAt(row, 0);
+
+                    if (col == 4) {
+                        taskManagerController.remove(id);
+                        tableModel.updateData();
+                        return;
+                    }
+
                     Task task = taskManagerController.get(id);
 
                     NewTaskDialog newTaskDialog = new NewTaskDialog(getContentPane(), task);
                     if (newTaskDialog.showDialog() == NewTaskDialog.OK) {
-                        taskManagerController.add(newTaskDialog.getResult());
-                        calendarPanel.repaint();
+                        taskManagerController.edit(id, newTaskDialog.getResult());
+                        tableModel.updateData();
                     }
                 }
             }
@@ -439,15 +434,22 @@ public class TaskManagerView extends JFrame implements ProgramInterface, Observe
                 lblMonthYear.setText(date.get(Calendar.DAY_OF_MONTH) + " " + month + ", " + date.get(Calendar.YEAR) + " – " + dayOfWeek);
                 break;
 
+            case tasksTable:
+                lblMonthYear.setText("Все задачи");
+            break;
+
+            default:
         }
     }
 
     //Если как-то изменяются эти два поля - все наблюдатели об этом знают
+    @Override
     public void update(Map<Integer, Task> hashMapTasks, Integer tasksCnt){
 
     }
 
 
+    @Override
     public void updateFromNotification(){
         NotificationView newTaskDialog = new NotificationView();
         newTaskDialog.setVisible(true);

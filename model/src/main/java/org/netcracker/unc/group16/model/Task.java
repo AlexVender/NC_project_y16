@@ -2,8 +2,6 @@ package org.netcracker.unc.group16.model;
 
 import org.netcracker.unc.group16.annotations.FieldSettings;
 
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.util.Calendar;
 
@@ -33,14 +31,13 @@ public class Task implements Cloneable {
         this.id = id;
         this.title = title;
         this.time = (Calendar) time.clone();
+        this.time.set(Calendar.SECOND, 0);
+        this.time.set(Calendar.MILLISECOND, 0);
         this.description = description;
     }
 
     public Task(Task task ) {
-        this.id = task.id;
-        this.title = task.title;
-        this.time = (Calendar) task.time.clone();
-        this.description = task.description;
+        this(task.id, task.title, task.time, task.description);
     }
 
     
@@ -69,6 +66,10 @@ public class Task implements Cloneable {
     }
 
     public void setTime(Calendar time) {
+        if (time == null) {
+            this.time = null;
+        }
+
         this.time = (Calendar) time.clone();
         this.time.set(Calendar.SECOND, 0);
         this.time.set(Calendar.MILLISECOND, 0);

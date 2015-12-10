@@ -15,22 +15,25 @@ public class Appointment extends Task {
     }
 
     public Appointment(String title, Calendar time, Calendar endTime, String description) {
-        super(title, time, description);
-        this.endTime = (Calendar) endTime.clone();
+        this(0, title, time, endTime, description);
     }
 
     public Appointment(Integer id, String title, Calendar time, Calendar endTime, String description) {
         super(id, title, time, description);
-        this.endTime = (Calendar) endTime.clone();
+        setEndTime(endTime);
     }
 
     public Appointment(Appointment appointment) {
-        super(appointment.id, appointment.title, appointment.time, appointment.description);
-        this.endTime = (Calendar) appointment.endTime.clone();
+        this(appointment.id, appointment.title, appointment.time, appointment.endTime, appointment.description);
     }
 
     @Override
     public void setTime(Calendar time) throws IllegalArgumentException {
+        if (time == null) {
+            this.time = null;
+            return;
+        }
+
         Calendar tmpCalendar = (Calendar) time.clone();
         tmpCalendar.set(Calendar.SECOND, 0);
         tmpCalendar.set(Calendar.MILLISECOND, 0);
@@ -48,6 +51,10 @@ public class Appointment extends Task {
     }
 
     public void setEndTime(Calendar endTime) throws IllegalArgumentException {
+        if (endTime == null) {
+            this.endTime = null;
+            return;
+        }
         Calendar tmpCalendar = (Calendar) endTime.clone();
         tmpCalendar.set(Calendar.SECOND, 0);
         tmpCalendar.set(Calendar.MILLISECOND, 0);

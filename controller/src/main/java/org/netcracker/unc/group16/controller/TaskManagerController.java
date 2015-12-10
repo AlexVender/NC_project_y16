@@ -78,11 +78,8 @@ public class TaskManagerController implements TaskManager {
 
         for (int i = 1; i <= taskManagerModel.getTasksCnt(); i++) {
             Task task = taskManagerModel.get(i);
-            if (task == null) {
-                continue;
-            }
 
-            if (task.getClass().equals(requiredClass)) {
+            if (task != null && task.getClass().equals(requiredClass)) {
                 result.add(task);
             }
         }
@@ -111,6 +108,28 @@ public class TaskManagerController implements TaskManager {
         return result;
     }
 
+    public void setTitle(Integer id, String title) {
+        taskManagerModel.get(id).setTitle(title);
+    }
+
+    public void setTime(Integer id, Calendar time) {
+        taskManagerModel.get(id).setTime(time);
+    }
+
+    public void setEndTime (Integer id, Calendar endTime) {
+        Task task = taskManagerModel.get(id);
+        if (task instanceof Appointment) {
+            Appointment appointment = (Appointment) task;
+            appointment.setEndTime(endTime);
+        } else {
+            throw new IllegalArgumentException("Task by this id is not appointment");
+        }
+    }
+
+    public void setDescription(Integer id, String description) {
+        taskManagerModel.get(id).setDescription(description);
+    }
+
     public TaskManagerModel getTaskManagerModel() {
         return taskManagerModel;
     }
@@ -118,23 +137,4 @@ public class TaskManagerController implements TaskManager {
     public void setTaskManagerModel(TaskManagerModel taskManagerModel) {
         this.taskManagerModel = taskManagerModel;
     }
-
-    //    Только по идее id не должно передаваться, а должно генерироваться в model
-//    public void performedAddTask(int id, String title, Date time, String comment){
-//        taskManager.add(id, title, time, comment);
-//    }
-
-//    public void performedDeleteTask(int id){
-//        taskManager.deleteTask(id);
-//    }
-//
-//    public  void performedEditTask(int id, String title, Date time, String comment){
-//        taskManager.editTask(id, title, time, comment);
-//    }
-//
-//
-//    public Map<Integer, Task> performedGetTasks(Date date1, Date date2){
-//        return hashMapTasks = taskManager.getByDay(date1, date2);
-//    }
-
 }
