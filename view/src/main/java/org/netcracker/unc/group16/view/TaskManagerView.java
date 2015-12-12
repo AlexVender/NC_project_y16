@@ -450,8 +450,11 @@ public class TaskManagerView extends JFrame implements ProgramInterface, Observe
 
 
     @Override
-    public void updateFromNotification(){
-        NotificationView newTaskDialog = new NotificationView();
+    public void updateFromNotification(Map<Integer, Task> currentTasks){
+
+        NotificationView newTaskDialog = new NotificationView(currentTasks);
+        Dimension d = new Dimension(400,100);
+        newTaskDialog.setPreferredSize(d);
         newTaskDialog.setVisible(true);
         newTaskDialog.pack();
     }

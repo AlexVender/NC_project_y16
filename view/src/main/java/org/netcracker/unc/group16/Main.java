@@ -23,7 +23,7 @@ public class Main {
         Calendar t3 = Calendar.getInstance();
         Calendar t4 = Calendar.getInstance();
         t4.add(Calendar.HOUR_OF_DAY, 2);
-        taskManagerController.add(new Appointment("Today Appointment", t3, t4, "Appointment of the today"));
+//        taskManagerController.add(new Appointment("Today Appointment", t3, t4, "Appointment of the today"));
 
         Calendar t5 = new GregorianCalendar(2015, Calendar.DECEMBER, 6, 15, 31);
         taskManagerController.add(new Task("Today Task", Calendar.getInstance(), "Task of the today"));
@@ -42,7 +42,10 @@ public class Main {
         taskManagerController.add(new Appointment("12 Dec 2", t14, t15, "12DecComment 2"));
 
         Calendar t16 = Calendar.getInstance();
+//        System.out.println("Время t16:" + t16.getTimeInMillis()/1000);
         Calendar t17 = Calendar.getInstance();
+        t16.add(Calendar.MINUTE, 1);
+//        System.out.println("Время t16+30sec:" + t16.getTimeInMillis() / 1000);
         t17.add(Calendar.HOUR_OF_DAY, 2);
         taskManagerController.add(new Appointment("2Today Appointment", t16, t17, "Task of the today2"));
 

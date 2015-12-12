@@ -31,33 +31,24 @@ public class NotificationController implements org.netcracker.unc.group16.model.
 //        taskManagerModel.registerObserver(this);
 //    }
 
-    public NotificationController(TaskManagerController taskManagerController){
-        this.setTaskManagerController(taskManagerController);
-        this.setTaskManagerModel(taskManagerController.getTaskManagerModel());
-        this.setCurrentTasks(getTasksForNotification());
-
-        //Если таски для нотификатора есть
-        if (!(getCurrentTasks().isEmpty())){
-            initNC();
-        }
-    }
-
     public void initNC(){
 
-      //  System.out.println("В нотификаторе лежат следующие таски:");
+//        System.out.println("Sysdate:" + Calendar.getInstance().getTimeInMillis() / 1000);
+//        System.out.println("В нотификаторе лежат следующие таски:");
         for (HashMap.Entry<Integer, Task> entry : getCurrentTasks().entrySet()) {
             Integer key = entry.getKey();
             Task value = entry.getValue();
-          //  System.out.println("ID:" + key + ";unix timestamp время:" + (value.getTime().getTimeInMillis() / 1000));
+//            System.out.println("ID:" + key + ";unix timestamp время:" + (value.getTime().getTimeInMillis() / 1000));
 
         }
         ScheduledFuture scheduledFuture = scheduler.schedule(new Runnable() {
             @Override
             public void run() {
-                notifyObservers();
+            //    notifyObservers(currentTasks);
 
             }
-        }, getTimeBeforeExecution(), TimeUnit.SECONDS);
+        }//, getTimeBeforeExecution()
+                ,2, TimeUnit.SECONDS);
         if (scheduledFuture.isDone()){
             initNC();
         }
@@ -74,10 +65,10 @@ public class NotificationController implements org.netcracker.unc.group16.model.
     public void postpone(){
 
     }
+
     public boolean dismiss(){
         return true;
     }
-
     public void getLastTask(){
 
     }
@@ -115,14 +106,19 @@ public class NotificationController implements org.netcracker.unc.group16.model.
 
             if(value.getClass().getSimpleName().equals("Appointment")){// Только для встреч
                 if (min == 0) {
+//                    System.out.println("Задали min значение " + valueMS / 1000);
                     min = valueMS;
                 }
+//                System.out.println("Зашли с Appointment Comment:" + value.getDescription() + ";ID:" + key + ";Time:" + value.getTime().getTimeInMillis()/1000 +
+//                        ";Time2:" + value.getTime().getTime().getTime()/1000);
 
                 if ((valueMS > sysdate) && (valueMS > min) && (min < sysdate)){
+//                    System.out.println("Поменяли минимальное значение с " + min/1000 + " на " + valueMS/1000);
                     min = valueMS;
                 }
                 else if ((valueMS > sysdate) && (valueMS < min)){
-                        min = valueMS;
+//                    System.out.println("Поменяли минимальное значение с " + min/1000 + " на " + valueMS/1000);
+                    min = valueMS;
                 }
             }
 
@@ -178,15 +174,16 @@ public class NotificationController implements org.netcracker.unc.group16.model.
             return 0;
         }
         else{
+            System.out.println("Время до выполнения "  + (int) (min.getValue().getTime().getTimeInMillis() - cal.getTimeInMillis()) / 1000 + " секунд");
             return (int) (min.getValue().getTime().getTimeInMillis() - cal.getTimeInMillis()) / 1000;
 
         }
     }
 
-
     public TaskManagerController getTaskManagerController() {
         return taskManagerController;
     }
+
 
     public void setTaskManagerController(TaskManagerController taskManagerController) {
         this.taskManagerController = taskManagerController;
@@ -196,14 +193,26 @@ public class NotificationController implements org.netcracker.unc.group16.model.
     public void registerObserver(NotificationObserver o){
         notificationObservers.add(o);
     }
+
     @Override
     public void removeObserver(NotificationObserver o){
         notificationObservers.remove(o);
     }
     @Override
-    public void notifyObservers(){
+    public void notifyObservers(Map<Integer, Task> currentTasks){
         for (NotificationObserver notificationObserver: notificationObservers){
-            notificationObserver.updateFromNotification();
+            notificationObserver.updateFromNotification(currentTasks);
+        }
+    }
+
+    public NotificationController(TaskManagerController taskManagerController){
+        this.setTaskManagerController(taskManagerController);
+        this.setTaskManagerModel(taskManagerController.getTaskManagerModel());
+        this.setCurrentTasks(getTasksForNotification());
+
+        //Если таски для нотификатора есть
+        if (!(getCurrentTasks().isEmpty())){
+            initNC();
         }
     }
 }

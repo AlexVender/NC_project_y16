@@ -13,34 +13,76 @@ import org.netcracker.unc.group16.view.reflection.TaskFieldPanelFactory;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.HashMap;
+import java.util.Map;
 
 public class NotificationView extends JFrame {
     private JLabel countLabel;
+    private JLabel timeLabel;
+    private JLabel TitleLabel;
+    private JLabel descriptionLabel;
     private JButton OK;
-    private JButton Postpone;
+    private boolean status = true;
 
-    public NotificationView() {
-        //Подготавливаем компоненты объекта
+
+    public NotificationView(Map<Integer, Task> currentTasks) {
+        setTitle("Notification");
         countLabel = new JLabel("You've got new appointment!");
         OK = new JButton("OK");
-        Postpone = new JButton("Postpone");
         setLocationRelativeTo(null);
 
-        //Подготавливаем временные компоненты
+
         JPanel buttonsPanel = new JPanel(new FlowLayout());
-        //Расставляем компоненты по местам
-        add(countLabel, BorderLayout.NORTH); //О размещении компонент поговорим позже
+        add(countLabel, BorderLayout.NORTH);
+        //Р”РѕР±Р°РІР»РµРЅРёРµ РІСЃРµС… С‚Р°СЃРѕРє (СЂРµР°Р»РёР·РѕРІР°РЅРѕ РїР»РѕС…Рѕ, С‚.Рє. РїСЂРѕСЃС‚Рѕ РІС‹РІРѕРґРёС‚СЃСЏ РѕРґРЅР° С‚Р°СЃРєР°)
+        Map<Integer, Task> jjalbeMap = new HashMap<>(currentTasks);
+        for (HashMap.Entry<Integer, Task> entry: jjalbeMap.entrySet()){
+            int hour = entry.getValue().getTime().get(Calendar.HOUR_OF_DAY);
+            int min = entry.getValue().getTime().get(Calendar.MINUTE);
+
+
+            String formedText = (hour > 9 ? "" : "0") + hour + ":" +
+                    (min > 9 ? "" : "0") + min + " " + entry.getValue().getTitle();
+            timeLabel = new JLabel(formedText);
+            add(timeLabel, BorderLayout.CENTER);
+            System.out.println(formedText);
+        }
+
 
         buttonsPanel.add(OK);
-        buttonsPanel.add(Postpone);
 
         add(buttonsPanel, BorderLayout.SOUTH);
         setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+
+        addListeners();
+        paint();
+    }
+
+    private void addListeners(){
+        addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                status = false;
+            }
+        });
+
+        OK.addActionListener(e -> {
+            status = false;
+            NotificationView.this.setVisible(false);
+        });
+
+    }
+
+    public void paint() {
+
     }
 }
