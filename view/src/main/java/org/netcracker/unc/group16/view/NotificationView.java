@@ -54,7 +54,6 @@ public class NotificationView extends JFrame {
                     (min > 9 ? "" : "0") + min + " " + entry.getValue().getTitle();
             timeLabel = new JLabel(formedText);
             add(timeLabel, BorderLayout.CENTER);
-            System.out.println(formedText);
         }
 
 

@@ -22,14 +22,58 @@ public class NotificationController implements org.netcracker.unc.group16.model.
 
     private TaskManagerController taskManagerController;
 
+    public NotificationController(TaskManagerController taskManagerController){
+        this.setTaskManagerController(taskManagerController);
+        this.setTaskManagerModel(taskManagerController.getTaskManagerModel());
+        this.setCurrentTasks(getTasksForNotification());
+
+        //Если таски для нотификатора есть
+        if (!(getCurrentTasks().isEmpty())){
+            initNC();
+        }/*
+        while (!(getCurrentTasks().isEmpty())){
+            initNC();
+        }*/
+    }
+
     ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
 
+    private ScheduledExecutorService scheduledExecutorService;
+    private ScheduledFuture<?> futureTask;
+    private Runnable myTask;
+/*
+    @Override
+    public void onCreate(Bundle savedInstanceState)
+    {
+        super.onCreate(savedInstanceState);
 
-//    public NotificationController(TaskManagerModel taskManagerModel){
-//        this.taskManagerModel = taskManagerModel;
-//        Регистрируем наблюдателя
-//        taskManagerModel.registerObserver(this);
-//    }
+        // Your executor, you should instanciate it once for all
+        scheduledExecutorService = Executors.newScheduledThreadPool(5);
+
+        // Since your task won't change during runtime, you can instanciate it too once for all
+        myTask = new Runnable()
+        {
+            @Override
+            public void run()
+            {
+                // Your code to run periodically
+            }
+        };
+    }
+
+
+    public void changeReadInterval(long time)
+    {
+        if(time > 0)
+        {
+            if (futureTask != null)
+            {
+                futureTask.cancel(true);
+            }
+
+            futureTask = scheduledExecutorService.scheduleAtFixedRate(myTask, 0, time, TimeUnit.SECONDS);
+        }
+    }*/
 
     public void initNC(){
 
@@ -41,37 +85,16 @@ public class NotificationController implements org.netcracker.unc.group16.model.
 //            System.out.println("ID:" + key + ";unix timestamp время:" + (value.getTime().getTimeInMillis() / 1000));
 
         }
-        ScheduledFuture scheduledFuture = scheduler.schedule(new Runnable() {
-            @Override
-            public void run() {
-            //    notifyObservers(currentTasks);
+//        ScheduledFuture scheduledFuture = scheduler.schedule(() -> notifyObservers(currentTasks), getTimeBeforeExecution() , TimeUnit.SECONDS);
+//        System.out.println(scheduledFuture.isCancelled());
 
-            }
-        }//, getTimeBeforeExecution()
-                ,2, TimeUnit.SECONDS);
-        if (scheduledFuture.isDone()){
-            initNC();
-        }
 
-        if (dismiss()){
+//        scheduledFuture.cancel(true);
+//        System.out.println(scheduledFuture.isCancelled());
 
-        }
-    }
-
-    public void notificate(){
 
     }
 
-    public void postpone(){
-
-    }
-
-    public boolean dismiss(){
-        return true;
-    }
-    public void getLastTask(){
-
-    }
 
     public Map<Integer, Task> getCurrentTasks() {
         return currentTasks;
@@ -174,7 +197,7 @@ public class NotificationController implements org.netcracker.unc.group16.model.
             return 0;
         }
         else{
-            System.out.println("Время до выполнения "  + (int) (min.getValue().getTime().getTimeInMillis() - cal.getTimeInMillis()) / 1000 + " секунд");
+            System.out.println("Время до выполнения нотификатора:"  + (int) (min.getValue().getTime().getTimeInMillis() - cal.getTimeInMillis()) / 1000 + " секунд");
             return (int) (min.getValue().getTime().getTimeInMillis() - cal.getTimeInMillis()) / 1000;
 
         }
@@ -205,14 +228,5 @@ public class NotificationController implements org.netcracker.unc.group16.model.
         }
     }
 
-    public NotificationController(TaskManagerController taskManagerController){
-        this.setTaskManagerController(taskManagerController);
-        this.setTaskManagerModel(taskManagerController.getTaskManagerModel());
-        this.setCurrentTasks(getTasksForNotification());
 
-        //Если таски для нотификатора есть
-        if (!(getCurrentTasks().isEmpty())){
-            initNC();
-        }
-    }
 }
