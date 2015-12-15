@@ -87,7 +87,7 @@ public class TaskManagerView extends JFrame implements ProgramInterface, Observe
         setResizable(true);
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         setPreferredSize(new Dimension(800, 700));
-        setMinimumSize(new Dimension(650, 650));
+        setMinimumSize(new Dimension(700, 650));
         setLocationRelativeTo(null);
         setIconImage(Toolkit.getDefaultToolkit().getImage("view/resources/icon.png"));
 

@@ -1,7 +1,6 @@
 package org.netcracker.unc.group16;
 
 import org.netcracker.unc.group16.controller.NotificationController;
-import org.netcracker.unc.group16.controller.TaskManager;
 import org.netcracker.unc.group16.controller.TaskManagerController;
 import org.netcracker.unc.group16.model.Appointment;
 import org.netcracker.unc.group16.model.JAXB;
@@ -24,9 +23,9 @@ public class Main{
 
 
 
-        Calendar t1 = new GregorianCalendar(2015, Calendar.DECEMBER, 15, 10, 0);
-        Calendar t2 = new GregorianCalendar(2015, Calendar.DECEMBER, 19, 15, 0);
-        main.taskManagerController.add(new Appointment("Test1", t1, t2, "TestTask"));
+        Calendar t1 = new GregorianCalendar(2015, Calendar.DECEMBER, 22, 10, 0);
+        Calendar t2 = new GregorianCalendar(2015, Calendar.DECEMBER, 25, 15, 0);
+        main.taskManagerController.add(new Appointment("Long Appointment", t1, t2, "Test Appointment"));
         Calendar t3 = Calendar.getInstance();
         Calendar t4 = Calendar.getInstance();
         t4.add(Calendar.HOUR_OF_DAY, 2);
