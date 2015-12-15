@@ -3,10 +3,12 @@ package org.netcracker.unc.group16.model;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
+import javax.xml.bind.annotation.XmlSeeAlso;
 import javax.xml.bind.annotation.adapters.XmlAdapter;
 /**
  * Created by Ivan on 25.11.2015.
  */
+@XmlSeeAlso(Appointment.class)
 public class HashMapAdapter extends XmlAdapter<MyMapType,Map<Integer, Task>> {
 
     @Override

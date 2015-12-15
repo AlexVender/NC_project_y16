@@ -3,6 +3,7 @@ package org.netcracker.unc.group16.model;
 import org.netcracker.unc.group16.annotations.FieldSettings;
 import org.netcracker.unc.group16.exceptions.IllegalTimeSetException;
 
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.util.Calendar;
 
 
@@ -26,6 +27,10 @@ public class Appointment extends Task {
     public Appointment(Appointment appointment) {
         this(appointment.id, appointment.title, appointment.time, appointment.endTime, appointment.description);
     }
+    public Appointment(Task task){
+        super(task.id, task.title, task.time, task.description);
+        this.endTime = task.time;
+    }
 
     @Override
     public void setTime(Calendar time) throws IllegalArgumentException {
@@ -46,6 +51,7 @@ public class Appointment extends Task {
     }
 
 
+    @XmlJavaTypeAdapter(value = CalendarAdapter.class)
     public Calendar getEndTime() {
         return (Calendar) endTime.clone();
     }

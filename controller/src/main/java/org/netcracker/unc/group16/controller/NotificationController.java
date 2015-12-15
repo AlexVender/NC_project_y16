@@ -85,7 +85,7 @@ public class NotificationController implements org.netcracker.unc.group16.model.
 //            System.out.println("ID:" + key + ";unix timestamp время:" + (value.getTime().getTimeInMillis() / 1000));
 
         }
-//        ScheduledFuture scheduledFuture = scheduler.schedule(() -> notifyObservers(currentTasks), getTimeBeforeExecution() , TimeUnit.SECONDS);
+        ScheduledFuture scheduledFuture = scheduler.schedule(() -> notifyObservers(currentTasks), getTimeBeforeExecution() , TimeUnit.SECONDS);
 //        System.out.println(scheduledFuture.isCancelled());
 
 
