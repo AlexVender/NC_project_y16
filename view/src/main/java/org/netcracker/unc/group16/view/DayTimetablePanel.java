@@ -105,33 +105,37 @@ public class DayTimetablePanel extends JPanel {
 
             @Override
             public void mousePressed(MouseEvent e) {
-                mouseLastPressedY = e.getY() + shift;
-                draggedAppLocalId = -1;
+                switch (e.getButton()) {
+                    case MouseEvent.BUTTON1:
+                        mouseLastPressedY = e.getY() + shift;
+                        draggedAppLocalId = -1;
 
-                Calendar time = yToTime(e.getY());
+                        Calendar time = yToTime(e.getY());
 
-                for (int i = tasks.size() - 1; i >= 0; i--) {
-                    Appointment task = tasks.get(i);
+                        for (int i = tasks.size() - 1; i >= 0; i--) {
+                            Appointment task = tasks.get(i);
 
-                    if (time.compareTo(task.getTime()) > 0 && time.compareTo(task.getEndTime()) < 0) {
-                        draggedAppLocalId = i;
-                        savStartTime = task.getTime();
-                        savEndTime = task.getEndTime();
+                            if (time.compareTo(task.getTime()) > 0 && time.compareTo(task.getEndTime()) < 0) {
+                                draggedAppLocalId = i;
+                                savStartTime = task.getTime();
+                                savEndTime = task.getEndTime();
 
-                        if (e.getClickCount() == 2) {
-                            if (e.getX() >= getWidth() - 17 && e.getY() <= timeToY(task.getTime()) + 15) {
-                                taskManagerController.remove(task.getId());
-                                tasks.remove(i);
-                            } else {
-                                NewTaskDialog newTaskDialog = new NewTaskDialog(null, task); // fixme
-                                if (newTaskDialog.showDialog() == NewTaskDialog.OK) {
-                                    taskManagerController.edit(task.getId(), newTaskDialog.getResult());
+                                if (e.getClickCount() == 2) {
+                                    if (e.getX() >= getWidth() - 17 && e.getY() <= timeToY(task.getTime()) + 15) {
+                                        taskManagerController.remove(task.getId());
+                                        tasks.remove(i);
+                                    } else {
+                                        NewTaskDialog newTaskDialog = new NewTaskDialog(null, task); // fixme
+                                        if (newTaskDialog.showDialog() == NewTaskDialog.OK) {
+                                            taskManagerController.edit(task.getId(), newTaskDialog.getResult());
+                                        }
+                                    }
                                 }
+                                repaint();
+                                return;
                             }
                         }
-                        repaint();
-                        return;
-                    }
+                        break;
                 }
             }
 
@@ -158,7 +162,6 @@ public class DayTimetablePanel extends JPanel {
                 int appointmentDragY = (int) (dy / (ROWS_HEIGHT/4));
 
                 if (draggedAppLocalId != -1 && appointmentDragY != 0) {
-                    System.out.println(appointmentDragY);
                     Appointment task = tasks.get(draggedAppLocalId);
 
                     Calendar startTime = (Calendar) savStartTime.clone();
@@ -256,7 +259,7 @@ public class DayTimetablePanel extends JPanel {
                 Calendar tmpEndOfDate = (Calendar) date.clone();
                 tmpEndOfDate.add(Calendar.DAY_OF_MONTH, 1);
                 if (taskTimeEnd.compareTo(tmpEndOfDate) >= 0) {
-                    y2 = 24 * ROWS_HEIGHT - shift - 1;;
+                    y2 = 24 * ROWS_HEIGHT - shift - 1;
                 } else {
                     y2 = timeToY(taskTimeEnd);
                 }

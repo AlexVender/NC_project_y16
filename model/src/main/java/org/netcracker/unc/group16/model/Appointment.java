@@ -5,6 +5,7 @@ import org.netcracker.unc.group16.exceptions.IllegalTimeSetException;
 
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.util.Calendar;
+import java.util.Objects;
 
 
 public class Appointment extends Task {
@@ -78,5 +79,19 @@ public class Appointment extends Task {
         result.endTime = (Calendar) endTime.clone();
 
         return result;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        if (!super.equals(o)) return false;
+        Appointment that = (Appointment) o;
+        return Objects.equals(endTime, that.endTime);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(super.hashCode(), endTime);
     }
 }

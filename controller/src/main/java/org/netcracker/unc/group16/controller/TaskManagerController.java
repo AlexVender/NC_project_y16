@@ -4,7 +4,10 @@ import org.netcracker.unc.group16.model.Appointment;
 import org.netcracker.unc.group16.model.Task;
 import org.netcracker.unc.group16.model.TaskManagerModel;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.GregorianCalendar;
+import java.util.List;
 
 
 public class TaskManagerController implements TaskManager {
@@ -18,6 +21,12 @@ public class TaskManagerController implements TaskManager {
 
     public void add(Task task) throws IllegalArgumentException {
         taskManagerModel.add(task);
+    }
+
+    public void add(Task ... tasks) throws IllegalArgumentException {
+        for (Task task : tasks) {
+            add(task);
+        }
     }
 
     public Task get(Integer id) {
@@ -39,11 +48,11 @@ public class TaskManagerController implements TaskManager {
 
         List<Task> result = new ArrayList<>();
 
-        int year = date.get(Calendar.YEAR);
+        int year  = date.get(Calendar.YEAR);
         int month = date.get(Calendar.MONTH);
-        int day = date.get(Calendar.DAY_OF_MONTH);
+        int day   = date.get(Calendar.DAY_OF_MONTH);
         Calendar dateStart = new GregorianCalendar(year, month, day);
-        Calendar dateEnd = new GregorianCalendar(year, month, day + 1);
+        Calendar dateEnd   = new GregorianCalendar(year, month, day + 1);
 
         for (int i = 1; i <= taskManagerModel.getTasksCnt(); i++) {
             Task task = taskManagerModel.get(i);
@@ -106,6 +115,11 @@ public class TaskManagerController implements TaskManager {
         result.removeIf(task -> task.getTime().compareTo(minDate) > 0);
 
         return result;
+    }
+
+
+    public Integer getTasksCnt() {
+        return taskManagerModel.getTasksCnt();
     }
 
     public void setTitle(Integer id, String title) {

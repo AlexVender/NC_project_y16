@@ -26,7 +26,6 @@ private static final int[][] COLUMNS_WIDTHS = new int[][] {
         setSelectionForeground(Color.BLACK);
 
         getTableHeader().setReorderingAllowed(false);
-        setAutoResizeMode(JTable.AUTO_RESIZE_LAST_COLUMN);
         for (int i = 0; i < getColumnCount(); i++) {
             TableColumn column = getColumnModel().getColumn(i);
             column.setMinWidth(COLUMNS_WIDTHS[i][0]);

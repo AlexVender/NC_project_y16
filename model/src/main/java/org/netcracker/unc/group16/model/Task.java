@@ -5,6 +5,7 @@ import org.netcracker.unc.group16.annotations.FieldSettings;
 import javax.xml.bind.annotation.XmlSeeAlso;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.util.Calendar;
+import java.util.Objects;
 
 
 
@@ -70,6 +71,7 @@ public class Task implements Cloneable {
     public void setTime(Calendar time) {
         if (time == null) {
             this.time = null;
+            return;
         }
 
         this.time = (Calendar) time.clone();
@@ -100,5 +102,19 @@ public class Task implements Cloneable {
         }
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Task task = (Task) o;
+        return Objects.equals(id, task.id) &&
+                Objects.equals(title, task.title) &&
+                Objects.equals(time, task.time) &&
+                Objects.equals(description, task.description);
+    }
 
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, title, time, description);
+    }
 }
