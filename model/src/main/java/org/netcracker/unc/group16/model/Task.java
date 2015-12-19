@@ -2,13 +2,16 @@ package org.netcracker.unc.group16.model;
 
 import org.netcracker.unc.group16.annotations.FieldSettings;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlSeeAlso;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.util.Calendar;
 import java.util.Objects;
 
 
-
+//@XmlAccessorType(XmlAccessType.FIELD)
+@XmlSeeAlso(Appointment.class)
 public class Task implements Cloneable {
     @FieldSettings(displayName = "ID", editable = false, orderNumb = 0)
     protected Integer id;

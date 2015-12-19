@@ -18,10 +18,12 @@ public class Main{
     private NotificationController notificationController;
     public static void main(String[] args) {
         Main main = new Main();
-        main.taskManagerModel = new TaskManagerModel();
+//        main.taskManagerModel = new TaskManagerModel();
+        JAXB jaxb = new JAXB();
+        main.taskManagerModel = jaxb.read();
         main.taskManagerController = new TaskManagerController(main.taskManagerModel);
 
-
+/*
 
         Calendar t1 = new GregorianCalendar(2015, Calendar.DECEMBER, 22, 10, 0);
         Calendar t2 = new GregorianCalendar(2015, Calendar.DECEMBER, 25, 15, 0);
@@ -53,15 +55,15 @@ public class Main{
         t16.add(Calendar.MINUTE, 1);
 //        System.out.println("Время t16+30sec:" + t16.getTimeInMillis() / 1000);
         t17.add(Calendar.HOUR_OF_DAY, 2);
-        main.taskManagerController.add(new Appointment("2Today Appointment", t16, t17, "Task of the today2"));
+        main.taskManagerController.add(new Appointment("2Today Appointment", t16, t17, "Task of the today2"));*/
 
 
         main.notificationController = new NotificationController(main.taskManagerController);
         TaskManagerView taskManagerView = new TaskManagerView(main.notificationController);
 
 
-        JAXB jaxb = new JAXB();
-//          jaxb.write(taskManagerModel);
+
+//          jaxb.write(main.taskManagerModel);
 
     }
     class MyRunnable implements Runnable{

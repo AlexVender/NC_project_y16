@@ -3,11 +3,12 @@
     <hashMapTasks>
         <entry>
             <key>1</key>
-            <value>
-                <description>TestTask</description>
+            <value xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="appointment">
+                <description>Test Appointment</description>
                 <id>1</id>
-                <time>1450159200000</time>
-                <title>Test1</title>
+                <time>1450764000000</time>
+                <title>Long Appointment</title>
+                <endTime>1451041200000</endTime>
             </value>
         </entry>
         <entry>
@@ -15,7 +16,7 @@
             <value>
                 <description>Task of the today</description>
                 <id>2</id>
-                <time>1450159500000</time>
+                <time>1450541820000</time>
                 <title>Today Task</title>
             </value>
         </entry>
@@ -33,7 +34,7 @@
             <value>
                 <description>TestTask</description>
                 <id>4</id>
-                <time>1450159500000</time>
+                <time>1450541820000</time>
                 <title>TestTask2</title>
             </value>
         </entry>
@@ -66,29 +67,32 @@
         </entry>
         <entry>
             <key>8</key>
-            <value>
+            <value xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="appointment">
                 <description>12DecComment</description>
                 <id>8</id>
                 <time>1449892800000</time>
                 <title>12 Dec</title>
+                <endTime>1449896400000</endTime>
             </value>
         </entry>
         <entry>
             <key>9</key>
-            <value>
+            <value xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="appointment">
                 <description>12DecComment 2</description>
                 <id>9</id>
                 <time>1449918000000</time>
                 <title>12 Dec 2</title>
+                <endTime>1449925200000</endTime>
             </value>
         </entry>
         <entry>
             <key>10</key>
-            <value>
+            <value xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="appointment">
                 <description>Task of the today2</description>
                 <id>10</id>
-                <time>1450159560000</time>
+                <time>1450541880000</time>
                 <title>2Today Appointment</title>
+                <endTime>1450549020000</endTime>
             </value>
         </entry>
     </hashMapTasks>
