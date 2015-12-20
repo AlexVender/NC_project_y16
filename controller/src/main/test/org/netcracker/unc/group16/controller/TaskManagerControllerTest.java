@@ -25,14 +25,14 @@ public class TaskManagerControllerTest {
         Calendar t1 = Calendar.getInstance();
         Task task1 = new Task("", t1, "");
         controller.add(task1);
-        assertEquals(controller.getTasksCnt(), new Integer(1));
+        assertEquals(new Integer(1), controller.getTasksCnt());
 
         controller.add(task1);
-        assertEquals(controller.getTasksCnt(), new Integer(1));
+        assertEquals(new Integer(1), controller.getTasksCnt());
 
         Calendar t2 = Calendar.getInstance();
         Task task2 = new Task("", t2, "");
         controller.add(task2);
-        assertEquals(controller.getTasksCnt(), new Integer(2));
+        assertEquals(new Integer(2), controller.getTasksCnt());
     }
 }

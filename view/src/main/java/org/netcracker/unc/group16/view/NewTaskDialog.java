@@ -27,7 +27,8 @@ public class NewTaskDialog extends JDialog {
     private JButton btnOK;
     
     private ArrayList<FieldPanel> panels;
-    private Task task;
+    private Task oldTask;
+    private Task newTask;
 
     private Boolean editMode;
 
@@ -37,7 +38,10 @@ public class NewTaskDialog extends JDialog {
         setTitle("Редактировать");
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 
-        this.task = task;
+        this.oldTask = task;
+        try {
+            this.newTask = task.getClass().newInstance();
+        } catch (InstantiationException | IllegalAccessException ignored) {}
         editMode = true;
 
         initGUI();
@@ -53,7 +57,11 @@ public class NewTaskDialog extends JDialog {
         setTitle("Создать");
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 
-        this.task = (Task) aClass.newInstance();
+        this.newTask = (Task) aClass.newInstance();
+        this.oldTask = this.newTask;
+        try {
+            this.newTask = (Task) aClass.newInstance();
+        } catch (InstantiationException | IllegalAccessException ignored) {}
         editMode = false;
 
 
@@ -77,7 +85,7 @@ public class NewTaskDialog extends JDialog {
             Object defaultVal = null;
             try {
                 taskField.setAccessible(true);
-                defaultVal = taskField.get(task);
+                defaultVal = taskField.get(oldTask);
             } catch (IllegalAccessException ignored) {}
 
             FieldPanel newFieldPanel = taskFieldPanelFactory.createPanel(taskField.getType(), taskField, defaultVal,
@@ -114,7 +122,7 @@ public class NewTaskDialog extends JDialog {
 
 
         panels = new ArrayList<>();
-        analyze(task);
+        analyze(newTask);
 
         panels.sort((o1, o2) -> o1.getOrder().compareTo(o2.getOrder()));
 
@@ -170,14 +178,14 @@ public class NewTaskDialog extends JDialog {
                 Field field = panel.getField();
                 String fieldName = field.getName();
                 String setterName = "set" + Character.toUpperCase(fieldName.charAt(0)) + fieldName.substring(1);
-                Object instance = task;
+                Object instance = newTask;
                 do {
                     try {
                         Method[] methods = instance.getClass().getDeclaredMethods();
                         for (Method method : methods) {
                             if (method.getName().equals(setterName)) {
                                 instance = null;
-                                method.invoke(task, panel.getData());
+                                method.invoke(newTask, panel.getData());
                                 break;
                             }
                         }
@@ -220,7 +228,7 @@ public class NewTaskDialog extends JDialog {
 
     public Task getResult() {
         if (status == OK) {
-            return task;
+            return newTask;
         }
 
         return null;

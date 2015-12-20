@@ -4,13 +4,16 @@ import org.netcracker.unc.group16.controller.NotificationController;
 import org.netcracker.unc.group16.controller.NotificationObserver;
 import org.netcracker.unc.group16.controller.TaskManagerController;
 import org.netcracker.unc.group16.model.Appointment;
+import org.netcracker.unc.group16.model.JAXB;
 import org.netcracker.unc.group16.model.Observer;
 import org.netcracker.unc.group16.model.Task;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.time.DayOfWeek;
 import java.time.Month;
 import java.time.format.TextStyle;
@@ -199,6 +202,14 @@ public class TaskManagerView extends JFrame implements ProgramInterface, Observe
 
 
     private void addListeners() {
+        addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                JAXB jaxb = new JAXB();
+                jaxb.write(taskManagerController.getTaskManagerModel());
+            }
+        });
+
         // Кнопка назад
         btnBack.addActionListener(e -> {
             btnBack.setVisible(false);
@@ -209,6 +220,7 @@ public class TaskManagerView extends JFrame implements ProgramInterface, Observe
             cardLayout.show(workPanel, "Calendar");
         });
 
+        // Кнопка "  <  "
         btnPrev.addActionListener(e -> {
             switch (menuState) {
                 case calendar:
@@ -226,6 +238,7 @@ public class TaskManagerView extends JFrame implements ProgramInterface, Observe
             updateMonthLabel();
         });
 
+        // Кнопка "  >  "
         btnNext.addActionListener(e -> {
             switch (menuState) {
                 case calendar:
@@ -243,6 +256,7 @@ public class TaskManagerView extends JFrame implements ProgramInterface, Observe
             updateMonthLabel();
         });
 
+        // Кнопка "  <<  "
         btnDoublePrev.addActionListener(e1 -> {
             switch (menuState) {
                 case calendar:
@@ -260,6 +274,7 @@ public class TaskManagerView extends JFrame implements ProgramInterface, Observe
             updateMonthLabel();
         });
 
+        // Кнопка "  >>  "
         btnDoubleNext.addActionListener(e1 -> {
             switch (menuState) {
                 case calendar:
@@ -277,6 +292,7 @@ public class TaskManagerView extends JFrame implements ProgramInterface, Observe
             updateMonthLabel();
         });
 
+        // Кнопка "Создать встречу"
         btnCreateAppointment.addActionListener(e -> {
             try {
                 NewTaskDialog newTaskDialog = new NewTaskDialog(this, Appointment.class);
@@ -293,6 +309,7 @@ public class TaskManagerView extends JFrame implements ProgramInterface, Observe
             }
         });
 
+        // Кнопка "Создать задачу"
         btnCreateTask.addActionListener(e -> {
             try {
                 NewTaskDialog newTaskDialog = new NewTaskDialog(this, Task.class);
@@ -305,6 +322,7 @@ public class TaskManagerView extends JFrame implements ProgramInterface, Observe
             }
         });
 
+        // Кнопка "Просмотр задач"
         btnViewTasks.addActionListener(e -> {
             switch (menuState) {
                 case calendar:
@@ -334,11 +352,7 @@ public class TaskManagerView extends JFrame implements ProgramInterface, Observe
             cardLayout.show(workPanel, "TasksTable");
         });
 
-        calendarPanel.addMouseListener(new MouseListener() {
-            @Override
-            public void mouseClicked(MouseEvent e) {
-            }
-
+        calendarPanel.addMouseListener(new MouseAdapter() {
             @Override
             public void mousePressed(MouseEvent e) {
                 // По двойному клику
@@ -365,24 +379,9 @@ public class TaskManagerView extends JFrame implements ProgramInterface, Observe
                     }
                 }
             }
-
-            @Override
-            public void mouseReleased(MouseEvent e) {
-            }
-
-            @Override
-            public void mouseEntered(MouseEvent e) {
-            }
-
-            @Override
-            public void mouseExited(MouseEvent e) {
-            }
         });
 
-        tasksTable.addMouseListener(new MouseListener() {
-            @Override
-            public void mouseClicked(MouseEvent e) {}
-
+        tasksTable.addMouseListener(new MouseAdapter() {
             @Override
             public void mousePressed(MouseEvent e) {
                 if (e.getClickCount() == 2) {
@@ -406,17 +405,9 @@ public class TaskManagerView extends JFrame implements ProgramInterface, Observe
                     }
                 }
             }
-
-            @Override
-            public void mouseReleased(MouseEvent e) {}
-
-            @Override
-            public void mouseEntered(MouseEvent e) {}
-
-            @Override
-            public void mouseExited(MouseEvent e) {}
         });
     }
+
 
     public void updateMonthLabel() {
         String month;

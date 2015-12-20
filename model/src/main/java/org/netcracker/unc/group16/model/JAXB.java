@@ -1,14 +1,10 @@
 package org.netcracker.unc.group16.model;
 
-import org.apache.log4j.Logger;
-
-import java.io.File;
-import java.util.HashMap;
-import java.util.Map;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
-import javax.xml.bind.Unmarshaller;
 import javax.xml.bind.Marshaller;
+import javax.xml.bind.Unmarshaller;
+import java.io.File;
 
 public class JAXB {
 
@@ -38,12 +34,10 @@ public class JAXB {
             JAXBContext jaxbContext = JAXBContext.newInstance(TaskManagerModel.class, Task.class);
             Marshaller jaxbMarshaller = jaxbContext.createMarshaller();
 
-
             jaxbMarshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
 
-
             jaxbMarshaller.marshal(taskManagerModel, file);
-            jaxbMarshaller.marshal(taskManagerModel, System.out);
+//            jaxbMarshaller.marshal(taskManagerModel, System.out);
 
         } catch (JAXBException e) {
             System.err.println(e + "Error");

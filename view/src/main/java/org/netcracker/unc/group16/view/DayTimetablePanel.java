@@ -128,6 +128,7 @@ public class DayTimetablePanel extends JPanel {
                                         NewTaskDialog newTaskDialog = new NewTaskDialog(null, task); // fixme
                                         if (newTaskDialog.showDialog() == NewTaskDialog.OK) {
                                             taskManagerController.edit(task.getId(), newTaskDialog.getResult());
+                                            updateTasks();
                                         }
                                     }
                                 }
